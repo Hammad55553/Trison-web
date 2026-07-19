@@ -1,0 +1,552 @@
+/* ── Overview Page Layout ── */
+.overview-page {
+  position: relative;
+  z-index: 2;
+  padding-top: 80px;
+  background-color: var(--bg-primary);
+  min-height: 100vh;
+}
+
+/* ── Breadcrumb Navigation ── */
+.overview-breadcrumb {
+  background-color: var(--bg-secondary);
+  border-bottom: 1px solid var(--card-border);
+  padding: 14px 24px;
+}
+
+.breadcrumb-wrap {
+  max-width: 1200px;
+  margin: 0 auto;
+  font-size: 0.85rem;
+  color: var(--text-tertiary);
+  font-weight: 500;
+}
+
+.breadcrumb-wrap span {
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.breadcrumb-wrap span:hover {
+  color: var(--secondary);
+}
+
+.breadcrumb-wrap span.active {
+  color: var(--text-primary);
+  font-weight: 700;
+  cursor: default;
+}
+
+/* ── Product Hero Banner (Full-bleed Background Image) ── */
+.product-hero-sec {
+  background-size: cover;
+  background-position: center;
+  color: #ffffff;
+  padding: 120px 24px;
+  position: relative;
+  overflow: hidden;
+}
+
+.product-hero-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.brand-pill {
+  display: inline-block;
+  font-family: var(--font-display);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--secondary);
+  border: 1px solid rgba(249, 115, 22, 0.4);
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: rgba(249, 115, 22, 0.08);
+  margin-bottom: 24px;
+}
+
+.product-info-col h1 {
+  font-size: 3.2rem;
+  font-weight: 850;
+  line-height: 1.15;
+  margin-bottom: 16px;
+  color: #ffffff;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.5);
+}
+
+.product-tagline {
+  font-size: 1.2rem;
+  line-height: 1.6;
+  color: #cbd5e1;
+  margin-bottom: 48px;
+  max-width: 700px;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.4);
+}
+
+/* ── Quick Specs Cards ── */
+.product-quick-specs {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  max-width: 800px;
+}
+
+.spec-card {
+  background: rgba(11, 11, 38, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: var(--radius-md);
+  padding: 20px 14px;
+  text-align: center;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  transition: all var(--transition-normal);
+}
+
+.spec-card:hover {
+  background: rgba(11, 11, 38, 0.85);
+  border-color: var(--secondary);
+  transform: translateY(-4px);
+}
+
+.spec-val {
+  display: block;
+  font-family: var(--font-display);
+  font-size: 2rem;
+  font-weight: 850;
+  color: var(--secondary);
+  line-height: 1.1;
+  margin-bottom: 6px;
+}
+
+.spec-unit {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-left: 2px;
+}
+
+.spec-label {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #cbd5e1;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* ── Sticky Sub-navigation Bar ── */
+.product-sub-nav {
+  position: sticky;
+  top: 78px;
+  background: #ffffff;
+  border-bottom: 1px solid var(--card-border);
+  z-index: 100;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+}
+
+.sub-nav-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  gap: 32px;
+  padding: 0 24px;
+}
+
+.product-sub-nav button {
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  font-weight: 600;
+  padding: 20px 0;
+  cursor: pointer;
+  position: relative;
+  transition: color 0.2s ease;
+}
+
+.product-sub-nav button:hover {
+  color: var(--secondary);
+}
+
+/* ── LONGi Style Interactive Parameters Section ── */
+.parameter-interactive-section {
+  padding: 80px 24px;
+  background-color: var(--bg-secondary);
+}
+
+.parameter-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.parameter-tabs {
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+  margin-bottom: 60px;
+  border-bottom: 1px solid var(--card-border);
+}
+
+.param-tab-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  font-weight: 700;
+  padding: 12px 24px;
+  cursor: pointer;
+  position: relative;
+  transition: color 0.2s ease;
+}
+
+.param-tab-btn:hover {
+  color: var(--text-primary);
+}
+
+.param-tab-btn.active {
+  color: var(--secondary);
+}
+
+.param-tab-btn.active::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background-color: var(--secondary);
+}
+
+/* ── Parameter Grid ── */
+.parameter-interactive-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr 1fr;
+  gap: 40px;
+  align-items: center;
+}
+
+.param-column {
+  display: flex;
+  flex-direction: column;
+  gap: 64px;
+}
+
+/* Feature card styles (Left and Right Columns) */
+.param-feature-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  max-width: 320px;
+}
+
+.column-right .param-feature-card {
+  align-items: flex-start;
+}
+
+.param-icon-wrapper {
+  color: var(--secondary);
+  background: rgba(249, 115, 22, 0.08);
+  border: 1px solid rgba(249, 115, 22, 0.15);
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.param-feature-card h3 {
+  font-size: 1.15rem;
+  font-weight: 800;
+  margin-bottom: 10px;
+  color: var(--text-primary);
+}
+
+.param-feature-card p {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* Center Column style (Left arrow, central plate viewer, right arrow) */
+.column-center {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+}
+
+.center-plate-box {
+  flex-grow: 1;
+  height: 480px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+
+.interactive-plate-img {
+  width: 90%;
+  height: 80%;
+  object-fit: contain;
+  filter: drop-shadow(0 25px 40px rgba(26, 26, 94, 0.1));
+}
+
+.plate-badge {
+  position: absolute;
+  bottom: 24px;
+  font-family: var(--font-display);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: var(--secondary);
+  background: rgba(249, 115, 22, 0.08);
+  border: 1px solid rgba(249, 115, 22, 0.2);
+  padding: 6px 16px;
+  border-radius: 999px;
+}
+
+/* Curved Rotate buttons on Left/Right of plate viewer */
+.rotate-arrow-btn {
+  background: #ffffff;
+  border: 1px solid var(--card-border);
+  color: var(--text-secondary);
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04);
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  flex-shrink: 0;
+  z-index: 5;
+}
+
+.rotate-arrow-btn:hover {
+  background: var(--secondary);
+  border-color: var(--secondary);
+  color: #ffffff;
+  box-shadow: 0 8px 25px rgba(249, 115, 22, 0.3);
+  transform: scale(1.08);
+}
+
+.rotate-arrow-btn:active {
+  transform: scale(0.95);
+}
+
+/* ── Entrance Animation ── */
+.animated-slide-in {
+  animation: slideScaleIn 0.5s cubic-bezier(0.25, 0.8, 0.25, 1) forwards;
+}
+
+@keyframes slideScaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* ── Technical Specifications Section ── */
+.specs-sec {
+  background: var(--bg-primary);
+  border-top: 1px solid var(--card-border);
+  border-bottom: 1px solid var(--card-border);
+  padding: 80px 24px;
+}
+
+.specs-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.section-title-box {
+  margin-bottom: 48px;
+  text-align: center;
+}
+
+.section-badge {
+  display: inline-block;
+  font-family: var(--font-display);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  color: var(--secondary);
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.section-title-box h2 {
+  font-size: 2.2rem;
+  font-weight: 850;
+  color: var(--text-primary);
+}
+
+.specs-detail-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 48px;
+}
+
+.detail-table-card {
+  background: var(--bg-secondary);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-lg);
+  padding: 36px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.01);
+}
+
+.detail-table-card h3 {
+  font-size: 1.25rem;
+  font-weight: 800;
+  margin-bottom: 24px;
+  color: var(--primary);
+  border-bottom: 2px solid var(--card-border);
+  padding-bottom: 12px;
+}
+
+.detail-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.detail-table tr {
+  border-bottom: 1px solid var(--card-border);
+}
+
+.detail-table tr:last-child {
+  border-bottom: none;
+}
+
+.detail-table td {
+  padding: 14px 8px;
+  font-size: 0.95rem;
+}
+
+.detail-table td:first-child {
+  color: var(--text-secondary);
+}
+
+.detail-table td:last-child {
+  text-align: right;
+  color: var(--text-primary);
+}
+
+/* ── FAQs Section ── */
+.faqs-sec-container {
+  padding: 80px 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.faqs-container {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.faqs-accordion-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.faq-accordion-item {
+  background: var(--bg-secondary);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.faq-accordion-item:hover {
+  border-color: rgba(249, 115, 22, 0.25);
+}
+
+.faq-question-bar {
+  padding: 20px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--text-primary);
+  transition: color 0.2s ease;
+}
+
+.faq-accordion-item:hover .faq-question-bar {
+  color: var(--secondary);
+}
+
+.faq-chevron {
+  color: var(--text-tertiary);
+  transition: transform 0.3s ease;
+}
+
+.faq-accordion-item.expanded .faq-chevron {
+  transform: rotate(180deg);
+  color: var(--secondary);
+}
+
+.faq-answer-bar {
+  max-height: 0;
+  transition: max-height 0.35s cubic-bezier(0, 1, 0, 1);
+  overflow: hidden;
+  background: rgba(249, 115, 22, 0.01);
+}
+
+.faq-accordion-item.expanded .faq-answer-bar {
+  max-height: 1000px;
+}
+
+.faq-answer-bar p {
+  padding: 0 24px 20px 24px;
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* ── Responsive adjustments ── */
+@media (max-width: 968px) {
+  .parameter-interactive-grid {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+  .param-column {
+    gap: 32px;
+    align-items: center;
+  }
+  .param-feature-card {
+    align-items: center;
+    text-align: center;
+  }
+  .specs-detail-grid {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+}
+
+@media (max-width: 640px) {
+  .product-quick-specs {
+    grid-template-columns: 1fr 1fr;
+  }
+  .product-hero-sec {
+    padding: 80px 20px;
+  }
+  .product-info-col h1 {
+    font-size: 2.2rem;
+  }
+}

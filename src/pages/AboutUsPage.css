@@ -1,0 +1,437 @@
+/* ── About Us Page Layout ── */
+.about-page {
+  position: relative;
+  z-index: 2;
+  padding-top: 80px;
+  background-color: var(--bg-primary);
+  min-height: 100vh;
+}
+
+/* ── Breadcrumb ── */
+.about-breadcrumb {
+  background-color: var(--bg-secondary);
+  border-bottom: 1px solid var(--card-border);
+  padding: 14px 24px;
+}
+
+/* ── About Hero Banner (bilding.png Background Cover) ── */
+.about-hero-sec {
+  background-size: cover;
+  background-position: center;
+  color: #ffffff;
+  padding: 120px 24px;
+  position: relative;
+  overflow: hidden;
+}
+
+.about-hero-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.about-hero-sec h1 {
+  font-size: 2.8rem;
+  font-weight: 850;
+  line-height: 1.25;
+  margin-top: 16px;
+  color: #ffffff;
+  max-width: 800px;
+  text-shadow: 0 4px 20px rgba(11, 11, 38, 0.85);
+}
+
+/* ── Sticky Sub-navigation Bar ── */
+.about-sub-nav {
+  position: sticky;
+  top: 78px;
+  background: #ffffff;
+  border-bottom: 1px solid var(--card-border);
+  z-index: 100;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+}
+
+/* ── Profile Section ── */
+.profile-section {
+  padding: 80px 24px;
+  background-color: var(--bg-secondary);
+}
+
+.profile-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.profile-grid-cols {
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr;
+  gap: 60px;
+  align-items: center;
+}
+
+.profile-desc-col h2 {
+  font-size: 2.2rem;
+  font-weight: 850;
+  margin-bottom: 24px;
+  color: var(--text-primary);
+}
+
+.profile-desc-col p {
+  font-size: 1.05rem;
+  color: var(--text-secondary);
+  line-height: 1.65;
+  margin-bottom: 20px;
+}
+
+.profile-stats-col {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.profile-stat-box {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  background: var(--bg-primary);
+  border: 1px solid var(--card-border);
+  padding: 24px;
+  border-radius: var(--radius-md);
+}
+
+.stat-icon-wrap {
+  background: rgba(249, 115, 22, 0.08);
+  color: var(--secondary);
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.profile-stat-box h4 {
+  font-family: var(--font-display);
+  font-size: 1.55rem;
+  font-weight: 850;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.profile-stat-box p {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  font-weight: 600;
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* ── Bankability Section ── */
+.bankability-banner {
+  padding: 80px 24px;
+}
+
+.bankability-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.bankability-header {
+  text-align: center;
+  margin-bottom: 48px;
+}
+
+.bankability-header h2 {
+  font-size: 2.2rem;
+  font-weight: 850;
+  margin-bottom: 12px;
+}
+
+.bankability-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 28px;
+}
+
+.bankability-card {
+  background: var(--bg-secondary);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-lg);
+  padding: 40px;
+  text-align: center;
+  border-left: 4px solid var(--secondary);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.01);
+}
+
+.bankability-card h3 {
+  font-family: var(--font-display);
+  font-size: 2.5rem;
+  font-weight: 900;
+  color: var(--secondary);
+  margin-bottom: 10px;
+}
+
+.bankability-card p {
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+  font-weight: 600;
+  margin: 0;
+}
+
+/* ── Milestones Timeline Section ── */
+.milestones-section {
+  padding: 80px 24px;
+  background-color: var(--bg-secondary);
+  border-top: 1px solid var(--card-border);
+}
+
+.milestones-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.milestones-timeline-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+}
+
+.timeline-node-card {
+  background: var(--bg-primary);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-md);
+  padding: 30px 24px;
+  position: relative;
+}
+
+.timeline-node-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 24px;
+  width: 32px;
+  height: 4px;
+  background: var(--secondary);
+  border-radius: 0 0 4px 4px;
+}
+
+.node-year {
+  display: block;
+  font-family: var(--font-display);
+  font-size: 1.8rem;
+  font-weight: 850;
+  color: var(--primary);
+  margin-bottom: 12px;
+}
+
+.timeline-node-card p {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* ── Innovation R&D Section ── */
+.innovation-section {
+  padding: 80px 24px;
+}
+
+.innovation-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.innovation-headline-box {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 60px;
+  border-bottom: 1px solid var(--card-border);
+  padding-bottom: 40px;
+  flex-wrap: wrap;
+  gap: 32px;
+}
+
+.headline-text {
+  max-width: 600px;
+}
+
+.headline-text h2 {
+  font-size: 2.2rem;
+  font-weight: 850;
+  margin-bottom: 12px;
+}
+
+.headline-text p {
+  color: var(--text-secondary);
+  font-size: 1.1rem;
+  margin: 0;
+}
+
+.headline-stats {
+  display: flex;
+  gap: 40px;
+}
+
+.head-stat-item span {
+  display: block;
+  font-family: var(--font-display);
+  font-size: 1.8rem;
+  font-weight: 850;
+  color: var(--secondary);
+  margin-bottom: 4px;
+}
+
+.head-stat-item p {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  font-weight: 700;
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.innovation-grid-cards {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+}
+
+.innovation-feat-card {
+  background: var(--bg-secondary);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-md);
+  padding: 30px 24px;
+  transition: all var(--transition-normal);
+}
+
+.innovation-feat-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(249, 115, 22, 0.25);
+  box-shadow: 0 10px 25px rgba(249, 115, 22, 0.02);
+}
+
+.feat-circle-icon {
+  color: var(--secondary);
+  margin-bottom: 20px;
+}
+
+.innovation-feat-card h3 {
+  font-size: 1.15rem;
+  font-weight: 800;
+  margin-bottom: 12px;
+  color: var(--text-primary);
+}
+
+.innovation-feat-card p {
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* ── Into The Future Section ── */
+.future-section {
+  padding: 80px 24px;
+  background-color: var(--bg-secondary);
+  border-top: 1px solid var(--card-border);
+}
+
+.future-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.future-split-grid {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 60px;
+  align-items: center;
+}
+
+.future-content-box h2 {
+  font-size: 2.2rem;
+  font-weight: 850;
+  margin-bottom: 24px;
+}
+
+.future-content-box p {
+  font-size: 1.05rem;
+  color: var(--text-secondary);
+  line-height: 1.65;
+  margin-bottom: 20px;
+}
+
+.future-visual-box {
+  height: 400px;
+  background-size: cover;
+  background-position: center;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  position: relative;
+  border: 1px solid var(--card-border);
+}
+
+.visual-caption {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  padding: 30px;
+  background: linear-gradient(to top, rgba(11, 11, 38, 0.9) 0%, rgba(11, 11, 38, 0) 100%);
+  color: #ffffff;
+}
+
+.visual-caption span {
+  font-family: var(--font-display);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--secondary);
+  margin-bottom: 6px;
+  display: block;
+}
+
+.visual-caption h4 {
+  font-size: 1.35rem;
+  font-weight: 800;
+  margin: 0;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+}
+
+/* ── Responsive adjustments ── */
+@media (max-width: 968px) {
+  .profile-grid-cols {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+  .bankability-grid {
+    grid-template-columns: 1fr;
+  }
+  .milestones-timeline-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+  .innovation-grid-cards {
+    grid-template-columns: 1fr 1fr;
+  }
+  .future-split-grid {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+}
+
+@media (max-width: 580px) {
+  .milestones-timeline-grid {
+    grid-template-columns: 1fr;
+  }
+  .innovation-grid-cards {
+    grid-template-columns: 1fr;
+  }
+  .headline-stats {
+    flex-direction: column;
+    gap: 20px;
+  }
+  .about-hero-sec h1 {
+    font-size: 2rem;
+  }
+}

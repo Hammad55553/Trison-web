@@ -1,0 +1,126 @@
+.value-chain-section {
+  padding: 100px 24px;
+  background-color: var(--bg-primary);
+  position: relative;
+  z-index: 2;
+}
+
+.value-chain-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.section-header-center {
+  text-align: center;
+  margin-bottom: 60px;
+}
+
+.value-badge {
+  display: inline-block;
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  font-weight: 750;
+  color: var(--secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  background: rgba(249, 115, 22, 0.08);
+  padding: 6px 16px;
+  border-radius: 9999px;
+  margin-bottom: 16px;
+}
+
+.section-header-center h2 {
+  font-size: 2.5rem;
+  font-weight: 850;
+  margin-bottom: 16px;
+}
+
+.section-header-center p {
+  font-size: 1.1rem;
+  color: var(--text-secondary);
+  max-width: 700px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+.value-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 32px;
+}
+
+.value-chain-card {
+  background: var(--bg-secondary);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.02);
+  transition: all var(--transition-normal);
+  display: flex;
+  flex-direction: column;
+}
+
+.value-chain-card:hover {
+  transform: translateY(-6px);
+  border-color: rgba(249, 115, 22, 0.3);
+  box-shadow: 0 15px 40px rgba(249, 115, 22, 0.05);
+}
+
+.value-chain-img-box {
+  width: 100%;
+  height: 180px;
+  overflow: hidden;
+  border-bottom: 1px solid var(--card-border);
+}
+
+.value-chain-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform var(--transition-normal);
+}
+
+.value-chain-card:hover .value-chain-img {
+  transform: scale(1.06);
+}
+
+.value-chain-content {
+  padding: 30px;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.value-chain-icon-box {
+  width: 46px;
+  height: 46px;
+  border-radius: var(--radius-sm);
+  background: rgba(249, 115, 22, 0.08);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: var(--secondary);
+  margin-bottom: 20px;
+}
+
+.value-chain-content h3 {
+  font-size: 1.35rem;
+  font-weight: 800;
+  margin-bottom: 12px;
+}
+
+.value-chain-content p {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+@media (max-width: 968px) {
+  .value-grid {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+  .section-header-center h2 {
+    font-size: 2rem;
+  }
+}

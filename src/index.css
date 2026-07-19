@@ -1,0 +1,290 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+
+:root {
+  /* Trison Brand Palette */
+  --bg-primary: #f8fafc;       /* Clean Cool Slate/White */
+  --bg-secondary: #ffffff;     /* Pure White Card/Section BG */
+  --bg-tertiary: #f1f5f9;      /* Light Slate */
+  
+  /* Glass Cards */
+  --card-bg: rgba(255, 255, 255, 0.8);
+  --card-border: rgba(0, 0, 0, 0.08);
+  --card-border-hover: rgba(249, 115, 22, 0.4);
+  
+  /* Trison Brand: Navy Blue (Primary) */
+  --primary: #1a1a5e;          /* Deep Navy */
+  --primary-light: #2d2d8a;
+  --primary-dark: #0f0f3d;
+  --primary-glow: rgba(26, 26, 94, 0.15);
+  
+  /* Trison Brand: Orange (Secondary Accent) */
+  --secondary: #f97316;        /* Trison Orange */
+  --secondary-light: #fb923c;
+  --secondary-dark: #ea6a00;
+  --secondary-glow: rgba(249, 115, 22, 0.15);
+  
+  --accent: #f59e0b;           /* Warm Amber Complement */
+  --accent-glow: rgba(245, 158, 11, 0.15);
+  
+  --text-primary: #0f172a;     /* Dark Slate (Charcoal) */
+  --text-secondary: #475569;   /* Medium Slate */
+  --text-tertiary: #64748b;    /* Light Slate */
+  
+  /* Fonts */
+  --font-display: 'Outfit', sans-serif;
+  --font-body: 'Plus Jakarta Sans', sans-serif;
+
+  /* Transitions */
+  --transition-fast: 0.15s cubic-bezier(0.25, 0.8, 0.25, 1);
+  --transition-normal: 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);
+  --transition-slow: 0.6s cubic-bezier(0.25, 0.8, 0.25, 1);
+  
+  /* Radius */
+  --radius-sm: 8px;
+  --radius-md: 16px;
+  --radius-lg: 28px;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  line-height: 1.6;
+  overflow-x: hidden;
+  position: relative;
+}
+
+/* Premium Ambient Solar Glows */
+body::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1000px;
+  background: radial-gradient(circle at 50% 0%, rgba(245, 158, 11, 0.06) 0%, rgba(248, 250, 252, 0) 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Advanced Repeating Solar Plate Background Pattern */
+.grid-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: 
+    /* Silver grid lines separating cell plates */
+    linear-gradient(to right, rgba(0, 0, 0, 0.02) 2px, transparent 2px),
+    linear-gradient(to bottom, rgba(0, 0, 0, 0.02) 2px, transparent 2px),
+    /* Vertical busbars inside each cell (typical solar cell conductor lines) */
+    linear-gradient(90deg, transparent 30px, rgba(0, 0, 0, 0.005) 30px, rgba(0, 0, 0, 0.005) 31px, transparent 31px),
+    linear-gradient(90deg, transparent 60px, rgba(0, 0, 0, 0.005) 60px, rgba(0, 0, 0, 0.005) 61px, transparent 61px),
+    linear-gradient(90deg, transparent 90px, rgba(0, 0, 0, 0.005) 90px, rgba(0, 0, 0, 0.005) 91px, transparent 91px),
+    /* Monocrystalline silicon cell concentric textures */
+    radial-gradient(circle at center, rgba(245, 158, 11, 0.03) 0%, rgba(248, 250, 252, 0.95) 75%);
+  background-size: 120px 120px;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Scrollbar customization */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg-primary);
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.15);
+  border-radius: 99px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--primary);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+/* Glassmorphism Styling System */
+.glass {
+  background: var(--card-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-md);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+  position: relative;
+  overflow: hidden;
+  transition: all var(--transition-normal);
+}
+
+.glass::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: inherit;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.4), transparent);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Shimmering Text Gradient (Light Moving Effect) */
+.shimmer-text {
+  background: linear-gradient(to right, var(--text-primary) 20%, #d97706 40%, #f59e0b 60%, var(--text-primary) 80%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: textShimmer 3s infinite linear;
+  filter: drop-shadow(0 2px 10px rgba(245, 158, 11, 0.08));
+}
+
+@keyframes textShimmer {
+  0% { background-position: 0% center; }
+  100% { background-position: -200% center; }
+}
+
+/* Modern Gradient Text Classes */
+.text-gradient-gold {
+  background: linear-gradient(135deg, var(--text-primary) 10%, #d97706 60%, #ea580c 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 2px 10px rgba(245, 158, 11, 0.08));
+}
+
+.text-gradient-eco {
+  background: linear-gradient(135deg, #059669 0%, #047857 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Animated Buttons */
+.btn-primary {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.95rem;
+  background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+  color: #ffffff;
+  border: none;
+  padding: 14px 30px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all var(--transition-normal);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3);
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-primary::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transition: all 0.6s ease;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(245, 158, 11, 0.4);
+}
+
+.btn-primary:hover::after {
+  left: 100%;
+}
+
+.btn-secondary {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.95rem;
+  background: rgba(0, 0, 0, 0.02);
+  color: var(--text-primary);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  padding: 14px 30px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all var(--transition-normal);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  backdrop-filter: blur(5px);
+}
+
+.btn-secondary:hover {
+  background: rgba(0, 0, 0, 0.05);
+  border-color: rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+}
+
+/* Page Section structure */
+.section {
+  padding: 120px 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 2;
+}
+
+.section-title {
+  text-align: center;
+  font-size: 3rem;
+  font-weight: 850;
+  margin-bottom: 16px;
+  line-height: 1.2;
+}
+
+.section-subtitle {
+  text-align: center;
+  color: var(--text-secondary);
+  max-width: 650px;
+  margin: 0 auto 60px auto;
+  font-size: 1.15rem;
+  line-height: 1.6;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(15px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes spinSlow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes pulseGlow {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.8; }
+}
+
+@media (max-width: 968px) {
+  .section {
+    padding: 80px 16px;
+  }
+  .section-title {
+    font-size: 2.3rem;
+  }
+}
