@@ -1,0 +1,9 @@
+# Ignore backend server code
+backend/
+
+# Ignore local dev/build artifacts
+node_modules/
+dist/
+.agent-cache/
+.vercel/
+.git/

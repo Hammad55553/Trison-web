@@ -1,10 +1,11 @@
 /**
  * ─────────────────────────────────────────────────────
  * Trison Panel Registry API Service
- * All local-storage CRUD operations for PV panel management.
+ * Synced automatically with Node.js/Express MySQL Database, fallback to localStorage.
  * ─────────────────────────────────────────────────────
  */
 
+const API_BASE = 'http://localhost:5000/api/panels';
 const REGISTRY_KEY = 'trison_registered_panels';
 
 // ── Preset Data Lists ─────────────────────────────────
@@ -28,73 +29,142 @@ export const COUNTRY_OPTIONS = [
   'Pakistan', 'UAE', 'Saudi Arabia', 'Qatar', 'Kuwait', 'Bangladesh', 'India', 'China',
 ];
 
-// ── Serial Auto-Generator ─────────────────────────────
+// ── Background Sync Logic ─────────────────────────────
+const syncRegistry = () => {
+  fetch(API_BASE)
+    .then(res => res.json())
+    .then(data => {
+      const registryObj = {};
+      data.forEach(p => {
+        registryObj[p.serial] = p;
+      });
+      localStorage.setItem(REGISTRY_KEY, JSON.stringify(registryObj));
+    })
+    .catch(() => {
+      // Fallback silently if offline
+    });
+};
 
-/**
- * Generates a unique Trison panel serial number
- * Format: TRPK-[YEAR][MONTH]-[4-digit random]
- */
+// Initial background sync
+syncRegistry();
+
 export const generateSerial = () => {
   const now = new Date();
   const year  = now.getFullYear().toString().slice(-2);
   const month = String(now.getMonth() + 1).padStart(2, '0');
   const rand  = String(Math.floor(1000 + Math.random() * 9000));
   const seq   = String(Date.now()).slice(-5);
-  return `TRPK-${year}${month}-${rand}${seq}`;
+  return `TSCN-${year}${month}-${rand}${seq}`;
+};
+
+// ── Preset Default Panels for local fallback ──────────
+const PRESET_PANELS = {
+  'TSCN-2607-731358458': {
+    serial: 'TSCN-2607-731358458',
+    brand: 'Trison',
+    model: 'TS-HM5B-575M',
+    wattage: '575W',
+    technology: 'Bifacial Mono PERC',
+    class: 'A',
+    country: 'Pakistan',
+    customerName: 'Hammad Aslam',
+    warrantyYears: '25',
+    status: 'active',
+    registeredAt: '2026-07-20T10:00:00.000Z'
+  },
+  'TSCN-2607-994821102': {
+    serial: 'TSCN-2607-994821102',
+    brand: 'Trison',
+    model: 'TS-HM6B-600M',
+    wattage: '600W',
+    technology: 'Bifacial HPDC',
+    class: 'A',
+    country: 'Pakistan',
+    customerName: 'Zainab Bibi',
+    warrantyYears: '25',
+    status: 'active',
+    registeredAt: '2026-07-20T11:30:00.000Z'
+  }
 };
 
 // ── CRUD Operations ───────────────────────────────────
 
 /**
- * Get all registered panels from local storage
- * @returns {Array} array of panel objects (sorted newest first)
+ * Get all registered panels (returns sorted list from local storage, triggers sync in BG)
  */
 export const getAllPanels = () => {
-  const raw = JSON.parse(localStorage.getItem(REGISTRY_KEY) || '{}');
-  return Object.values(raw).sort((a, b) => new Date(b.registeredAt) - new Date(a.registeredAt));
+  syncRegistry();
+  const raw = getRegistry();
+  return Object.entries(raw).map(([key, p]) => ({
+    ...p,
+    serial: p.serial || p.barcode || key,
+    barcode: p.barcode || p.serial || key
+  })).sort((a, b) => new Date(b.registeredAt) - new Date(a.registeredAt));
 };
 
 /**
- * Get raw registry object (keyed by serial)
+ * Get raw registry object
  */
 export const getRegistry = () => {
-  return JSON.parse(localStorage.getItem(REGISTRY_KEY) || '{}');
+  const local = localStorage.getItem(REGISTRY_KEY);
+  if (!local || local === '{}') {
+    localStorage.setItem(REGISTRY_KEY, JSON.stringify(PRESET_PANELS));
+    return PRESET_PANELS;
+  }
+  return JSON.parse(local);
 };
 
 /**
  * Add or update a panel entry
- * @param {object} panel - Full panel data object
  */
 export const savePanel = (panel) => {
   if (!panel.serial?.trim()) throw new Error('Serial number is required.');
+  const cleanSerial = panel.serial.trim();
 
+  // 1. Save locally
   const registry = getRegistry();
-  registry[panel.serial.trim()] = {
+  const savedObj = {
     ...panel,
-    serial: panel.serial.trim(),
+    serial: cleanSerial,
     registeredAt: panel.registeredAt || new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
   };
-
+  registry[cleanSerial] = savedObj;
   localStorage.setItem(REGISTRY_KEY, JSON.stringify(registry));
+
+  // 2. Post to Express Server
+  fetch(API_BASE, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(savedObj)
+  })
+  .then(() => syncRegistry())
+  .catch(() => {});
+
   return { success: true };
 };
 
 /**
  * Delete a panel by serial number
- * @param {string} serial
  */
 export const deletePanel = (serial) => {
+  const cleanSerial = serial.trim();
+
+  // 1. Delete locally
   const registry = getRegistry();
-  delete registry[serial];
+  delete registry[cleanSerial];
   localStorage.setItem(REGISTRY_KEY, JSON.stringify(registry));
+
+  // 2. Delete on Express Server
+  fetch(`${API_BASE}/${cleanSerial}`, { method: 'DELETE' })
+    .then(() => syncRegistry())
+    .catch(() => {});
+
   return { success: true };
 };
 
 /**
- * Get single panel by serial number
- * @param {string} serial
- * @returns {object|null}
+ * Get single panel locally
  */
 export const getPanelBySerial = (serial) => {
   const registry = getRegistry();
@@ -103,101 +173,51 @@ export const getPanelBySerial = (serial) => {
 
 // ── Authenticity Verification ─────────────────────────
 
-const LONGI_API = (code) =>
-  `https://javacms-prod-us.longi.com/getQrInfo?moduleCode=${encodeURIComponent(code)}&locale=en-US&_locale=en-US`;
-
 /**
- * Verify a panel's authenticity by serial.
- * Checks Trison local registry first, then LONGI official API.
- * @param {string} serial - Panel serial or barcode
- * @returns {Promise<object>}
+ * Verify a panel's authenticity.
+ * Checks Express database first, then falls back to local storage.
  */
 export const verifyPanel = async (serial) => {
   const clean = serial.trim();
   if (!clean) throw new Error('Please enter a valid serial number.');
 
-  // 1. Check local Trison registry
-  const local = getPanelBySerial(clean);
+  let localData = null;
 
-  // 2. Try LONGI official API
-  let apiData = null;
+  // 1. Try querying the Node.js Express server directly
   try {
-    const res = await fetch(LONGI_API(clean), { method: 'GET', mode: 'cors' });
+    const res = await fetch(`${API_BASE}/verify/${clean}`);
     if (res.ok) {
-      const json = await res.json();
-      if (json.success && json.content) {
-        apiData = {
-          model:      json.content.productionType || 'N/A',
-          serial:     json.content.moduleId || clean,
-          class:      json.content.moduleLevel === 'A' ? 'A' : (json.content.moduleLevel || 'A'),
-          wattage:    _wattFromModel(json.content.productionType) || '580W',
-          technology: 'Mono PERC / HPDC High Efficiency',
-          brand:      'LONGI Solar',
-          country:    'N/A',
-          status:     'active',
-          source:     'LONGI Official Database',
-        };
-      }
+      localData = await res.json();
     }
   } catch (_) {
-    /* silent – fallback below */
+    // Fallback to local storage if API is offline
+    localData = getPanelBySerial(clean);
   }
 
-  // 3. If both found, merge local warranty info on top of official record
-  if (local && apiData) {
-    return { ...apiData, customerName: local.customerName, warrantyYears: local.warrantyYears, source: 'LONGI DB + Trison Registry', found: true };
-  }
-
-  // 4. Local registry only
-  if (local) {
-    return { ...local, brand: local.brand || 'Trison', source: 'Trison Local Registry', found: true };
-  }
-
-  // 5. LONGI API only
-  if (apiData) {
-    return { ...apiData, found: true };
-  }
-
-  // 6. LONGI heuristic fallback
-  if (clean.startsWith('LR') && clean.length >= 15) {
+  // 2. Return Trison Local Registry match if found
+  if (localData) {
     return {
-      model:      `LR5-72HPH-580M`,
-      serial:     clean,
-      class:      'A',
-      wattage:    '580W',
-      technology: 'Tier-1 Mono PERC',
-      brand:      'LONGI Solar',
-      country:    'N/A',
-      status:     'active',
-      source:     'LONGI Heuristic Match',
-      found:      true,
+      ...localData,
+      brand: localData.brand || 'Trison',
+      source: 'Trison Local Registry',
+      found: true
     };
   }
 
-  throw new Error('Serial not found in any database. Register it in the admin panel first.');
+  throw new Error('Serial not found in Trison Database. Register it in the admin panel first.');
 };
 
 // ── Legacy compatibility shims ─────────────────────────
-
-/** @deprecated use savePanel() */
 export const registerCustomPanel = (data) => savePanel({ ...data, serial: data.barcode });
-
-/** @deprecated use getRegistry() */
 export const getCustomRegistry = () => getRegistry();
-
-/** @deprecated use generateSerial() */
 export const generateCustomBarcode = () => generateSerial();
-
-/** @deprecated use verifyPanel() */
 export const verifyAuthenticity = (barcode) => verifyPanel(barcode);
-
-/** @deprecated  */
 export const registerBulkPanels = (arr) => {
   arr.forEach(p => savePanel({ ...p, serial: p.barcode }));
   return { success: true, count: arr.length };
 };
 
-// ── Helpers ───────────────────────────────────────────
+// Helpers
 function _wattFromModel(model) {
   if (!model) return null;
   const m = model.match(/-(\d+)M/);

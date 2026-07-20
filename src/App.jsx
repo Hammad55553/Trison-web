@@ -65,7 +65,7 @@ function App() {
         setView('verifier');
       } else if (path === '/partner' || path === '/partner/') {
         setView('partner');
-      } else if (path === '/admin' || path === '/admin/') {
+      } else if (path.startsWith('/admin-x7k2m9')) {
         setView('admin');
       } else {
         setView('home');
@@ -94,7 +94,7 @@ function App() {
     } else if (newView === 'partner') {
       targetPath = '/partner/';
     } else if (newView === 'admin') {
-      targetPath = '/admin/';
+      targetPath = '/admin-x7k2m9/';
     }
 
     window.history.pushState({}, '', targetPath);
@@ -111,6 +111,16 @@ function App() {
   }, [view]);
 
   const isAdmin = view === 'admin';
+
+  // Toggle admin body class to disable page-level scrolling & background glows
+  useEffect(() => {
+    if (isAdmin) {
+      document.body.classList.add('admin-body');
+    } else {
+      document.body.classList.remove('admin-body');
+    }
+    return () => document.body.classList.remove('admin-body');
+  }, [isAdmin]);
 
   return (
     <>

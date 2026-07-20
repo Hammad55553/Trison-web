@@ -159,7 +159,7 @@ const PanelManager = () => {
             <div className="pm-serial-row">
               <input
                 className="pm-input pm-serial-input"
-                placeholder="e.g. TRPK-2407-78934"
+                placeholder="e.g. TSCN-2607-78934"
                 value={form.serial}
                 onChange={e => setForm(f => ({ ...f, serial: e.target.value }))}
                 required

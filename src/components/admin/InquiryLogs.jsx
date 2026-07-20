@@ -1,14 +1,15 @@
 import React from 'react';
 import { Trash2, ClipboardList } from 'lucide-react';
-import { getInquiries } from '../../services/leadService';
+import { getInquiries, deleteInquiryLead } from '../../services/leadService';
 
 const InquiryLogs = ({ inquiries, onInquiriesUpdate }) => {
   const handleDeleteInquiry = (id) => {
     if (window.confirm('Delete this partner inquiry submission?')) {
-      const currentLeads = getInquiries();
-      const updated = currentLeads.filter(lead => lead.id !== id);
-      localStorage.setItem('trison_solar_leads', JSON.stringify(updated));
-      onInquiriesUpdate(getInquiries());
+      deleteInquiryLead(id);
+      // Wait slightly for background sync then update parent state
+      setTimeout(() => {
+        onInquiriesUpdate(getInquiries());
+      }, 50);
     }
   };
 

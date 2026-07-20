@@ -1,8 +1,8 @@
 User-agent: *
 Allow: /
 
-# Disallow admin or private paths (none currently)
-# Disallow: /admin/
+# Disallow secure admin portal path from search indexers
+Disallow: /admin-x7k2m9/
 
 # Sitemap location
 Sitemap: https://trisonsolar.com/sitemap.xml

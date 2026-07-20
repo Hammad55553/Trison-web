@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { LayoutDashboard, Cpu, ScanLine, ClipboardList, LogOut, LayoutGrid, X } from 'lucide-react';
+import { LayoutDashboard, Cpu, ScanLine, ClipboardList, LogOut, LayoutGrid, X, User, Lock, Eye, EyeOff } from 'lucide-react';
 import AdminStats from '../../components/admin/AdminStats';
 import PanelManager from '../../components/admin/PanelManager';
 import QRScanner from '../../components/admin/QRScanner';
@@ -7,8 +7,9 @@ import InquiryLogs from '../../components/admin/InquiryLogs';
 import { getCustomRegistry } from '../../services/authenticityService';
 import { getInquiries } from '../../services/leadService';
 import trisonLogo from '../../assets/images/TRISON.jpg';
+import mainGateImg from '../../assets/images/MainGate.jpeg';
 import './AdminPage.css';
-
+import { ChevronRight } from 'lucide-react';
 const VIEWS = [
   { key: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { key: 'panels', label: 'Panel Manager', icon: Cpu },
@@ -17,21 +18,119 @@ const VIEWS = [
 ];
 
 const AdminPage = () => {
-  const [activeView, setActiveView] = useState('dashboard');
+  const [isAuthenticated, setIsAuthenticated] = useState(
+    sessionStorage.getItem('trison_admin_auth') === 'true'
+  );
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [loginError, setLoginError] = useState('');
+
+  const [activeView, setActiveView] = useState(
+    sessionStorage.getItem('trison_admin_view') || 'dashboard'
+  );
   const [serials, setSerials] = useState({});
   const [inquiries, setInquiries] = useState([]);
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
+  // Sync active view to sessionStorage to persist across page refresh
   useEffect(() => {
-    setSerials(getCustomRegistry());
-    setInquiries(getInquiries());
-  }, []);
+    sessionStorage.setItem('trison_admin_view', activeView);
+  }, [activeView]);
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      setSerials(getCustomRegistry());
+      setInquiries(getInquiries());
+    }
+  }, [isAuthenticated]);
 
   // Refresh data whenever tab changes (so counts stay fresh)
   useEffect(() => {
-    setSerials(getCustomRegistry());
-    setInquiries(getInquiries());
-  }, [activeView]);
+    if (isAuthenticated) {
+      setSerials(getCustomRegistry());
+      setInquiries(getInquiries());
+    }
+  }, [activeView, isAuthenticated]);
+
+  const handleLogin = (e) => {
+    e.preventDefault();
+    // Default administrative credentials
+    if (username.trim() === 'admin' && password === 'trison') {
+      sessionStorage.setItem('trison_admin_auth', 'true');
+      setIsAuthenticated(true);
+      setLoginError('');
+    } else {
+      setLoginError('Invalid username or password.');
+    }
+  };
+
+  const handleLogout = (e) => {
+    e.preventDefault();
+    sessionStorage.removeItem('trison_admin_auth');
+    setIsAuthenticated(false);
+  };
+
+  if (!isAuthenticated) {
+    return (
+      <div className="admin-login-container">
+        <div className="admin-login-card">
+          {/* Card Header Image Section */}
+          <div className="login-card-hero" style={{ backgroundImage: `url(${mainGateImg})` }}>
+            <div className="hero-overlay"></div>
+          </div>
+
+          {/* Card Body Section */}
+          <div className="login-card-body">
+            <div className="login-brand-header">
+              <img src={trisonLogo} alt="Trison Logo" className="login-logo" />
+              <p>Access requires verified administrative credentials.</p>
+            </div>
+            <form onSubmit={handleLogin} className="login-form">
+              <div className="login-group">
+                <label>Username</label>
+                <div className="login-input-wrapper">
+                  <User className="login-input-icon" size={18} />
+                  <input
+                    type="text"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    placeholder="Enter username"
+                    required
+                  />
+                </div>
+              </div>
+              <div className="login-group">
+                <label>Password</label>
+                <div className="login-input-wrapper">
+                  <Lock className="login-input-icon" size={18} />
+                  <input
+                    type={showPassword ? 'text' : 'password'}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="Enter password"
+                    aria-label="Password"
+                    required
+                  />
+                  <button
+                    type="button"
+                    className="password-toggle"
+                    onClick={() => setShowPassword(s => !s)}
+                    aria-label={showPassword ? 'Hide password' : 'Show password'}
+                  >
+                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </button>
+                </div>
+              </div>
+              {loginError && <div className="login-error-message">{loginError}</div>}
+              <button type="submit" className="login-submit-btn">Authorize Session</button>
+            </form>
+            <a href="/" className="login-back-link">Return to Main Site</a>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={`admin-root ${sidebarOpen ? 'sidebar-visible' : 'sidebar-hidden'}`}>
@@ -61,7 +160,10 @@ const AdminPage = () => {
           ))}
         </nav>
 
-        <div className="sidebar-footer">
+        <div className="sidebar-footer" style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          <button onClick={handleLogout} className="sidebar-logout" style={{ border: 'none', background: 'transparent', width: '100%', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <LogOut size={16} /> End Session (Logout)
+          </button>
           <a href="/" className="sidebar-logout">
             <LogOut size={16} /> Back to Site
           </a>
@@ -99,19 +201,19 @@ const AdminPage = () => {
                   <Cpu size={26} />
                   <h3>Panel Manager</h3>
                   <p>Register, edit, and delete solar panel serial keys in the authenticity database.</p>
-                  <span className="quick-link">Open →</span>
+                  <span className="quick-link">Open <ChevronRight size={16} /></span>
                 </div>
                 <div className="dash-quick-card" onClick={() => setActiveView('scanner')}>
                   <ScanLine size={26} />
                   <h3>Scan & Verify</h3>
                   <p>Use camera or manual entry to verify if a panel serial number is authentic.</p>
-                  <span className="quick-link">Open →</span>
+                  <span className="quick-link">Open <ChevronRight size={16} /></span>
                 </div>
                 <div className="dash-quick-card" onClick={() => setActiveView('leads')}>
                   <ClipboardList size={26} />
                   <h3>Sales Leads</h3>
                   <p>View and manage all incoming dealer and distributor inquiry submissions.</p>
-                  <span className="quick-link">Open →</span>
+                  <span className="quick-link">Open <ChevronRight size={16} /></span>
                 </div>
               </div>
 
@@ -119,8 +221,9 @@ const AdminPage = () => {
               <div className="dash-recent-block">
                 <div className="dash-recent-header">
                   <h3>Recently Registered Panels</h3>
-                  <button className="dash-view-all" onClick={() => setActiveView('panels')}>View All →</button>
-                </div>
+                  <button className="dash-view-all" onClick={() => setActiveView('panels')}>
+                    View All <span className='icon-right'><ChevronRight size={16} /></span>
+                  </button>                </div>
                 <div className="pm-table-wrap">
                   <table className="pm-tbl">
                     <thead>

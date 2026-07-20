@@ -149,7 +149,7 @@ const AuthenticityScreen = () => {
   };
 
   const loadSampleCode = () => {
-    setBarcode('LRPI04109241102416062');
+    setBarcode('TSCN-2607-731358458');
   };
 
   const testRegisteredBarcode = () => {
@@ -178,24 +178,8 @@ const AuthenticityScreen = () => {
           Database <span className="shimmer-text">Verification & Registry</span>
         </h2>
         <p className="section-subtitle">
-          Verify imported LONGI panels via global APIs or register your custom Trison plates with active customer warranty tracking.
+          Verify registered Trison PV panels via secure database lookup.
         </p>
-      </div>
-
-      {/* Tabs Row */}
-      <div className="auth-tabs">
-        <button
-          className={`tab-btn ${activeTab === 'verify' ? 'active' : ''}`}
-          onClick={() => setActiveTab('verify')}
-        >
-          <Search size={16} /> Verify Module Barcode
-        </button>
-        <button
-          className={`tab-btn ${activeTab === 'register' ? 'active' : ''}`}
-          onClick={() => setActiveTab('register')}
-        >
-          <PlusCircle size={16} /> Register Panels / Warranty
-        </button>
       </div>
 
       <div className="authenticity-grid">
@@ -204,7 +188,7 @@ const AuthenticityScreen = () => {
           <>
             <Card className="auth-form-card" glow={true} interactive={false}>
               <h3 className="auth-card-title">Check Module Status</h3>
-              <p className="auth-card-desc">Enter any registered barcode or official LONGI barcode to retrieve consolidated specifications.</p>
+              <p className="auth-card-desc">Enter any registered barcode or serial number to retrieve consolidated specifications.</p>
 
               <form onSubmit={handleVerify} className="auth-form">
                 <div className="search-input-wrapper">
@@ -212,7 +196,7 @@ const AuthenticityScreen = () => {
                     type="text"
                     value={barcode}
                     onChange={(e) => setBarcode(e.target.value)}
-                    placeholder="Enter barcode (e.g. LR... or TRI...)"
+                    placeholder="Enter barcode (e.g. TSCN...)"
                     className="search-input"
                     required
                   />
@@ -226,13 +210,13 @@ const AuthenticityScreen = () => {
                   onClick={loadSampleCode}
                   className="btn-sample"
                 >
-                  Paste LONGI Sample Barcode
+                  Paste Sample Barcode
                 </button>
               </form>
 
               <div className="barcode-guideline">
                 <h4>Where to find the barcode?</h4>
-                <p>Look for a white label containing a barcode and an alphanumeric string starting with "LR..." on the side frame or back sheet of the panel.</p>
+                <p>Look for a white label containing a barcode and an alphanumeric string starting with "TSCN..." on the side frame or back sheet of the panel.</p>
                 <div className="fake-barcode-sticker">
                   <div className="sticker-laser-line"></div>
                   <div className="barcode-lines">
@@ -240,7 +224,7 @@ const AuthenticityScreen = () => {
                     <span></span><span></span><span></span><span></span><span></span>
                     <span></span><span></span><span></span><span></span><span></span>
                   </div>
-                  <span className="barcode-string">LRPI 04109 24110 2416 062</span>
+                  <span className="barcode-string">TSCN-2607-731358458</span>
                 </div>
               </div>
             </Card>
