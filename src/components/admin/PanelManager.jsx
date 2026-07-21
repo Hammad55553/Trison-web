@@ -12,14 +12,14 @@ import {
 // ── Blank panel template with all 7 fields ────────────
 const BLANK = {
   serial: '',
-  model: PANEL_MODELS[0].model,
-  wattage: PANEL_MODELS[0].wattage,
-  technology: PANEL_MODELS[0].technology,
+  model: '',
+  wattage: '',
+  technology: '',
   class: 'A',
   country: 'Pakistan',
   status: 'active',
   customerName: '',
-  warrantyYears: '25',
+  warrantyYears: 'Active and Validated',
   brand: 'Trison',
 };
 
@@ -194,41 +194,52 @@ const PanelManager = () => {
             {/* Field 2: Model Number */}
             <div className="pm-section">
               <label className="pm-section-title">Model Number *</label>
-              <div className="pm-select-wrap">
-                <select
-                  className="pm-select"
-                  value={form.model}
-                  onChange={e => handleModelChange(e.target.value)}
-                >
-                  {PANEL_MODELS.map(m => (
-                    <option key={m.model} value={m.model}>{m.label}</option>
-                  ))}
-                </select>
-                <ChevronDown size={15} className="pm-select-icon" />
-              </div>
+              <input
+                className="pm-input"
+                placeholder="e.g. TS-HM5B-575M"
+                value={form.model}
+                onChange={e => setForm(f => ({ ...f, model: e.target.value }))}
+                required
+              />
             </div>
 
-            {/* Brand Selector */}
+            {/* Brand Input */}
             <div className="pm-section">
               <label className="pm-section-title">Brand / Plate Owner</label>
-              <div className="pm-select-wrap">
-                <select
-                  className="pm-select"
-                  value={form.brand}
-                  onChange={e => setForm(f => ({ ...f, brand: e.target.value }))}
-                >
-                  <option value="Trison">Trison</option>
-                  <option value="LONGI Solar">LONGI Solar</option>
-                </select>
-                <ChevronDown size={15} className="pm-select-icon" />
-              </div>
+              <input
+                className="pm-input"
+                placeholder="e.g. Trison"
+                value={form.brand}
+                onChange={e => setForm(f => ({ ...f, brand: e.target.value }))}
+                required
+              />
             </div>
           </div>
 
-          <div className="pm-section" style={{ marginTop: '-8px' }}>
-            <div className="pm-auto-filled">
-              <span>Wattage: <strong>{form.wattage}</strong></span>
-              <span>Technology: <strong>{form.technology}</strong></span>
+          {/* ── Row: Wattage + Technology ─────── */}
+          <div className="pm-row-2">
+            {/* Wattage Input */}
+            <div className="pm-section">
+              <label className="pm-section-title">Wattage *</label>
+              <input
+                className="pm-input"
+                placeholder="e.g. 580W"
+                value={form.wattage}
+                onChange={e => setForm(f => ({ ...f, wattage: e.target.value }))}
+                required
+              />
+            </div>
+
+            {/* Technology Input */}
+            <div className="pm-section">
+              <label className="pm-section-title">Technology *</label>
+              <input
+                className="pm-input"
+                placeholder="e.g. Bifacial Mono PERC"
+                value={form.technology}
+                onChange={e => setForm(f => ({ ...f, technology: e.target.value }))}
+                required
+              />
             </div>
           </div>
 
@@ -254,16 +265,13 @@ const PanelManager = () => {
             {/* Field 4: Country */}
             <div className="pm-section">
               <label className="pm-section-title">Country Entered</label>
-              <div className="pm-select-wrap">
-                <select
-                  className="pm-select"
-                  value={form.country}
-                  onChange={e => setForm(f => ({ ...f, country: e.target.value }))}
-                >
-                  {COUNTRY_OPTIONS.map(c => <option key={c}>{c}</option>)}
-                </select>
-                <ChevronDown size={15} className="pm-select-icon" />
-              </div>
+              <input
+                className="pm-input"
+                placeholder="e.g. Pakistan"
+                value={form.country}
+                onChange={e => setForm(f => ({ ...f, country: e.target.value }))}
+                required
+              />
             </div>
           </div>
 
@@ -271,7 +279,7 @@ const PanelManager = () => {
           <div className="pm-row-2">
             {/* Field 5: Customer */}
             <div className="pm-section">
-              <label className="pm-section-title">Customer / Project Name</label>
+              <label className="pm-section-title">Customer / Project Name (Optional)</label>
               <input
                 className="pm-input"
                 placeholder="e.g. Al-Noor Solar Project"
@@ -283,18 +291,13 @@ const PanelManager = () => {
             {/* Field 6: Warranty */}
             <div className="pm-section">
               <label className="pm-section-title">Warranty Period</label>
-              <div className="pm-select-wrap">
-                <select
-                  className="pm-select"
-                  value={form.warrantyYears}
-                  onChange={e => setForm(f => ({ ...f, warrantyYears: e.target.value }))}
-                >
-                  {['10', '12', '15', '25', '30'].map(y => (
-                    <option key={y} value={y}>{y} Years</option>
-                  ))}
-                </select>
-                <ChevronDown size={15} className="pm-select-icon" />
-              </div>
+              <input
+                className="pm-input"
+                placeholder="e.g. Active and Validated"
+                value={form.warrantyYears}
+                onChange={e => setForm(f => ({ ...f, warrantyYears: e.target.value }))}
+                required
+              />
             </div>
           </div>
 
@@ -393,7 +396,7 @@ const PanelManager = () => {
                   </td>
                   <td>{p.country || 'Pakistan'}</td>
                   <td className="pm-customer">{p.customerName || ''}</td>
-                  <td>{p.warrantyYears ? `${p.warrantyYears} Yrs` : <span className="pm-dash">—</span>}</td>
+                  <td>{p.warrantyYears ? (isNaN(p.warrantyYears) ? p.warrantyYears : `${p.warrantyYears} Yrs`) : <span className="pm-dash">—</span>}</td>
                   <td>
                     <button
                       className={`pm-status-toggle ${p.status === 'active' ? 'active' : 'inactive'}`}

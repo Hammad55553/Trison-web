@@ -359,7 +359,7 @@ const AuthenticityScreen = () => {
                       )}
                       <p>
                         <strong>Active Warranty:</strong>{' '}
-                        {result.warrantyYears || (result.localWarranty && result.localWarranty.warrantyYears) || '25'} Years Replacement
+                        {result.warrantyYears ? (isNaN(result.warrantyYears) ? result.warrantyYears : `${result.warrantyYears} Years Replacement`) : '25 Years Replacement'}
                       </p>
                       <p><strong>Status:</strong> Active & Validated</p>
                     </div>
