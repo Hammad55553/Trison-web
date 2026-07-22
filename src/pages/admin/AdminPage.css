@@ -1497,6 +1497,7 @@ body.admin-body::before {
   width: 100%;
   height: auto;
   aspect-ratio: 16 / 9; /* Lock ratio to prevent vertical crop/zoom */
+  max-height: 40vh; /* Prevent hero from occupying too much vertical space on wide monitors */
   position: relative;
   background-size: cover;
   background-position: center center;
