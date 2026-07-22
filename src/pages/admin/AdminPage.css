@@ -1451,14 +1451,14 @@ body.admin-body::before {
 .admin-login-container {
   display: flex;
   flex-direction: column; /* stacked layout */
-  align-items: center; /* Center horizontally on all screens */
-  justify-content: flex-end; /* Move fields to the bottom vertically */
+  align-items: flex-start; /* Align left horizontally on desktop */
+  justify-content: center; /* Center vertically on desktop */
   height: 100vh;
   width: 100%;
   background-size: cover !important;
   background-position: center center !important;
   background-repeat: no-repeat !important;
-  padding: 24px 24px 8vh 24px; /* Offset from bottom edge with 8vh padding */
+  padding: 24px 24px 24px 10%; /* Offset elegantly from the left edge */
   overflow: hidden;
   position: relative;
   font-family: var(--font-body);
@@ -1466,7 +1466,8 @@ body.admin-body::before {
 
 @media (max-width: 900px) {
   .admin-login-container {
-    padding: 24px 24px 5vh 24px; /* compact bottom padding for smaller viewports */
+    align-items: center; /* Center horizontally on mobile/tablets */
+    padding: 24px;
   }
 }
 
