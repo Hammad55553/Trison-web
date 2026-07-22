@@ -1451,16 +1451,23 @@ body.admin-body::before {
 .admin-login-container {
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-end; /* Align login fields to the right on desktop */
   height: 100vh;
   width: 100%;
   background-size: cover !important;
   background-position: center center !important;
   background-repeat: no-repeat !important;
-  padding: 24px;
+  padding: 24px 10% 24px 24px; /* offset slightly from the right edge */
   overflow: hidden;
   position: relative;
   font-family: var(--font-body);
+}
+
+@media (max-width: 900px) {
+  .admin-login-container {
+    justify-content: center; /* Center on tablets and mobile screens */
+    padding: 24px;
+  }
 }
 
 /* Dark transparent overlay over the background image to make login card pop */

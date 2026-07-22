@@ -78,8 +78,8 @@ const AdminPage = () => {
           {/* Card Body Section */}
           <div className="login-card-body">
             <div className="login-brand-header">
-              <img src={trisonLogo} alt="Trison Logo" className="login-logo" />
-              <p>Access requires verified administrative credentials.</p>
+              {/* <img src={trisonLogo} alt="Trison Logo" className="login-logo" /> */}
+              {/* <p>Access requires verified administrative credentials.</p> */}
             </div>
             <form onSubmit={handleLogin} className="login-form">
               <div className="login-group">
