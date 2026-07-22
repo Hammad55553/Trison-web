@@ -288,3 +288,37 @@ h1, h2, h3, h4, h5, h6 {
     font-size: 2.3rem;
   }
 }
+
+/* ── Prevent content, text and images from blowing out on large screens (Desktops, 2K/4K displays, wide LEDs) ── */
+@media (min-width: 1400px) {
+  html {
+    font-size: 15.5px;
+  }
+}
+
+@media (min-width: 1680px) {
+  html {
+    font-size: 14.5px;
+  }
+  .section, .hero-container {
+    max-width: 1300px;
+  }
+}
+
+@media (min-width: 1920px) {
+  html {
+    font-size: 13.5px;
+  }
+  .section, .hero-container {
+    max-width: 1400px;
+  }
+}
+
+@media (min-width: 2560px) {
+  html {
+    font-size: 13px;
+  }
+  .section, .hero-container {
+    max-width: 1500px;
+  }
+}
