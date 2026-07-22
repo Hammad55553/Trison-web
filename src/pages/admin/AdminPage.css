@@ -1473,21 +1473,14 @@ body.admin-body::before {
   pointer-events: none;
 }
 
-/* Floating centered glass card */
+/* Floating centered container (no background blur card) */
 .admin-login-card {
   display: flex;
   flex-direction: column;
   width: 100%;
   max-width: 450px;
-  background: rgba(26, 26, 94, 0.35); /* Translucent navy blue matching Trison */
-  backdrop-filter: blur(20px) saturate(180%);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
-  border: 1.5px solid rgba(255, 255, 255, 0.15);
-  border-radius: 16px;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
-  overflow: hidden;
   z-index: 2;
-  padding: 40px 32px;
+  padding: 20px;
   animation: cardFadeIn 0.5s ease-out;
 }
 
@@ -1568,13 +1561,16 @@ body.admin-body::before {
 .login-input-wrapper input {
   width: 100%;
   padding: 14px 46px 14px 46px; /* leave space on right for the toggle */
-  border: 1.5px solid rgba(255, 255, 255, 0.2);
+  border: 1.5px solid rgba(255, 255, 255, 0.25);
   border-radius: 10px;
   font-size: 0.92rem;
   font-weight: 500;
   color: #ffffff;
   transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(15, 23, 42, 0.5); /* darker translucent fill for high text contrast */
+  backdrop-filter: blur(12px) saturate(180%);
+  -webkit-backdrop-filter: blur(12px) saturate(180%);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
 }
 
 .password-toggle {
@@ -1600,9 +1596,9 @@ body.admin-body::before {
 
 .login-input-wrapper input:focus {
   outline: none;
-  background: rgba(255, 255, 255, 0.12);
+  background: rgba(15, 23, 42, 0.65);
   border-color: var(--secondary);
-  box-shadow: 0 0 0 4px rgba(249, 115, 22, 0.25);
+  box-shadow: 0 0 0 4px rgba(249, 115, 22, 0.25), 0 8px 32px rgba(0, 0, 0, 0.3);
   transform: translateY(-1px);
 }
 
