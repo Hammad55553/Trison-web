@@ -73,13 +73,8 @@ const AdminPage = () => {
 
   if (!isAuthenticated) {
     return (
-      <div className="admin-login-container">
+      <div className="admin-login-container" style={{ backgroundImage: `url(${mainGateImg})` }}>
         <div className="admin-login-card">
-          {/* Card Header Image Section */}
-          <div className="login-card-hero" style={{ backgroundImage: `url(${mainGateImg})` }}>
-            <div className="hero-overlay"></div>
-          </div>
-
           {/* Card Body Section */}
           <div className="login-card-body">
             <div className="login-brand-header">
