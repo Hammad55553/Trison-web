@@ -1490,6 +1490,7 @@ body.admin-body::before {
   z-index: 2;
   padding: 20px;
   animation: cardFadeIn 0.5s ease-out;
+  transform: translateY(-50px); /* shift upwards slightly from the vertical center */
 }
 
 @keyframes cardFadeIn {
