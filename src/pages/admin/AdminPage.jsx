@@ -7,7 +7,7 @@ import InquiryLogs from '../../components/admin/InquiryLogs';
 import { getCustomRegistry } from '../../services/authenticityService';
 import { getInquiries } from '../../services/leadService';
 import trisonLogo from '../../assets/images/TRISON.jpg';
-import mainGateImg from '../../assets/images/MainGate.jpeg';
+import mainGateImg from '../../assets/images/inside.png';
 import './AdminPage.css';
 import { ChevronRight } from 'lucide-react';
 const VIEWS = [
