@@ -1495,10 +1495,11 @@ body.admin-body::before {
 /* Full-bleed hero image across top */
 .login-card-hero {
   width: 100%;
-  height: 45vh; /* prominent top hero */
+  height: auto;
+  aspect-ratio: 16 / 9; /* Lock ratio to prevent vertical crop/zoom */
   position: relative;
-  background-size: cover; /* fill and crop to fit */
-  background-position: center top;
+  background-size: cover;
+  background-position: center center;
   background-repeat: no-repeat;
   transition: all 0.3s ease;
   display: block;
@@ -1702,13 +1703,11 @@ body.admin-body::before {
 
 /* Adjust for smaller screens */
 @media (max-width: 900px) {
-  .login-card-hero { height: 34vh; }
   .login-card-body { padding: 32px 20px; border-top-left-radius: 12px; border-top-right-radius: 12px; }
   .login-form { max-width: 100%; }
 }
 
 @media (max-width: 540px) {
-  .login-card-hero { height: 28vh; }
   .login-logo { height: 56px; }
   .login-card-body { padding: 20px; }
 }
@@ -1727,7 +1726,7 @@ body.admin-body::before {
 
 /* Hero locks to a vh-based height; body takes remaining space */
 .login-card-hero {
-  flex: 0 0 45vh;
+  flex: 0 0 auto;
   height: auto; /* allow cover to control visuals */
 }
 
@@ -1764,7 +1763,7 @@ body.admin-body::before {
 
 /* Smaller screens adjustments */
 @media (max-width: 900px) {
-  .login-card-hero { flex: 0 0 34vh; }
+  .login-card-hero { flex: 0 0 auto; }
   .login-card-body { padding: 32px 20px; border-top-left-radius: 12px; border-top-right-radius: 12px; }
   .login-form { max-width: 100%; }
 }
@@ -1772,7 +1771,7 @@ body.admin-body::before {
 @media (max-width: 540px) {
   .admin-login-container { padding: 0; }
   .admin-login-card { border-radius: 0; }
-  .login-card-hero { flex: 0 0 28vh; }
+  .login-card-hero { flex: 0 0 auto; }
   .login-logo { height: 56px; }
   .login-card-body { padding: 20px; }
 }
