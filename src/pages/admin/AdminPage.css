@@ -1450,14 +1450,15 @@ body.admin-body::before {
    ════════════════════════════════ */
 .admin-login-container {
   display: flex;
-  align-items: center;
-  justify-content: flex-end; /* Align login fields to the right on desktop */
+  flex-direction: column; /* stacked layout */
+  align-items: center; /* Center horizontally on all screens */
+  justify-content: flex-end; /* Move fields to the bottom vertically */
   height: 100vh;
   width: 100%;
   background-size: cover !important;
   background-position: center center !important;
   background-repeat: no-repeat !important;
-  padding: 24px 10% 24px 24px; /* offset slightly from the right edge */
+  padding: 24px 24px 8vh 24px; /* Offset from bottom edge with 8vh padding */
   overflow: hidden;
   position: relative;
   font-family: var(--font-body);
@@ -1465,8 +1466,7 @@ body.admin-body::before {
 
 @media (max-width: 900px) {
   .admin-login-container {
-    justify-content: center; /* Center on tablets and mobile screens */
-    padding: 24px;
+    padding: 24px 24px 5vh 24px; /* compact bottom padding for smaller viewports */
   }
 }
 
