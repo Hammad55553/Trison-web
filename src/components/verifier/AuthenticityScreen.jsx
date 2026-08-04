@@ -177,7 +177,7 @@ const AuthenticityScreen = () => {
       {/* Premium Hero Banner for Verification */}
       <section
         style={{
-          backgroundImage: `linear-gradient(135deg, rgba(14, 165, 233, 0.5) 0%, rgba(15, 23, 42, 0.8) 100%), url('/src/assets/images/verification_header.webp')`,
+          backgroundImage: `linear-gradient(135deg, rgba(14, 165, 233, 0.5) 0%, rgba(15, 23, 42, 0.8) 100%), url('/src/assets/images/verification_barcode_header.png')`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           backgroundRepeat: 'no-repeat',
