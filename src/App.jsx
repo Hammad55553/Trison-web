@@ -23,6 +23,7 @@ const PanelWarrantyPage = lazy(() => import('./pages/PanelWarrantyPage'));
 const InverterWarrantyPage = lazy(() => import('./pages/InverterWarrantyPage'));
 const TermsPage = lazy(() => import('./pages/TermsPage'));
 const PrivacyPolicyPage = lazy(() => import('./pages/PrivacyPolicyPage'));
+const NotFoundPage = lazy(() => import('./pages/NotFoundPage'));
 
 const PAGE_META = {
   home: {
@@ -107,8 +108,10 @@ function App() {
         setView('privacy');
       } else if (path.startsWith('/admin-x7k2m9')) {
         setView('admin');
-      } else {
+      } else if (path === '/' || path === '') {
         setView('home');
+      } else {
+        setView('not-found');
       }
     };
 
@@ -229,6 +232,8 @@ function App() {
         ) : view === 'admin' ? (
           /* Hidden Internal Verifier DB & Leads Dashboard Manager */
           <AdminPanelPage onViewChange={handleViewChange} />
+        ) : view === 'not-found' ? (
+          <NotFoundPage />
         ) : (
           <HomePage onViewChange={handleViewChange} />
         )}
