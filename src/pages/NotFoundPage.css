@@ -138,6 +138,11 @@
   20%, 21.999%, 63%, 63.999%, 65%, 69.999% { opacity: 0.3; }
 }
 /* ------------------------------------- */
+
+.notfound-title {
+  font-size: 6rem;
+  font-weight: 900;
+  margin: 0;
   background: linear-gradient(135deg, #f87171, #dc2626);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
