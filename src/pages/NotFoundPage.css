@@ -23,24 +23,121 @@
   box-shadow: 0 30px 60px rgba(0, 0, 0, 0.3);
 }
 
-.notfound-icon-wrapper {
-  display: inline-flex;
+/* --- Animated Solar Graphic --- */
+.notfound-animation-container {
+  position: relative;
+  width: 200px;
+  height: 200px;
+  margin: 0 auto 30px;
+  display: flex;
   justify-content: center;
   align-items: center;
-  width: 140px;
-  height: 140px;
-  background: rgba(239, 68, 68, 0.1);
-  border-radius: 50%;
-  margin-bottom: 24px;
-  color: #ef4444; /* Red color for warning/depleted */
-  animation: pulse-error 2s infinite;
-  box-shadow: 0 0 30px rgba(239, 68, 68, 0.3);
 }
 
-.notfound-title {
-  font-size: 6rem;
-  font-weight: 900;
-  margin: 0;
+.solar-core {
+  position: absolute;
+  width: 60px;
+  height: 60px;
+  background: radial-gradient(circle, #fca5a5 0%, #ef4444 60%, transparent 100%);
+  border-radius: 50%;
+  box-shadow: 0 0 40px #ef4444, inset 0 0 20px #7f1d1d;
+  animation: pulse-core 3s infinite alternate;
+  z-index: 2;
+}
+
+.notfound-icon-center {
+  position: relative;
+  z-index: 3;
+  color: white;
+  animation: flicker 4s infinite;
+}
+
+.orbit {
+  position: absolute;
+  border-radius: 50%;
+  border: 1px dashed rgba(239, 68, 68, 0.4);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.orbit-1 {
+  width: 100px;
+  height: 100px;
+  animation: spin 10s linear infinite;
+  border-top: 2px solid #ef4444;
+}
+
+.orbit-2 {
+  width: 150px;
+  height: 150px;
+  animation: spin-reverse 15s linear infinite;
+  border-bottom: 2px solid #f87171;
+  border-left: 2px solid rgba(239, 68, 68, 0.2);
+}
+
+.orbit-3 {
+  width: 200px;
+  height: 200px;
+  animation: spin 20s linear infinite;
+  border-right: 2px solid #ef4444;
+  border-top: 1px dotted rgba(239, 68, 68, 0.5);
+}
+
+.particle {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  background: #fca5a5;
+  border-radius: 50%;
+  box-shadow: 0 0 10px #ef4444;
+}
+
+.particle-1 {
+  top: 20%;
+  left: 30%;
+  animation: float 4s ease-in-out infinite;
+}
+
+.particle-2 {
+  bottom: 25%;
+  right: 20%;
+  animation: float 5s ease-in-out infinite 1s;
+}
+
+.particle-3 {
+  top: 40%;
+  right: 15%;
+  width: 4px;
+  height: 4px;
+  animation: float 3s ease-in-out infinite 0.5s;
+}
+
+@keyframes spin {
+  0% { transform: translate(-50%, -50%) rotate(0deg); }
+  100% { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+@keyframes spin-reverse {
+  0% { transform: translate(-50%, -50%) rotate(360deg); }
+  100% { transform: translate(-50%, -50%) rotate(0deg); }
+}
+
+@keyframes pulse-core {
+  0% { transform: scale(0.9); box-shadow: 0 0 20px #ef4444, inset 0 0 10px #7f1d1d; opacity: 0.8; }
+  100% { transform: scale(1.1); box-shadow: 0 0 50px #ef4444, inset 0 0 25px #7f1d1d; opacity: 1; }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0) translateX(0); opacity: 0.5; }
+  50% { transform: translateY(-15px) translateX(10px); opacity: 1; }
+}
+
+@keyframes flicker {
+  0%, 19.999%, 22%, 62.999%, 64%, 64.999%, 70%, 100% { opacity: 1; }
+  20%, 21.999%, 63%, 63.999%, 65%, 69.999% { opacity: 0.3; }
+}
+/* ------------------------------------- */
   background: linear-gradient(135deg, #f87171, #dc2626);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -128,12 +225,20 @@
   .notfound-content {
     padding: 40px 20px;
   }
-  .notfound-icon-wrapper {
-    width: 100px;
-    height: 100px;
+  .notfound-animation-container {
+    width: 150px;
+    height: 150px;
   }
-  .notfound-icon-wrapper svg {
-    width: 50px;
-    height: 50px;
+  .orbit-3 {
+    width: 150px;
+    height: 150px;
+  }
+  .orbit-2 {
+    width: 110px;
+    height: 110px;
+  }
+  .orbit-1 {
+    width: 70px;
+    height: 70px;
   }
 }
