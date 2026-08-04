@@ -1,0 +1,28 @@
+.reveal {
+  position: relative;
+  z-index: 2;
+  opacity: 0;
+  will-change: transform, opacity;
+  transition:
+    opacity 0.9s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.reveal-up { transform: translate3d(0, 60px, 0); }
+.reveal-down { transform: translate3d(0, -60px, 0); }
+.reveal-left { transform: translate3d(-90px, 0, 0); }
+.reveal-right { transform: translate3d(90px, 0, 0); }
+.reveal-zoom { transform: scale(0.86); }
+
+.reveal.is-visible {
+  opacity: 1;
+  transform: translate3d(0, 0, 0) scale(1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+}

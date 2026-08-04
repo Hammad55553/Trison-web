@@ -11,7 +11,7 @@ export default function ThreeDGallery() {
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 16 }}>
         {images.map((src, i) => (
           <div key={i} style={{ borderRadius: 8, overflow: 'hidden', background: '#f6f6f6' }}>
-            <img src={src} alt={`3d-${i + 1}`} style={{ width: '100%', height: 'auto', display: 'block' }} />
+            <img src={src} alt={`3d-${i + 1}`} loading="lazy" decoding="async" style={{ width: "100%", height: "auto", display: "block" }} />
           </div>
         ))}
       </div>

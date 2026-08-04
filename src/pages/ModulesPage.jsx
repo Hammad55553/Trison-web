@@ -1,11 +1,14 @@
 import React from 'react';
+import { motion } from 'framer-motion';
 import { Layers, Zap, Landmark, Award, ShieldAlert, Cpu } from 'lucide-react';
 import './ModulesPage.css';
 
 // Import images
-import solutionsBg from '../assets/images/pv_solutions.png';
-import monoFrontImg from '../assets/images/mono_front.png';
-import bifacialFrontImg from '../assets/images/3d/angle1.png';
+import solutionsBg from '../assets/images/pv_solutions.webp';
+import monoFrontImg from '../assets/images/mono_front.webp';
+import bifacialFrontImg from '../assets/images/3d/angle1.webp';
+// Exploded view image (User uploaded)
+import explodedViewImg from '../assets/images/exploded_view.webp';
 
 const ModulesPage = ({ onViewChange, setSelectedProduct }) => {
   const navigateToProduct = (productId) => {
@@ -78,6 +81,24 @@ const ModulesPage = ({ onViewChange, setSelectedProduct }) => {
     }
   ];
 
+  const staggerContainer = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: { staggerChildren: 0.15 }
+    }
+  };
+
+  const fadeInUp = {
+    hidden: { opacity: 0, y: 40 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } }
+  };
+
+  const scaleIn = {
+    hidden: { opacity: 0, scale: 0.9 },
+    visible: { opacity: 1, scale: 1, transition: { duration: 0.5, ease: "easeOut" } }
+  };
+
   return (
     <div className="modules-page">
 
@@ -86,29 +107,77 @@ const ModulesPage = ({ onViewChange, setSelectedProduct }) => {
         className="modules-hero"
         style={{ backgroundImage: `linear-gradient(to right, rgba(11, 11, 38, 0.95) 30%, rgba(11, 11, 38, 0.7) 100%), url(${solutionsBg})` }}
       >
-        <div className="modules-hero-container">
+        <motion.div 
+          className="modules-hero-container"
+          initial="hidden"
+          animate="visible"
+          variants={fadeInUp}
+        >
           <span className="hero-category">Silicon Solar Wafer & Wafer Modules</span>
           <h1>US-Assembled Modules & Domestic Content Cells</h1>
           <p>
             Trison supplies high-efficiency solar modules with a traceable supply chain and regions to power the world toward a low-carbon future.
           </p>
+        </motion.div>
+      </section>
+
+      {/* Exploded View / Panel Anatomy Section */}
+      <section className="exploded-view-section" style={{ padding: '80px 24px', backgroundColor: '#ffffff', textAlign: 'center' }}>
+        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+          <motion.div 
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.3 }}
+            variants={fadeInUp}
+          >
+            <span className="section-badge" style={{ display: 'inline-block', marginBottom: '12px', padding: '6px 12px', backgroundColor: '#f1f5f9', color: '#0ea5e9', borderRadius: '20px', fontSize: '0.9rem', fontWeight: 600 }}>Anatomy</span>
+            <h2 style={{ fontSize: '2.5rem', color: '#0f172a', marginBottom: '40px' }}>Trison Solar Panel Assembly</h2>
+            <div style={{ 
+              backgroundColor: '#f8fafc', 
+              padding: '40px', 
+              borderRadius: '24px', 
+              boxShadow: '0 20px 40px rgba(0,0,0,0.05)',
+              border: '1px solid #e2e8f0'
+            }}>
+              <img
+                src={explodedViewImg}
+                alt="Solar Panel Exploded View"
+                loading="lazy"
+                decoding="async"
+                style={{ width: '100%', maxWidth: '900px', height: 'auto', display: 'block', margin: '0 auto' }}
+                onError={(e) => { e.target.src = 'https://dummyimage.com/1200x800/f8fafc/0f172a&text=Save+your+image+as+exploded_view.png+in+src/assets/images/'; }}
+              />
+            </div>
+          </motion.div>
         </div>
       </section>
 
       {/* Modules Catalog Section */}
       <section className="catalog-section">
         <div className="catalog-container">
-          <div className="catalog-header">
+          <motion.div 
+            className="catalog-header"
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.3 }}
+            variants={fadeInUp}
+          >
             <span className="section-badge">Main Products</span>
             <h2>Trison High-Efficiency Solar Modules</h2>
-          </div>
+          </motion.div>
 
-          <div className="products-list-grid">
-            {products.map((prod) => (
-              <div className="product-catalog-card" key={prod.id}>
+          <motion.div 
+            className="products-list-grid"
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.2 }}
+            variants={staggerContainer}
+          >
+          {products.map((prod) => (
+              <motion.div className="product-catalog-card" key={prod.id} variants={fadeInUp}>
                 {/* Product image */}
                 <div className="product-catalog-img-box">
-                  <img src={prod.image} alt={prod.title} className="product-catalog-img" />
+                  <img src={prod.image} alt={prod.title} className="product-catalog-img" loading="lazy" decoding="async" />
                 </div>
                 {/* Product details */}
                 <div className="product-catalog-info">
@@ -126,73 +195,103 @@ const ModulesPage = ({ onViewChange, setSelectedProduct }) => {
                     Product Details &gt;
                   </button>
                 </div>
-              </div>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         </div>
       </section>
 
       {/* Supply Chain & Rating Info Banner */}
       <section className="info-banners-section">
-        <div className="info-banners-container">
-          <div className="info-grid-card">
+        <motion.div 
+          className="info-banners-container"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.3 }}
+          variants={staggerContainer}
+        >
+          <motion.div className="info-grid-card" variants={scaleIn}>
             <h3>Traceable Supply Chain</h3>
             <p>
               Trison and Western Silicon Metal producers have entered into long-term metallurgical grade silicon MGS agreements. This consolidates traceable supply chains to ensure high quality materials are procured responsibly for all module lines.
             </p>
-          </div>
-          <div className="info-grid-card rating-card">
+          </motion.div>
+          <motion.div className="info-grid-card rating-card" variants={scaleIn}>
             <Award className="rating-award-icon" size={32} />
             <h3>AAA PV Module Tech Bankability Rating</h3>
             <p>
               Trison has consistently retained high bankability scores in global PV Module Tech bankability ratings, reflecting continuous excellence and market supply leadership.
             </p>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
       </section>
 
       {/* Technology Leadership */}
       <section className="tech-leadership-section">
         <div className="tech-leadership-container">
-          <div className="section-title-box">
+          <motion.div 
+            className="section-title-box"
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.3 }}
+            variants={fadeInUp}
+          >
             <span className="section-badge">R&D Innovation</span>
             <h2>Technology Leadership</h2>
             <p>Reliable, top-quality, high-performance solar innovation from Trison.</p>
-          </div>
+          </motion.div>
 
-          <div className="tech-cards-grid">
-            {technologies.map((tech, index) => (
-              <div className="tech-card-item" key={index}>
+          <motion.div 
+            className="tech-cards-grid"
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.2 }}
+            variants={staggerContainer}
+          >
+          {technologies.map((tech, index) => (
+              <motion.div className="tech-card-item" key={index} variants={fadeInUp}>
                 <div className="tech-icon-circle">{tech.icon}</div>
                 <h3>{tech.title}</h3>
                 <p>{tech.desc}</p>
-              </div>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         </div>
       </section>
 
       {/* Successful Cases */}
       <section className="cases-section">
         <div className="cases-container">
-          <div className="section-title-box">
+          <motion.div 
+            className="section-title-box"
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.3 }}
+            variants={fadeInUp}
+          >
             <span className="section-badge">Global Performance</span>
             <h2>Successful Project Cases</h2>
             <p>Our high-efficiency modules are installed widely across utility, commercial, and residential fields globally.</p>
-          </div>
+          </motion.div>
 
-          <div className="cases-grid">
+          <motion.div 
+            className="cases-grid"
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.2 }}
+            variants={staggerContainer}
+          >
             {cases.map((cs, index) => (
-              <div className="case-item-card" key={index}>
+              <motion.div className="case-item-card" key={index} variants={scaleIn}>
                 <span className="case-location">{cs.loc}</span>
                 <h4>{cs.title}</h4>
                 <div className="case-stat">
                   <span className="case-val">{cs.capacity}</span>
                   <span className="case-label">{cs.label}</span>
                 </div>
-              </div>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         </div>
       </section>
     </div>

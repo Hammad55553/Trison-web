@@ -44,7 +44,7 @@ const Footer = ({ onViewChange }) => {
         {/* Brand Col */}
         <div className="footer-brand">
           <div className="footer-logo" onClick={() => navigateToHomeSection('hero')}>
-            <img src={trisonLogo} alt="Trison" className="logo-img-footer" />
+            <img src={trisonLogo} alt="Trison" className="logo-img-footer" loading="lazy" decoding="async" />
           </div>
           <p className="footer-desc">
             A premier global Tier-1 solar cell and plate manufacturer founded in 2007 in China. Delivering leading PV module technology with verified lifespan yields.
@@ -75,19 +75,19 @@ const Footer = ({ onViewChange }) => {
         {/* Services Col */}
         <div className="footer-links-col">
           <h4>Solar Solutions</h4>
-          <span>Silicon Cell Manufacturing</span>
-          <span>Utility Bifacial Modules</span>
-          <span>C&I Monocrystalline Plates</span>
-          <span>N-Type TOPCon Technology</span>
+          <button onClick={() => { onViewChange('silicon-cell'); window.scrollTo(0,0); }}>Silicon Cell Manufacturing</button>
+          <button onClick={() => { onViewChange('utility-bifacial'); window.scrollTo(0,0); }}>Utility Bifacial Modules</button>
+          <button onClick={() => { onViewChange('ci-monocrystalline'); window.scrollTo(0,0); }}>C&I Monocrystalline Plates</button>
+          <button onClick={() => { onViewChange('n-type-topcon'); window.scrollTo(0,0); }}>N-Type TOPCon Technology</button>
         </div>
 
         {/* Legal Col */}
         <div className="footer-links-col">
           <h4>Security & Support</h4>
-          <span>25-Year Panel Warranty</span>
-          <span>10-Year Inverter Warranty</span>
-          <span>Terms & Conditions</span>
-          <span>Privacy Policy</span>
+          <button onClick={() => { onViewChange('panel-warranty'); window.scrollTo(0,0); }}>25-Year Panel Warranty</button>
+          <button onClick={() => { onViewChange('inverter-warranty'); window.scrollTo(0,0); }}>10-Year Inverter Warranty</button>
+          <button onClick={() => { onViewChange('terms'); window.scrollTo(0,0); }}>Terms & Conditions</button>
+          <button onClick={() => { onViewChange('privacy'); window.scrollTo(0,0); }}>Privacy Policy</button>
         </div>
       </div>
 

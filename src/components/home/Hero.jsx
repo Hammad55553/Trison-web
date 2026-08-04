@@ -1,9 +1,11 @@
 import React, { useState, useRef, useEffect } from 'react';
 import './Hero.css';
 
-// Import local background videos
-import bannerVideo from '../../assets/videos/Banner_3b83dcd243.mp4';
-import hiMoVideo from '../../assets/videos/Hi_MO_9_PV_14ff44ca50.mp4';
+// Import local background videos (web-optimized: scaled to 1080p, CRF 20, audio stripped)
+import bannerVideo from '../../assets/videos/Banner_optimized.mp4';
+import hiMoVideo from '../../assets/videos/HiMo9_optimized.mp4';
+import bannerPoster from '../../assets/videos/banner_poster.jpg';
+import himo9Poster from '../../assets/videos/himo9_poster.jpg';
 
 // Per-video text content
 const videoContent = [
@@ -20,6 +22,7 @@ const videoContent = [
 ];
 
 const videos = [bannerVideo, hiMoVideo];
+const posters = [bannerPoster, himo9Poster];
 
 const Hero = ({ onViewChange }) => {
   const [activeIndex, setActiveIndex] = useState(0);
@@ -67,9 +70,11 @@ const Hero = ({ onViewChange }) => {
           ref={videoRefs[idx]}
           className={`hero-bg-video ${idx === activeIndex ? 'video-active' : 'video-inactive'}`}
           src={src}
+          poster={posters[idx]}
           autoPlay={idx === 0}
           muted
           playsInline
+          preload={idx === activeIndex ? 'auto' : 'metadata'}
           onEnded={idx === activeIndex ? handleEnded : undefined}
           onTimeUpdate={() => handleTimeUpdate(idx)}
         />

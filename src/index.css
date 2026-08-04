@@ -1,4 +1,6 @@
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+/* Font <link> moved to index.html so the browser's preload scanner can
+   discover it immediately, instead of waiting on this CSS file to parse
+   first (an @import here would add a full extra round-trip). */
 
 :root {
   /* Trison Brand Palette */
@@ -262,6 +264,13 @@ h1, h2, h3, h4, h5, h6 {
   margin: 0 auto 60px auto;
   font-size: 1.15rem;
   line-height: 1.6;
+}
+
+/* Responsive images across the site by default */
+img, video {
+  max-width: 100%;
+  height: auto;
+  display: block;
 }
 
 /* Animations */

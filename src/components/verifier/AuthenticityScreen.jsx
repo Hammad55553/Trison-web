@@ -3,6 +3,7 @@ import Card from '../common/Card';
 import { verifyAuthenticity, registerCustomPanel, registerBulkPanels, generateCustomBarcode } from '../../services/authenticityService';
 import { Search, Loader2, CheckCircle2, AlertTriangle, Cpu, Calendar, ShieldCheck, Tag, PlusCircle, HelpCircle, FileText, Upload, Globe } from 'lucide-react';
 import './AuthenticityScreen.css';
+import verificationImg from '../../assets/images/verification.webp';
 
 const AuthenticityScreen = () => {
   const [activeTab, setActiveTab] = useState('verify'); // 'verify' | 'register'
@@ -172,448 +173,547 @@ const AuthenticityScreen = () => {
   };
 
   return (
-    <section id="authenticity" className="authenticity-section">
-      <div className="section-header">
-        <h2 className="section-title">
-          Database <span className="shimmer-text">Verification & Registry</span>
-        </h2>
-        <p className="section-subtitle">
-          Verify registered Trison PV panels via secure database lookup.
-        </p>
-      </div>
+    <div className="verifier-page-wrapper" style={{ position: 'relative', zIndex: 10, backgroundColor: '#f8fafc' }}>
+      {/* Premium Hero Banner for Verification */}
+      <section
+        style={{
+          backgroundImage: `linear-gradient(135deg, rgba(14, 165, 233, 0.5) 0%, rgba(15, 23, 42, 0.8) 100%), url('/src/assets/images/verification_header.webp')`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
+          padding: '140px 24px',
+          color: 'white',
+          textAlign: 'center',
+          position: 'relative'
+        }}
+      >
+        <div style={{ position: 'relative', zIndex: 2 }}>
+          <h1 style={{ fontSize: '3.5rem', fontWeight: 900, margin: '0 0 16px 0', color: '#fff' }}>Verification & Registry</h1>
+          <p style={{ fontSize: '1.25rem', color: '#cbd5e1', margin: 0 }}>Securely authenticate your Trison Solar imports via our encrypted global registry.</p>
+        </div>
+      </section>
 
-      <div className="authenticity-grid">
-        {activeTab === 'verify' ? (
-          /* VERIFICATION PANEL */
-          <>
-            <Card className="auth-form-card" glow={true} interactive={false}>
-              <h3 className="auth-card-title">Check Module Status</h3>
-              <p className="auth-card-desc">Enter any registered barcode or serial number to retrieve consolidated specifications.</p>
+      <section id="authenticity" className="authenticity-section" style={{ paddingTop: '60px' }}>
+        <div className="section-header" style={{ display: 'none' }}>
+          <h2 className="section-title">
+            <span className="shimmer-text">Verification & Registry</span>
+          </h2>
+          <p className="section-subtitle">
+            Verify registered Trison PV panels via secure database lookup.
+          </p>
+        </div>
 
-              <form onSubmit={handleVerify} className="auth-form">
-                <div className="search-input-wrapper">
-                  <input
-                    type="text"
-                    value={barcode}
-                    onChange={(e) => setBarcode(e.target.value)}
-                    placeholder="Enter barcode (e.g. TSCN...)"
-                    className="search-input"
-                    required
-                  />
-                  <button type="submit" className="btn-search" disabled={loading}>
-                    {loading ? <Loader2 className="spinner" size={18} /> : <Search size={18} />}
+        <div className="authenticity-grid">
+          {activeTab === 'verify' ? (
+            /* VERIFICATION PANEL */
+            <>
+              <Card className="auth-form-card" glow={true} interactive={false}>
+                <h3 className="auth-card-title">Check Module Status</h3>
+                <p className="auth-card-desc">Enter any registered barcode or serial number to retrieve consolidated specifications.</p>
+
+                <form onSubmit={handleVerify} className="auth-form">
+                  <div className="search-input-wrapper">
+                    <input
+                      type="text"
+                      value={barcode}
+                      onChange={(e) => setBarcode(e.target.value)}
+                      placeholder="Enter barcode (e.g. TSCN...)"
+                      className="search-input"
+                      required
+                    />
+                    <button type="submit" className="btn-search" disabled={loading}>
+                      {loading ? <Loader2 className="spinner" size={18} /> : <Search size={18} />}
+                    </button>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={loadSampleCode}
+                    className="btn-sample"
+                  >
+                    Paste Sample Barcode
                   </button>
-                </div>
+                </form>
 
-                <button
-                  type="button"
-                  onClick={loadSampleCode}
-                  className="btn-sample"
-                >
-                  Paste Sample Barcode
-                </button>
-              </form>
-
-              <div className="barcode-guideline">
-                <h4>Where to find the barcode?</h4>
-                <p>Look for a white label containing a barcode and an alphanumeric string starting with "TSCN..." on the side frame or back sheet of the panel.</p>
-                <div className="fake-barcode-sticker">
-                  <div className="sticker-laser-line"></div>
-                  <div className="barcode-lines">
-                    <span></span><span></span><span></span><span></span><span></span>
-                    <span></span><span></span><span></span><span></span><span></span>
-                    <span></span><span></span><span></span><span></span><span></span>
-                  </div>
-                  <span className="barcode-string">TSCN-2607-731358458</span>
-                </div>
-              </div>
-            </Card>
-
-            <div className="auth-result-wrapper">
-              {loading && (
-                <div className="auth-status-card loading-card glass">
-                  <div className="scanner-line"></div>
-                  <Loader2 className="spinner status-large-icon" size={40} />
-                  <h3>Querying Database Registries</h3>
-                  <p>Consolidating data logs for: <strong>{barcode}</strong></p>
-                </div>
-              )}
-
-              {!loading && !result && !error && (
-                <div className="auth-status-card empty-card glass">
-                  {/* High-tech Scanning Image Visual */}
-                  <div className="image-scanner-container">
-                    <img src="/solar_barcode_scanner.png" alt="Solar Panel Scanning" className="scanner-img" />
-                    <div className="image-laser-line"></div>
-                  </div>
-                  <h3>Ready for Scanning</h3>
-                  <p>Scan or input a module serial number to trigger verification logs.</p>
-
-                  <div className="radar-badges">
-                    <span className="radar-badge">⚡ Real-time API</span>
-                    <span className="radar-badge">🔒 Encrypted</span>
-                    <span className="radar-badge">📂 Multi-DB</span>
+                <div className="barcode-guideline">
+                  <h4>Where to find the barcode?</h4>
+                  <p>Look for a white label containing a barcode and an alphanumeric string starting with "TSCN..." on the side frame or back sheet of the panel.</p>
+                  <div className="fake-barcode-sticker">
+                    <div className="sticker-laser-line"></div>
+                    <div className="barcode-lines">
+                      <span></span><span></span><span></span><span></span><span></span>
+                      <span></span><span></span><span></span><span></span><span></span>
+                      <span></span><span></span><span></span><span></span><span></span>
+                    </div>
+                    <span className="barcode-string">TSCN-2607-731358458</span>
                   </div>
                 </div>
-              )}
+              </Card>
 
-              {!loading && error && (
-                <div className="auth-status-card error-card glass">
-                  <AlertTriangle className="status-large-icon text-orange" size={48} />
-                  <h3>Record Not Found</h3>
-                  <p>{error}</p>
-                </div>
-              )}
+              <div className="auth-result-wrapper">
+                {loading && (
+                  <div className="auth-status-card loading-card glass">
+                    <div className="scanner-line"></div>
+                    <Loader2 className="spinner status-large-icon" size={40} />
+                    <h3>Querying Database Registries</h3>
+                    <p>Consolidating data logs for: <strong>{barcode}</strong></p>
+                  </div>
+                )}
 
-              {!loading && result && (
-                <Card className="auth-status-card success-card" interactive={false}>
-                  <div className="success-header">
-                    <CheckCircle2 className="success-badge-icon" size={32} />
-                    <div>
-                      <span className="verified-tag">Genuine Record Match</span>
-                      <h3>{result.brand || 'Trison'} Authenticated</h3>
+                {!loading && !result && !error && (
+                  <div className="auth-status-card empty-card glass">
+                    {/* High-tech Scanning Image Visual */}
+                    <div className="image-scanner-container">
+                      <img src="/solar_barcode_scanner.png" alt="Solar Panel Scanning" className="scanner-img" loading="lazy" decoding="async" />
+                      <div className="image-laser-line"></div>
+                    </div>
+                    <h3>Ready for Scanning</h3>
+                    <p>Scan or input a module serial number to trigger verification logs.</p>
+
+                    <div className="radar-badges">
+                      <span className="radar-badge">⚡ Real-time API</span>
+                      <span className="radar-badge">🔒 Encrypted</span>
+                      <span className="radar-badge">📂 Multi-DB</span>
                     </div>
                   </div>
+                )}
 
-                  <div className="auth-meta-grid">
-                    <div className="meta-item">
-                      <Cpu className="meta-icon" />
+                {!loading && error && (
+                  <div className="auth-status-card error-card glass">
+                    <AlertTriangle className="status-large-icon text-orange" size={48} />
+                    <h3>Record Not Found</h3>
+                    <p>{error}</p>
+                  </div>
+                )}
+
+                {!loading && result && (
+                  <Card className="auth-status-card success-card" interactive={false}>
+                    <div className="success-header">
+                      <CheckCircle2 className="success-badge-icon" size={32} />
                       <div>
-                        <span className="meta-label">Serial Number</span>
-                        <span className="meta-value" style={{ fontFamily: 'monospace', fontWeight: 'bold' }}>
-                          {result.serial || result.moduleId}
-                        </span>
+                        <span className="verified-tag">Genuine Record Match</span>
+                        <h3>{result.brand || 'Trison'} Authenticated</h3>
                       </div>
                     </div>
 
-                    <div className="meta-item">
-                      <Cpu className="meta-icon" />
-                      <div>
-                        <span className="meta-label">Model Type</span>
-                        <span className="meta-value">{result.model || result.productionType || 'N/A'}</span>
-                      </div>
-                    </div>
-
-                    <div className="meta-item">
-                      <ShieldCheck className="meta-icon" />
-                      <div>
-                        <span className="meta-label">Module Level</span>
-                        <span className="meta-value text-green">
-                          {result.class ? `Class ${result.class}` : (result.moduleLevel || 'Class A')}
-                        </span>
-                      </div>
-                    </div>
-
-                    {result.source !== 'Trison Local Registry' && (result.registeredAt || result.manufactureDate) && (
+                    <div className="auth-meta-grid">
                       <div className="meta-item">
-                        <Calendar className="meta-icon" />
+                        <Cpu className="meta-icon" />
                         <div>
-                          <span className="meta-label">Registered/Mfg Date</span>
-                          <span className="meta-value">
-                            {result.registeredAt ? result.registeredAt.split('T')[0] : (result.manufactureDate || 'N/A')}
+                          <span className="meta-label">Serial Number</span>
+                          <span className="meta-value" style={{ fontFamily: 'monospace', fontWeight: 'bold' }}>
+                            {result.serial || result.moduleId}
                           </span>
                         </div>
                       </div>
-                    )}
 
-                    <div className="meta-item">
-                      <Tag className="meta-icon" />
-                      <div>
-                        <span className="meta-label">Power Output</span>
-                        <span className="meta-value">{result.wattage || '580W'}</span>
-                      </div>
-                    </div>
-
-                    {/* New/Extra clean DB fields */}
-                    {result.country && (
                       <div className="meta-item">
-                        <Globe className="meta-icon" />
+                        <Cpu className="meta-icon" />
                         <div>
-                          <span className="meta-label">Country Entered</span>
-                          <span className="meta-value">{result.country}</span>
+                          <span className="meta-label">Model Type</span>
+                          <span className="meta-value">{result.model || result.productionType || 'N/A'}</span>
                         </div>
                       </div>
-                    )}
 
-                    {result.status && (
                       <div className="meta-item">
                         <ShieldCheck className="meta-icon" />
                         <div>
-                          <span className="meta-label">Status</span>
-                          <span className="meta-value" style={{ textTransform: 'capitalize' }}>
-                            {result.status}
+                          <span className="meta-label">Module Level</span>
+                          <span className="meta-value text-green">
+                            {result.class ? `Class ${result.class}` : (result.moduleLevel || 'Class A')}
                           </span>
                         </div>
                       </div>
-                    )}
-                  </div>
 
-                  {(result.localWarranty || result.warrantyYears) && (
-                    <div className="warranty-specs glass">
-                      <h4>Distributor Warranty Details</h4>
-                      {(result.customerName || (result.localWarranty && result.localWarranty.customerName)) && (
+                      {result.source !== 'Trison Local Registry' && (result.registeredAt || result.manufactureDate) && (
+                        <div className="meta-item">
+                          <Calendar className="meta-icon" />
+                          <div>
+                            <span className="meta-label">Registered/Mfg Date</span>
+                            <span className="meta-value">
+                              {result.registeredAt ? result.registeredAt.split('T')[0] : (result.manufactureDate || 'N/A')}
+                            </span>
+                          </div>
+                        </div>
+                      )}
+
+                      <div className="meta-item">
+                        <Tag className="meta-icon" />
+                        <div>
+                          <span className="meta-label">Power Output</span>
+                          <span className="meta-value">{result.wattage || '580W'}</span>
+                        </div>
+                      </div>
+
+                      {/* New/Extra clean DB fields */}
+                      {result.country && (
+                        <div className="meta-item">
+                          <Globe className="meta-icon" />
+                          <div>
+                            <span className="meta-label">Country Entered</span>
+                            <span className="meta-value">{result.country}</span>
+                          </div>
+                        </div>
+                      )}
+
+                      {result.status && (
+                        <div className="meta-item">
+                          <ShieldCheck className="meta-icon" />
+                          <div>
+                            <span className="meta-label">Status</span>
+                            <span className="meta-value" style={{ textTransform: 'capitalize' }}>
+                              {result.status}
+                            </span>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+
+                    {(result.localWarranty || result.warrantyYears) && (
+                      <div className="warranty-specs glass">
+                        <h4>Distributor Warranty Details</h4>
+                        {(result.customerName || (result.localWarranty && result.localWarranty.customerName)) && (
+                          <p>
+                            <strong>Customer Name:</strong>{' '}
+                            {result.customerName || (result.localWarranty && result.localWarranty.customerName)}
+                          </p>
+                        )}
                         <p>
-                          <strong>Customer Name:</strong>{' '}
-                          {result.customerName || (result.localWarranty && result.localWarranty.customerName)}
+                          <strong>Active Warranty:</strong>{' '}
+                          {result.warrantyYears ? (isNaN(result.warrantyYears) ? result.warrantyYears : `${result.warrantyYears} Years Replacement`) : '25 Years Replacement'}
                         </p>
-                      )}
-                      <p>
-                        <strong>Active Warranty:</strong>{' '}
-                        {result.warrantyYears ? (isNaN(result.warrantyYears) ? result.warrantyYears : `${result.warrantyYears} Years Replacement`) : '25 Years Replacement'}
-                      </p>
-                      <p><strong>Status:</strong> Active & Validated</p>
-                    </div>
-                  )}
-
-                </Card>
-              )}
-            </div>
-          </>
-        ) : (
-          /* REGISTRATION PANEL */
-          <>
-            <Card className="auth-form-card" glow={true} interactive={false}>
-              <div className="reg-mode-selectors">
-                <button
-                  type="button"
-                  className={`mode-btn ${regMode === 'single' ? 'active' : ''}`}
-                  onClick={() => setRegMode('single')}
-                >
-                  Single Panel Entry
-                </button>
-                <button
-                  type="button"
-                  className={`mode-btn ${regMode === 'bulk' ? 'active' : ''}`}
-                  onClick={() => setRegMode('bulk')}
-                >
-                  Bulk Import List / CSV
-                </button>
-              </div>
-
-              {regMode === 'single' ? (
-                /* SINGLE REGISTRATION MODE */
-                <form onSubmit={handleRegister} className="registration-form">
-                  <div className="form-row">
-                    <div className="form-group">
-                      <label htmlFor="reg-brand">Brand / Plate Owner</label>
-                      <select
-                        id="reg-brand"
-                        value={regData.brand}
-                        onChange={(e) => setRegData({ ...regData, brand: e.target.value })}
-                      >
-                        <option value="Trison">Trison</option>
-                        <option value="LONGI Solar">LONGI Solar</option>
-                        <option value="JinkoSolar">Jinko Solar</option>
-                      </select>
-                    </div>
-
-                    <div className="form-group">
-                      <label htmlFor="reg-model">Model Name</label>
-                      <input
-                        id="reg-model"
-                        type="text"
-                        value={regData.model}
-                        onChange={(e) => setRegData({ ...regData, model: e.target.value })}
-                        placeholder="e.g. TS-Premium-580M"
-                        required
-                      />
-                    </div>
-                  </div>
-
-                  <div className="form-row">
-                    <div className="form-group">
-                      <label htmlFor="reg-wattage">Wattage Rating</label>
-                      <input
-                        id="reg-wattage"
-                        type="text"
-                        value={regData.wattage}
-                        onChange={(e) => setRegData({ ...regData, wattage: e.target.value })}
-                        placeholder="e.g. 580W"
-                        required
-                      />
-                    </div>
-
-                    <div className="form-group">
-                      <label htmlFor="reg-tech">Technology</label>
-                      <input
-                        id="reg-tech"
-                        type="text"
-                        value={regData.technology}
-                        onChange={(e) => setRegData({ ...regData, technology: e.target.value })}
-                        placeholder="e.g. Bifacial Mono PERC"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="form-group">
-                    <label htmlFor="reg-customer">Customer / Client Name (for Warranty) *</label>
-                    <input
-                      id="reg-customer"
-                      type="text"
-                      value={regData.customerName}
-                      onChange={(e) => setRegData({ ...regData, customerName: e.target.value })}
-                      placeholder="e.g. Tariq Mehmood"
-                      required
-                    />
-                  </div>
-
-                  <div className="form-group">
-                    <label htmlFor="reg-barcode">Plate Barcode / Serial Number *</label>
-                    <div className="barcode-gen-wrapper">
-                      <input
-                        id="reg-barcode"
-                        type="text"
-                        value={regData.barcode}
-                        onChange={(e) => setRegData({ ...regData, barcode: e.target.value })}
-                        placeholder="Enter custom barcode or generate one..."
-                        required
-                      />
-                      <button
-                        type="button"
-                        onClick={handleGenerateBarcode}
-                        className="btn-secondary btn-gen"
-                      >
-                        Auto-Generate
-                      </button>
-                    </div>
-                  </div>
-
-                  {regStatus.message && (
-                    <div className={`status-banner banner-${regStatus.type}`}>
-                      {regStatus.type === 'success' ? (
-                        <CheckCircle2 className="status-banner-icon" />
-                      ) : (
-                        <AlertTriangle className="status-banner-icon" />
-                      )}
-                      <span>{regStatus.message}</span>
-                    </div>
-                  )}
-
-                  <div className="reg-actions-row">
-                    <button type="submit" className="btn-primary">
-                      Register Plate Database
-                    </button>
-                    {regStatus.type === 'success' && (
-                      <button
-                        type="button"
-                        onClick={testRegisteredBarcode}
-                        className="btn-secondary"
-                      >
-                        Verify This Plate Now
-                      </button>
+                        <p><strong>Status:</strong> Active & Validated</p>
+                      </div>
                     )}
-                  </div>
-                </form>
-              ) : (
-                /* BULK REGISTRATION MODE */
-                <form onSubmit={handleBulkRegister} className="registration-form">
-                  <div className="form-row">
-                    <div className="form-group">
-                      <label htmlFor="bulk-brand">Default Brand</label>
-                      <select
-                        id="bulk-brand"
-                        value={bulkData.brand}
-                        onChange={(e) => setBulkData({ ...bulkData, brand: e.target.value })}
-                      >
-                        <option value="Trison">Trison</option>
-                        <option value="LONGI Solar">LONGI Solar</option>
-                        <option value="JinkoSolar">Jinko Solar</option>
-                      </select>
-                    </div>
 
-                    <div className="form-group">
-                      <label htmlFor="bulk-model">Default Model Name</label>
-                      <input
-                        id="bulk-model"
-                        type="text"
-                        value={bulkData.model}
-                        onChange={(e) => setBulkData({ ...bulkData, model: e.target.value })}
-                        placeholder="e.g. TS-Premium-580M"
-                      />
-                    </div>
-                  </div>
+                  </Card>
+                )}
+              </div>
+            </>
+          ) : (
+            /* REGISTRATION PANEL */
+            <>
+              <Card className="auth-form-card" glow={true} interactive={false}>
+                <div className="reg-mode-selectors">
+                  <button
+                    type="button"
+                    className={`mode-btn ${regMode === 'single' ? 'active' : ''}`}
+                    onClick={() => setRegMode('single')}
+                  >
+                    Single Panel Entry
+                  </button>
+                  <button
+                    type="button"
+                    className={`mode-btn ${regMode === 'bulk' ? 'active' : ''}`}
+                    onClick={() => setRegMode('bulk')}
+                  >
+                    Bulk Import List / CSV
+                  </button>
+                </div>
 
-                  <div className="form-row">
-                    <div className="form-group">
-                      <label htmlFor="bulk-customer">Default Client / Project Name</label>
-                      <input
-                        id="bulk-customer"
-                        type="text"
-                        value={bulkData.customerName}
-                        onChange={(e) => setBulkData({ ...bulkData, customerName: e.target.value })}
-                        placeholder="e.g. DHA Project Batch 1"
-                      />
-                    </div>
+                {regMode === 'single' ? (
+                  /* SINGLE REGISTRATION MODE */
+                  <form onSubmit={handleRegister} className="registration-form">
+                    <div className="form-row">
+                      <div className="form-group">
+                        <label htmlFor="reg-brand">Brand / Plate Owner</label>
+                        <select
+                          id="reg-brand"
+                          value={regData.brand}
+                          onChange={(e) => setRegData({ ...regData, brand: e.target.value })}
+                        >
+                          <option value="Trison">Trison</option>
+                          <option value="LONGI Solar">LONGI Solar</option>
+                          <option value="JinkoSolar">Jinko Solar</option>
+                        </select>
+                      </div>
 
-                    <div className="form-group">
-                      <label htmlFor="bulk-warranty">Default Warranty Years</label>
-                      <input
-                        id="bulk-warranty"
-                        type="number"
-                        value={bulkData.warrantyYears}
-                        onChange={(e) => setBulkData({ ...bulkData, warrantyYears: e.target.value })}
-                        placeholder="25"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="form-group">
-                    <div className="bulk-barcodes-header">
-                      <label htmlFor="bulk-list">Paste Barcodes (One per line) OR upload CSV</label>
-                      <div className="file-upload-btn-wrapper">
-                        <label className="file-upload-label">
-                          <Upload size={14} /> Upload CSV
-                          <input type="file" accept=".csv, .txt" onChange={handleFileUpload} />
-                        </label>
+                      <div className="form-group">
+                        <label htmlFor="reg-model">Model Name</label>
+                        <input
+                          id="reg-model"
+                          type="text"
+                          value={regData.model}
+                          onChange={(e) => setRegData({ ...regData, model: e.target.value })}
+                          placeholder="e.g. TS-Premium-580M"
+                          required
+                        />
                       </div>
                     </div>
-                    <textarea
-                      id="bulk-list"
-                      rows="6"
-                      value={bulkBarcodes}
-                      onChange={(e) => setBulkBarcodes(e.target.value)}
-                      placeholder="Paste barcodes list here...&#10;Format: barcode&#10;Or CSV: barcode, customerName, model, wattage&#10;&#10;e.g.&#10;LRPI04109241102416062&#10;LRPI04109241102416063, Tariq Khan, TS-Bifacial-600M, 600W"
-                      required
-                    ></textarea>
-                  </div>
 
-                  {bulkStatus.message && (
-                    <div className={`status-banner banner-${bulkStatus.type}`}>
-                      {bulkStatus.type === 'success' ? (
-                        <CheckCircle2 className="status-banner-icon" />
-                      ) : (
-                        <AlertTriangle className="status-banner-icon" />
-                      )}
-                      <span>{bulkStatus.message}</span>
+                    <div className="form-row">
+                      <div className="form-group">
+                        <label htmlFor="reg-wattage">Wattage Rating</label>
+                        <input
+                          id="reg-wattage"
+                          type="text"
+                          value={regData.wattage}
+                          onChange={(e) => setRegData({ ...regData, wattage: e.target.value })}
+                          placeholder="e.g. 580W"
+                          required
+                        />
+                      </div>
+
+                      <div className="form-group">
+                        <label htmlFor="reg-tech">Technology</label>
+                        <input
+                          id="reg-tech"
+                          type="text"
+                          value={regData.technology}
+                          onChange={(e) => setRegData({ ...regData, technology: e.target.value })}
+                          placeholder="e.g. Bifacial Mono PERC"
+                        />
+                      </div>
                     </div>
-                  )}
 
-                  <button type="submit" className="btn-primary">
-                    Import & Register Bulk List
-                  </button>
-                </form>
-              )}
-            </Card>
+                    <div className="form-group">
+                      <label htmlFor="reg-customer">Customer / Client Name (for Warranty) *</label>
+                      <input
+                        id="reg-customer"
+                        type="text"
+                        value={regData.customerName}
+                        onChange={(e) => setRegData({ ...regData, customerName: e.target.value })}
+                        placeholder="e.g. Tariq Mehmood"
+                        required
+                      />
+                    </div>
 
-            {/* Instruction Side Card */}
-            <div className="auth-result-wrapper">
-              <Card className="auth-status-card info-card glass" interactive={false}>
-                <FileText className="status-large-icon text-gold" size={44} />
-                <h3>Bulk Import Instructions</h3>
-                <p className="left-align-text">
-                  Adding panels in thousands is now simple. Choose "Bulk Import List / CSV" and perform one of the following operations:
-                </p>
-                <ul className="info-bullets">
-                  <li><strong>Paste Raw Serials</strong>: Paste a list of serials directly. All default values (Brand, Model, Wattage, Customer) will apply to the entire batch.</li>
-                  <li><strong>Paste CSV Format</strong>: Paste lines separated by commas containing: `barcode, customerName, model, wattage` (e.g., `LRPI04109241102416062, Bilal, TS-580W, 580W`)</li>
-                  <li><strong>Upload CSV File</strong>: Select your CSV file from your storage and click Import to run everything.</li>
-                </ul>
+                    <div className="form-group">
+                      <label htmlFor="reg-barcode">Plate Barcode / Serial Number *</label>
+                      <div className="barcode-gen-wrapper">
+                        <input
+                          id="reg-barcode"
+                          type="text"
+                          value={regData.barcode}
+                          onChange={(e) => setRegData({ ...regData, barcode: e.target.value })}
+                          placeholder="Enter custom barcode or generate one..."
+                          required
+                        />
+                        <button
+                          type="button"
+                          onClick={handleGenerateBarcode}
+                          className="btn-secondary btn-gen"
+                        >
+                          Auto-Generate
+                        </button>
+                      </div>
+                    </div>
+
+                    {regStatus.message && (
+                      <div className={`status-banner banner-${regStatus.type}`}>
+                        {regStatus.type === 'success' ? (
+                          <CheckCircle2 className="status-banner-icon" />
+                        ) : (
+                          <AlertTriangle className="status-banner-icon" />
+                        )}
+                        <span>{regStatus.message}</span>
+                      </div>
+                    )}
+
+                    <div className="reg-actions-row">
+                      <button type="submit" className="btn-primary">
+                        Register Plate Database
+                      </button>
+                      {regStatus.type === 'success' && (
+                        <button
+                          type="button"
+                          onClick={testRegisteredBarcode}
+                          className="btn-secondary"
+                        >
+                          Verify This Plate Now
+                        </button>
+                      )}
+                    </div>
+                  </form>
+                ) : (
+                  /* BULK REGISTRATION MODE */
+                  <form onSubmit={handleBulkRegister} className="registration-form">
+                    <div className="form-row">
+                      <div className="form-group">
+                        <label htmlFor="bulk-brand">Default Brand</label>
+                        <select
+                          id="bulk-brand"
+                          value={bulkData.brand}
+                          onChange={(e) => setBulkData({ ...bulkData, brand: e.target.value })}
+                        >
+                          <option value="Trison">Trison</option>
+                          <option value="LONGI Solar">LONGI Solar</option>
+                          <option value="JinkoSolar">Jinko Solar</option>
+                        </select>
+                      </div>
+
+                      <div className="form-group">
+                        <label htmlFor="bulk-model">Default Model Name</label>
+                        <input
+                          id="bulk-model"
+                          type="text"
+                          value={bulkData.model}
+                          onChange={(e) => setBulkData({ ...bulkData, model: e.target.value })}
+                          placeholder="e.g. TS-Premium-580M"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="form-row">
+                      <div className="form-group">
+                        <label htmlFor="bulk-customer">Default Client / Project Name</label>
+                        <input
+                          id="bulk-customer"
+                          type="text"
+                          value={bulkData.customerName}
+                          onChange={(e) => setBulkData({ ...bulkData, customerName: e.target.value })}
+                          placeholder="e.g. DHA Project Batch 1"
+                        />
+                      </div>
+
+                      <div className="form-group">
+                        <label htmlFor="bulk-warranty">Default Warranty Years</label>
+                        <input
+                          id="bulk-warranty"
+                          type="number"
+                          value={bulkData.warrantyYears}
+                          onChange={(e) => setBulkData({ ...bulkData, warrantyYears: e.target.value })}
+                          placeholder="25"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="form-group">
+                      <div className="bulk-barcodes-header">
+                        <label htmlFor="bulk-list">Paste Barcodes (One per line) OR upload CSV</label>
+                        <div className="file-upload-btn-wrapper">
+                          <label className="file-upload-label">
+                            <Upload size={14} /> Upload CSV
+                            <input type="file" accept=".csv, .txt" onChange={handleFileUpload} />
+                          </label>
+                        </div>
+                      </div>
+                      <textarea
+                        id="bulk-list"
+                        rows="6"
+                        value={bulkBarcodes}
+                        onChange={(e) => setBulkBarcodes(e.target.value)}
+                        placeholder="Paste barcodes list here...&#10;Format: barcode&#10;Or CSV: barcode, customerName, model, wattage&#10;&#10;e.g.&#10;LRPI04109241102416062&#10;LRPI04109241102416063, Tariq Khan, TS-Bifacial-600M, 600W"
+                        required
+                      ></textarea>
+                    </div>
+
+                    {bulkStatus.message && (
+                      <div className={`status-banner banner-${bulkStatus.type}`}>
+                        {bulkStatus.type === 'success' ? (
+                          <CheckCircle2 className="status-banner-icon" />
+                        ) : (
+                          <AlertTriangle className="status-banner-icon" />
+                        )}
+                        <span>{bulkStatus.message}</span>
+                      </div>
+                    )}
+
+                    <button type="submit" className="btn-primary">
+                      Import & Register Bulk List
+                    </button>
+                  </form>
+                )}
               </Card>
+
+
+              <div className="auth-result-wrapper">
+                <Card className="auth-status-card info-card glass" interactive={false}>
+                  <FileText className="status-large-icon text-gold" size={44} />
+                  <h3>Bulk Import Instructions</h3>
+                  <p className="left-align-text">
+                    Adding panels in thousands is now simple. Choose "Bulk Import List / CSV" and perform one of the following operations:
+                  </p>
+                  <ul className="info-bullets">
+                    <li><strong>Paste Raw Serials</strong>: Paste a list of serials directly. All default values (Brand, Model, Wattage, Customer) will apply to the entire batch.</li>
+                    <li><strong>Paste CSV Format</strong>: Paste lines separated by commas containing: `barcode, customerName, model, wattage` (e.g., `LRPI04109241102416062, Bilal, TS-580W, 580W`)</li>
+                    <li><strong>Upload CSV File</strong>: Select your CSV file from your storage and click Import to run everything.</li>
+                  </ul>
+                </Card>
+              </div>
+            </>
+          )}
+        </div> {/* Close authenticity-grid */}
+        <div className="verification-benefits-section" style={{ display: 'flex', flexDirection: 'column', gap: '6rem', maxWidth: '1000px', margin: '0 auto', padding: '40px 24px' }}>
+          
+          <div className="verification-benefits-header" style={{ textAlign: 'center', marginBottom: '20px' }}>
+            <span className="verification-benefits-badge">Registry Benefits</span>
+            <h2 className="verification-benefits-title" style={{ fontSize: '2.5rem' }}>Why Verify Your Trison Modules?</h2>
+          </div>
+
+          {/* Row 1: Image Left, Text Right */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '4rem', flexWrap: 'wrap' }}>
+            <div style={{ flex: '1 1 45%', minWidth: '300px' }}>
+              <img
+                src={verificationImg}
+                alt="Verification Process"
+                loading="lazy"
+                decoding="async"
+                style={{ width: '100%', height: 'auto', borderRadius: '24px', boxShadow: '0 20px 40px -10px rgba(0,0,0,0.15)' }}
+              />
             </div>
-          </>
-        )}
-      </div>
-    </section>
+            <div style={{ flex: '1 1 45%', minWidth: '300px' }}>
+              <h3 style={{ fontSize: '1.8rem', marginBottom: '16px', color: 'var(--text-primary)' }}>Anti-Counterfeit Protection</h3>
+              <p style={{ fontSize: '1.1rem', color: 'var(--text-secondary)', lineHeight: 1.6 }}>
+                By instantly cross-referencing your module's serial number against our secure cloud database, you can confidently eliminate the risk of installing counterfeit or gray-market panels that lack genuine Trison Tier-1 engineering.
+              </p>
+            </div>
+          </div>
+
+          {/* Row 2: Text Left, Card Right */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '4rem', flexWrap: 'wrap-reverse' }}>
+            <div style={{ flex: '1 1 45%', minWidth: '300px' }}>
+              <h3 style={{ fontSize: '1.8rem', marginBottom: '16px', color: 'var(--text-primary)' }}>Warranty Activation</h3>
+              <p style={{ fontSize: '1.1rem', color: 'var(--text-secondary)', lineHeight: 1.6 }}>
+                Verification acts as the first step toward officially registering your project. Once validated, your panels are instantly logged into our global warranty tracking system, securing your 25-year performance guarantees.
+              </p>
+            </div>
+            <div style={{ flex: '1 1 45%', minWidth: '300px', display: 'flex', justifyContent: 'center' }}>
+              <div className="verification-benefit-card" style={{ padding: '40px', width: '100%', maxWidth: '350px', display: 'flex', justifyContent: 'center', alignItems: 'center', backgroundColor: '#ffffff', borderRadius: '24px', boxShadow: '0 10px 40px -10px var(--primary-glow)' }}>
+                <div className="verification-benefit-icon-wrapper" style={{ margin: 0, width: '80px', height: '80px' }}>
+                  <FileText size={40} />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Row 3: Card Left, Text Right */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '4rem', flexWrap: 'wrap' }}>
+            <div style={{ flex: '1 1 45%', minWidth: '300px', display: 'flex', justifyContent: 'center' }}>
+              <div className="verification-benefit-card" style={{ padding: '40px', width: '100%', maxWidth: '350px', display: 'flex', justifyContent: 'center', alignItems: 'center', backgroundColor: '#ffffff', borderRadius: '24px', boxShadow: '0 10px 40px -10px var(--primary-glow)' }}>
+                <div className="verification-benefit-icon-wrapper" style={{ margin: 0, width: '80px', height: '80px' }}>
+                  <Search size={40} />
+                </div>
+              </div>
+            </div>
+            <div style={{ flex: '1 1 45%', minWidth: '300px' }}>
+              <h3 style={{ fontSize: '1.8rem', marginBottom: '16px', color: 'var(--text-primary)' }}>Detailed Specifications</h3>
+              <p style={{ fontSize: '1.1rem', color: 'var(--text-secondary)', lineHeight: 1.6 }}>
+                A successful scan unlocks the exact factory flash-test data for your specific panel. Access precise metrics including actual peak wattage (Wp), Voc, Isc, and efficiency ratings measured directly off the production line.
+              </p>
+            </div>
+          </div>
+
+          {/* Row 4: Text Left, Card Right */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '4rem', flexWrap: 'wrap-reverse' }}>
+            <div style={{ flex: '1 1 45%', minWidth: '300px' }}>
+              <h3 style={{ fontSize: '1.8rem', marginBottom: '16px', color: 'var(--text-primary)' }}>Global Traceability</h3>
+              <p style={{ fontSize: '1.1rem', color: 'var(--text-secondary)', lineHeight: 1.6 }}>
+                Our blockchain-backed registry allows EPCs and project financiers to trace the complete origin of the solar equipment—from the specific manufacturing hub down to the shipping logistics, ensuring 100% supply chain transparency.
+              </p>
+            </div>
+            <div style={{ flex: '1 1 45%', minWidth: '300px', display: 'flex', justifyContent: 'center' }}>
+              <div className="verification-benefit-card" style={{ padding: '40px', width: '100%', maxWidth: '350px', display: 'flex', justifyContent: 'center', alignItems: 'center', backgroundColor: '#ffffff', borderRadius: '24px', boxShadow: '0 10px 40px -10px var(--primary-glow)' }}>
+                <div className="verification-benefit-icon-wrapper" style={{ margin: 0, width: '80px', height: '80px' }}>
+                  <Globe size={40} />
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+    </div>
   );
 };
 

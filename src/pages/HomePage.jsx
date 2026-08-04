@@ -5,7 +5,6 @@ import LongiTechHighlight from '../components/home/LongiTechHighlight';
 import Solutions from '../components/home/Solutions';
 import NewsFeed from '../components/home/NewsFeed';
 import ESG from '../components/home/ESG';
-
 const HomePage = ({ onViewChange }) => {
   return (
     <>

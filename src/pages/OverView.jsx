@@ -3,16 +3,16 @@ import { ChevronDown, Layers, Zap, Scale, Box } from 'lucide-react';
 import './OverView.css';
 
 // Import local Bifacial 3D angles
-import angle1Img from '../assets/images/3d/angle1.png';
-import angle2Img from '../assets/images/3d/angle2.png';
-import angle3Img from '../assets/images/3d/angle3.png';
+import angle1Img from '../assets/images/3d/angle1.webp';
+import angle2Img from '../assets/images/3d/angle2.webp';
+import angle3Img from '../assets/images/3d/angle3.webp';
 
 // Import local Monofacial front/back images
-import monoFrontImg from '../assets/images/mono_front.png';
-import monoBackImg from '../assets/images/mono_back.png';
+import monoFrontImg from '../assets/images/mono_front.webp';
+import monoBackImg from '../assets/images/mono_back.webp';
 
 // Import solutions background image for the Hero
-import solutionsBg from '../assets/images/pv_solutions.png';
+import solutionsBg from '../assets/images/pv_solutions.webp';
 
 const OverView = ({ productId }) => {
   const [activeAngle, setActiveAngle] = useState(0);
@@ -131,15 +131,7 @@ const OverView = ({ productId }) => {
         </div>
       </section>
 
-      {/* Sticky Sub-navigation Bar */}
-      <div className="product-sub-nav">
-        <div className="sub-nav-container">
-          <button onClick={() => scrollToSection('overview-hero')}>Overview</button>
-          <button onClick={() => scrollToSection('parameter-interactive-sec')}>Core Parameters</button>
-          <button onClick={() => scrollToSection('technical-specs')}>Specifications</button>
-          <button onClick={() => scrollToSection('faqs-sec')}>FAQs</button>
-        </div>
-      </div>
+
 
       {/* Core Highlights & Interactive 3D Selector Section (LONGi Style) */}
       <section id="parameter-interactive-sec" className="parameter-interactive-section">
@@ -204,6 +196,7 @@ const OverView = ({ productId }) => {
                   key={activeAngle}
                   src={angles[activeAngle].image}
                   alt={angles[activeAngle].name}
+                  decoding="async"
                   className="interactive-plate-img animated-slide-in"
                 />
                 <span className="plate-badge">{angles[activeAngle].name}</span>

@@ -1,12 +1,32 @@
 import React from 'react';
+import { motion } from 'framer-motion';
+import AnimatedCounter from '../components/common/AnimatedCounter';
 import { DollarSign, Calendar, Globe, Award, ShieldCheck, CheckCircle, TrendingUp } from 'lucide-react';
 import './AboutUsPage.css';
 
 // Import images
-import buildingBg from '../assets/images/bilding.png';
-import waferSlicingImg from '../assets/images/silicon_wafer.png';
-import rczImg from '../assets/images/pv_module.png';
-import solutionsBg from '../assets/images/pv_solutions.png';
+import buildingBg from '../assets/images/bilding.webp';
+import waferSlicingImg from '../assets/images/silicon_wafer.webp';
+import rczImg from '../assets/images/pv_module.webp';
+import solutionsBg from '../assets/images/pv_solutions.webp';
+
+const fadeInUp = {
+  hidden: { opacity: 0, y: 40 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } }
+};
+
+const staggerContainer = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { staggerChildren: 0.15 }
+  }
+};
+
+const scaleIn = {
+  hidden: { opacity: 0, scale: 0.9 },
+  visible: { opacity: 1, scale: 1, transition: { duration: 0.5, ease: "easeOut" } }
+};
 
 const AboutUsPage = () => {
   const scrollToSection = (id) => {
@@ -37,27 +57,24 @@ const AboutUsPage = () => {
   return (
     <div className="about-page">
 
-      {/* Hero Banner (Using bilding.png background image) */}
+      {/* Hero Banner */}
       <section 
         id="about-hero" 
         className="about-hero-sec"
         style={{ backgroundImage: `url(${buildingBg})` }}
       >
-        <div className="about-hero-container">
+        <motion.div 
+          className="about-hero-container"
+          initial="hidden"
+          animate="visible"
+          variants={fadeInUp}
+        >
           <span className="hero-badge">About Trison</span>
           <h1>We are committed to being the most valuable solar technology company in the world.</h1>
-        </div>
+        </motion.div>
       </section>
 
-      {/* Sticky Sub navigation */}
-      <div className="about-sub-nav">
-        <div className="sub-nav-container">
-          <button onClick={() => scrollToSection('about-profile')}>About Us</button>
-          <button onClick={() => scrollToSection('milestones-sec')}>Milestones</button>
-          <button onClick={() => scrollToSection('innovation-sec')}>Innovation</button>
-          <button onClick={() => scrollToSection('future-sec')}>Into The Future</button>
-        </div>
-      </div>
+
 
       {/* Corporate Profile section */}
       <section id="about-profile" className="profile-section">
@@ -65,7 +82,13 @@ const AboutUsPage = () => {
           <div className="profile-grid-cols">
             
             {/* Left Description */}
-            <div className="profile-desc-col">
+            <motion.div 
+              className="profile-desc-col"
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, amount: 0.2 }}
+              variants={fadeInUp}
+            >
               <span className="section-badge">Who We Are</span>
               <h2>Leading the Energy Transition Since 2007</h2>
               <p>
@@ -74,34 +97,40 @@ const AboutUsPage = () => {
               <p>
                 Under its mission of “making the best of solar energy to build a green world” and brand positioning of “the most trusted, reliable solar company that blazes the trail for green technology”, Trison has dedicated itself to technology innovation and established robust business lines covering monocrystalline silicon wafers, silicon cells, modules, and distributed PV solutions.
               </p>
-            </div>
+            </motion.div>
 
             {/* Right Quick Stats Grid */}
-            <div className="profile-stats-col">
-              <div className="profile-stat-box">
+            <motion.div 
+              className="profile-stats-col"
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, amount: 0.2 }}
+              variants={staggerContainer}
+            >
+              <motion.div className="profile-stat-box" variants={scaleIn}>
                 <div className="stat-icon-wrap"><DollarSign size={24} /></div>
                 <div>
                   <h4>$ 18.28 Billion</h4>
                   <p>Operating Income</p>
                 </div>
-              </div>
+              </motion.div>
 
-              <div className="profile-stat-box">
+              <motion.div className="profile-stat-box" variants={scaleIn}>
                 <div className="stat-icon-wrap"><Calendar size={24} /></div>
                 <div>
                   <h4>2007</h4>
                   <p>Foundation Year</p>
                 </div>
-              </div>
+              </motion.div>
 
-              <div className="profile-stat-box">
+              <motion.div className="profile-stat-box" variants={scaleIn}>
                 <div className="stat-icon-wrap"><Globe size={24} /></div>
                 <div>
                   <h4>30+ Countries</h4>
                   <p>Global Network</p>
                 </div>
-              </div>
-            </div>
+              </motion.div>
+            </motion.div>
 
           </div>
         </div>
@@ -110,43 +139,69 @@ const AboutUsPage = () => {
       {/* Robust and Reliable Bankability Rating Banner */}
       <section className="bankability-banner">
         <div className="bankability-container">
-          <div className="bankability-header">
+          <motion.div 
+            className="bankability-header"
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.3 }}
+            variants={fadeInUp}
+          >
             <span className="section-badge">Market Strength</span>
             <h2>Robust and Reliable Bankability</h2>
             <p>Trison is consistently recognized as an elite cleantech supplier by global rating organizations.</p>
-          </div>
-          <div className="bankability-grid">
-            <div className="bankability-card">
+          </motion.div>
+          
+          <motion.div 
+            className="bankability-grid"
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.2 }}
+            variants={staggerContainer}
+          >
+            <motion.div className="bankability-card" variants={scaleIn}>
               <h3>AAA</h3>
               <p>PV Module Tech Bankability Rating</p>
-            </div>
-            <div className="bankability-card">
+            </motion.div>
+            <motion.div className="bankability-card" variants={scaleIn}>
               <h3>100%</h3>
               <p>Bankable PV Module Brand Score</p>
-            </div>
-            <div className="bankability-card">
+            </motion.div>
+            <motion.div className="bankability-card" variants={scaleIn}>
               <h3>First Class</h3>
               <p>Tier 1 PV Module Manufacturers List</p>
-            </div>
-          </div>
+            </motion.div>
+          </motion.div>
         </div>
       </section>
 
       {/* Milestones Section */}
       <section id="milestones-sec" className="milestones-section">
         <div className="milestones-container">
-          <div className="section-title-box">
+          <motion.div 
+            className="section-title-box"
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.3 }}
+            variants={fadeInUp}
+          >
             <span className="section-badge">History</span>
             <h2>Key Milestones</h2>
-          </div>
-          <div className="milestones-timeline-grid">
+          </motion.div>
+          
+          <motion.div 
+            className="milestones-timeline-grid"
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.2 }}
+            variants={staggerContainer}
+          >
             {milestones.map((item, idx) => (
-              <div className="timeline-node-card" key={idx}>
+              <motion.div className="timeline-node-card" key={idx} variants={fadeInUp}>
                 <span className="node-year">{item.year}</span>
                 <p>{item.event}</p>
-              </div>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         </div>
       </section>
 
@@ -154,7 +209,13 @@ const AboutUsPage = () => {
       <section id="innovation-sec" className="innovation-section">
         <div className="innovation-container">
           
-          <div className="innovation-headline-box">
+          <motion.div 
+            className="innovation-headline-box"
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.3 }}
+            variants={fadeInUp}
+          >
             <div className="headline-text">
               <span className="section-badge">R&D Leadership</span>
               <h2>Technology & Innovation</h2>
@@ -162,27 +223,33 @@ const AboutUsPage = () => {
             </div>
             <div className="headline-stats">
               <div className="head-stat-item">
-                <span>2,879+ Items</span>
+                <AnimatedCounter to={2879} suffix="+" duration={2.5} />
                 <p>Granted Patents</p>
               </div>
               <div className="head-stat-item">
-                <span>$1,090 Million</span>
+                <AnimatedCounter to={1090} prefix="$" suffix="M" duration={2.5} />
                 <p>R&D Investment</p>
               </div>
             </div>
-          </div>
+          </motion.div>
 
-          <div className="innovation-grid-cards">
+          <motion.div 
+            className="innovation-grid-cards"
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.2 }}
+            variants={staggerContainer}
+          >
             {innovations.map((item, idx) => (
-              <div className="innovation-feat-card" key={idx}>
+              <motion.div className="innovation-feat-card" key={idx} variants={scaleIn}>
                 <div className="feat-circle-icon">
                   <CheckCircle size={20} />
                 </div>
                 <h3>{item.title}</h3>
                 <p>{item.desc}</p>
-              </div>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
 
         </div>
       </section>
@@ -190,8 +257,14 @@ const AboutUsPage = () => {
       {/* Into The Future */}
       <section id="future-sec" className="future-section">
         <div className="future-container">
-          <div className="future-split-grid">
-            <div className="future-content-box">
+          <motion.div 
+            className="future-split-grid"
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.2 }}
+            variants={staggerContainer}
+          >
+            <motion.div className="future-content-box" variants={fadeInUp}>
               <span className="section-badge">Solar for Solar</span>
               <h2>Green Hydropower Manufacturing</h2>
               <p>
@@ -200,14 +273,15 @@ const AboutUsPage = () => {
               <p>
                 We operate manufacturing facilities using abundant local hydropower resources to provide clean energy for cell and wafer production. We plan to integrate solar power plants with pumped storage in regions featuring elevation differences, creating a clean circular industrial model.
               </p>
-            </div>
-            <div className="future-visual-box" style={{ backgroundImage: `url(${solutionsBg})` }}>
+            </motion.div>
+            
+            <motion.div className="future-visual-box" style={{ backgroundImage: `url(${solutionsBg})` }} variants={scaleIn}>
               <div className="visual-caption">
                 <span>Vision</span>
                 <h4>Clean Energy to Build a Green World</h4>
               </div>
-            </div>
-          </div>
+            </motion.div>
+          </motion.div>
         </div>
       </section>
     </div>

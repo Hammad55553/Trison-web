@@ -1,4 +1,5 @@
 import React from 'react';
+import { motion } from 'framer-motion';
 import { Landmark, Zap, Shield, Sun } from 'lucide-react';
 import './Solutions.css';
 
@@ -30,26 +31,65 @@ const Solutions = () => {
     }
   ];
 
+  const staggerContainer = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: { staggerChildren: 0.15 }
+    }
+  };
+
+  const slideInLeft = {
+    hidden: { opacity: 0, x: -50 },
+    visible: { opacity: 1, x: 0, transition: { duration: 0.6, ease: "easeOut" } }
+  };
+
+  const slideInRight = {
+    hidden: { opacity: 0, x: 50 },
+    visible: { opacity: 1, x: 0, transition: { duration: 0.6, ease: "easeOut" } }
+  };
+
+  const fadeInUp = {
+    hidden: { opacity: 0, y: 30 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } }
+  };
+
   return (
     <section id="solutions" className="solutions-section">
       <div className="solutions-container">
-        <div className="solutions-title-block">
+        <motion.div 
+          className="solutions-title-block"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.3 }}
+          variants={fadeInUp}
+        >
           <h2>Trison PV Solutions</h2>
           <p>
             Trison provides a comprehensive suite of solar PV modules and solutions that can optimize a wide range of global project applications.
           </p>
-        </div>
+        </motion.div>
 
-        <div className="solutions-grid-layout">
+        <motion.div 
+          className="solutions-grid-layout"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.2 }}
+          variants={staggerContainer}
+        >
           {solutions.map((item, idx) => (
-            <div className="solution-item-card" key={idx}>
+            <motion.div 
+              className="solution-item-card" 
+              key={idx} 
+              variants={idx % 2 === 0 ? slideInLeft : slideInRight}
+            >
               <div className="sol-icon-box">{item.icon}</div>
               <h3>{item.title}</h3>
               <p>{item.desc}</p>
               <span className="sol-tag-badge">{item.tag}</span>
-            </div>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
       </div>
     </section>
   );

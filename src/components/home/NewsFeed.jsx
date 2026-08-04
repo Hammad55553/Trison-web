@@ -38,7 +38,7 @@ const NewsFeed = () => {
           {news.map((item, idx) => (
             <div className="news-item-card" key={idx}>
               <div className="news-img-box">
-                <img src={item.image} alt={item.title} className="news-img" />
+                <img src={item.image} alt={item.title} className="news-img" loading="lazy" decoding="async" />
               </div>
               <div className="news-content-box">
                 <span className="news-tag-badge">{item.tag}</span>

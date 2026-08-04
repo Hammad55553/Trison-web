@@ -1,13 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { LayoutDashboard, Cpu, ScanLine, ClipboardList, LogOut, LayoutGrid, X, User, Lock, Eye, EyeOff } from 'lucide-react';
+import { LayoutDashboard, Cpu, ScanLine, ClipboardList, LogOut, LayoutGrid, X, User, Lock, Eye, EyeOff, Shield } from 'lucide-react';
 import AdminStats from '../../components/admin/AdminStats';
+import DashboardCharts from '../../components/admin/DashboardCharts';
 import PanelManager from '../../components/admin/PanelManager';
 import QRScanner from '../../components/admin/QRScanner';
 import InquiryLogs from '../../components/admin/InquiryLogs';
 import { getCustomRegistry } from '../../services/authenticityService';
 import { getInquiries } from '../../services/leadService';
+import { loginAdmin } from '../../services/adminService';
+import AdminManager from '../../components/admin/AdminManager';
 import trisonLogo from '../../assets/images/TRISON.jpg';
-import mainGateImg from '../../assets/images/inside3.png';
+import mainGateImg from '../../assets/images/inside3.webp';
 import './AdminPage.css';
 import { ChevronRight } from 'lucide-react';
 const VIEWS = [
@@ -15,9 +18,16 @@ const VIEWS = [
   { key: 'panels', label: 'Panel Manager', icon: Cpu },
   { key: 'scanner', label: 'Scan & Verify', icon: ScanLine },
   { key: 'leads', label: 'Sales Leads', icon: ClipboardList },
+  { key: 'admins', label: 'Admin Users', icon: Shield },
 ];
 
-const AdminPage = () => {
+const AdminPage = ({ onViewChange }) => {
+  const goToSite = (e) => {
+    e.preventDefault();
+    if (onViewChange) onViewChange('home');
+    else window.location.href = '/';
+  };
+
   const [isAuthenticated, setIsAuthenticated] = useState(
     sessionStorage.getItem('trison_admin_auth') === 'true'
   );
@@ -31,7 +41,7 @@ const AdminPage = () => {
   );
   const [serials, setSerials] = useState({});
   const [inquiries, setInquiries] = useState([]);
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(window.innerWidth > 900);
 
   // Sync active view to sessionStorage to persist across page refresh
   useEffect(() => {
@@ -55,13 +65,12 @@ const AdminPage = () => {
 
   const handleLogin = (e) => {
     e.preventDefault();
-    // Default administrative credentials
-    if (username.trim() === 'admin' && password === 'trison') {
-      sessionStorage.setItem('trison_admin_auth', 'true');
+    const result = loginAdmin(username.trim(), password);
+    if (result.success) {
       setIsAuthenticated(true);
       setLoginError('');
     } else {
-      setLoginError('Invalid username or password.');
+      setLoginError(result.error);
     }
   };
 
@@ -120,7 +129,7 @@ const AdminPage = () => {
               {loginError && <div className="login-error-message">{loginError}</div>}
               <button type="submit" className="login-submit-btn">Authorize Session</button>
             </form>
-            <a href="/" className="login-back-link">Return to Main Site</a>
+            <a href="/" className="login-back-link" onClick={goToSite}>Return to Main Site</a>
           </div>
         </div>
       </div>
@@ -155,12 +164,12 @@ const AdminPage = () => {
           ))}
         </nav>
 
-        <div className="sidebar-footer" style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-          <button onClick={handleLogout} className="sidebar-logout" style={{ border: 'none', background: 'transparent', width: '100%', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px' }}>
+        <div className="sidebar-footer">
+          <button onClick={handleLogout} className="sidebar-logout sidebar-logout-btn">
             <LogOut size={16} /> End Session (Logout)
           </button>
-          <a href="/" className="sidebar-logout">
-            <LogOut size={16} /> Back to Site
+          <a href="/" className="sidebar-logout" onClick={goToSite}>
+            <ChevronRight size={16} /> Back to Site
           </a>
         </div>
       </aside>
@@ -189,7 +198,9 @@ const AdminPage = () => {
           {/* ── Dashboard ── */}
           {activeView === 'dashboard' && (
             <div className="dash-view">
-              <AdminStats serialCount={Object.keys(serials).length} inquiryCount={inquiries.length} />
+              <AdminStats serials={serials} inquiries={inquiries} />
+
+              <DashboardCharts serials={serials} inquiries={inquiries} />
 
               <div className="dash-quick-grid">
                 <div className="dash-quick-card" onClick={() => setActiveView('panels')}>
@@ -235,10 +246,10 @@ const AdminPage = () => {
                       ) : (
                         Object.keys(serials).slice(-5).reverse().map(key => (
                           <tr key={key} className="pm-row">
-                            <td><code className="pm-serial-code">{key}</code></td>
-                            <td style={{ fontWeight: '600', color: '#0f172a' }}>{serials[key].model}</td>
-                            <td><span className="pm-badge watt">{serials[key].wattage}</span></td>
-                            <td style={{ fontWeight: '500' }}>{serials[key].customerName || ''}</td>
+                            <td data-label="Serial / Barcode"><code className="pm-serial-code">{key}</code></td>
+                            <td data-label="Model" style={{ fontWeight: '600', color: '#0f172a' }}>{serials[key].model}</td>
+                            <td data-label="Wattage"><span className="pm-badge watt">{serials[key].wattage}</span></td>
+                            <td data-label="Customer" style={{ fontWeight: '500' }}>{serials[key].customerName || ''}</td>
                           </tr>
                         ))
                       )}
@@ -277,6 +288,11 @@ const AdminPage = () => {
               inquiries={inquiries}
               onInquiriesUpdate={setInquiries}
             />
+          )}
+
+          {/* ── Admins ── */}
+          {activeView === 'admins' && (
+            <AdminManager />
           )}
         </div>
       </div>
