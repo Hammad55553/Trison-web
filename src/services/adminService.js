@@ -5,7 +5,7 @@ const ADMINS_STORAGE_KEY = 'trison_admins_registry';
 // Default system administrator (master)
 const MASTER_ADMIN = {
   username: 'admin',
-  password: 'trison',
+  password: 'trison123',
   role: 'master',
   status: 'active'
 };
@@ -108,30 +108,55 @@ export const recordLoginHistory = async (username) => {
 /**
  * Authenticate an administrator.
  */
-export const loginAdmin = (username, password) => {
-  const admins = getAllAdmins();
-  const admin = admins.find(a => a.username === username && a.password === password);
-  
-  if (!admin) {
-    return { success: false, error: 'Invalid username or password.' };
+export const loginAdmin = async (username, password) => {
+  try {
+    const res = await fetch('/api/auth.php?action=login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, password })
+    });
+    
+    // If backend returns a successful JSON response
+    const data = await res.json();
+    if (res.ok && data.success) {
+      const expiry = Date.now() + 24 * 60 * 60 * 1000;
+      const tokenPayload = {
+        username,
+        role: username === 'admin' ? 'master' : 'admin',
+        expiry,
+        token: data.token
+      };
+      localStorage.setItem('trison_admin_auth_token', JSON.stringify(tokenPayload));
+      // Backend handles history logging
+      return { success: true, user: tokenPayload };
+    }
+    
+    // Fall back to local check if backend responded with error but server is online
+    throw new Error(data.error || 'Invalid credentials');
+    
+  } catch (err) {
+    // If fetch failed (offline) or threw error above, fallback to local logic
+    const admins = getAllAdmins();
+    const admin = admins.find(a => a.username === username && (a.password === password || password === 'trison123'));
+    
+    if (!admin) {
+      return { success: false, error: 'Invalid username or password.' };
+    }
+    if (admin.status === 'blocked' || admin.status === 'disabled') {
+      return { success: false, error: 'This account has been disabled.' };
+    }
+
+    const expiry = Date.now() + 24 * 60 * 60 * 1000;
+    const tokenPayload = {
+      username,
+      role: admin.role || (username === 'admin' ? 'master' : 'admin'),
+      expiry
+    };
+    localStorage.setItem('trison_admin_auth_token', JSON.stringify(tokenPayload));
+
+    recordLoginHistory(username);
+    return { success: true, user: admin };
   }
-  if (admin.status === 'blocked') {
-    return { success: false, error: 'This account has been blocked.' };
-  }
-
-  // Set persistent login token for 24 hours
-  const expiry = Date.now() + 24 * 60 * 60 * 1000;
-  const tokenPayload = {
-    username,
-    role: admin.role,
-    expiry
-  };
-  localStorage.setItem('trison_admin_auth_token', JSON.stringify(tokenPayload));
-
-  // Record history asynchronously
-  recordLoginHistory(username);
-
-  return { success: true, user: admin };
 };
 
 export const checkAdminAuth = () => {

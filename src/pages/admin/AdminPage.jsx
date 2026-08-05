@@ -67,9 +67,9 @@ const AdminPage = ({ onViewChange }) => {
     }
   }, [activeView, isAuthenticated]);
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    const result = loginAdmin(username.trim(), password);
+    const result = await loginAdmin(username.trim(), password);
     if (result.success) {
       setIsAuthenticated(true);
       setLoginError('');
