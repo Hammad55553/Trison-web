@@ -63,9 +63,18 @@ const PanelManager = ({ onSerialsUpdate }) => {
     }));
   };
 
+  // Persist form state for new panels so selections stay on refresh
+  useEffect(() => {
+    if (showForm && !editing) {
+      const templateToSave = { ...form, serial: '' };
+      localStorage.setItem('trison_panel_template', JSON.stringify(templateToSave));
+    }
+  }, [form, showForm, editing]);
+
   // Open Add form
   const openAdd = () => {
-    setForm({ ...BLANK, serial: generateSerial() });
+    const savedTemplate = JSON.parse(localStorage.getItem('trison_panel_template') || 'null') || BLANK;
+    setForm({ ...savedTemplate, serial: generateSerial() });
     setEditing(null);
     setShowForm(true);
   };
@@ -179,7 +188,7 @@ const PanelManager = ({ onSerialsUpdate }) => {
             <div className="pm-serial-row">
               <input
                 className="pm-input pm-serial-input"
-                placeholder="e.g. TSCN-2607-78934"
+                placeholder="e.g. TSCN260778934"
                 value={form.serial}
                 onChange={e => setForm(f => ({ ...f, serial: e.target.value }))}
                 required
@@ -234,11 +243,31 @@ const PanelManager = ({ onSerialsUpdate }) => {
               <label className="pm-section-title">Model Number *</label>
               <input
                 className="pm-input"
-                placeholder="e.g. TS-HM5B-575M"
+                placeholder="e.g. TS21RN-66HT580W"
                 value={form.model}
-                onChange={e => setForm(f => ({ ...f, model: e.target.value }))}
+                onChange={e => {
+                  const val = e.target.value;
+                  const found = PANEL_MODELS.find(m => m.model === val);
+                  const wattMatch = val.match(/(\d{3,}W)/i);
+                  setForm(f => ({ 
+                    ...f, 
+                    model: val,
+                    wattage: found?.wattage || (wattMatch ? wattMatch[0].toUpperCase() : f.wattage),
+                    technology: found?.technology || f.technology,
+                  }));
+                }}
+                list="model-options"
                 required
               />
+              <datalist id="model-options">
+                {Array.from(new Set([
+                  ...Array.from({ length: Math.floor((750 - 580) / 5) + 1 }, (_, i) => `TS21RN-66HT${580 + i * 5}W`),
+                  ...PANEL_MODELS.map(m => m.model),
+                  ...panels.map(p => p.model).filter(Boolean)
+                ])).sort().map(m => (
+                  <option key={m} value={m} />
+                ))}
+              </datalist>
             </div>
 
             {/* Brand Input */}
@@ -270,13 +299,12 @@ const PanelManager = ({ onSerialsUpdate }) => {
 
             {/* Technology Input */}
             <div className="pm-section">
-              <label className="pm-section-title">Technology *</label>
+              <label className="pm-section-title">Technology</label>
               <input
                 className="pm-input"
                 placeholder="e.g. Bifacial Mono PERC"
                 value={form.technology}
                 onChange={e => setForm(f => ({ ...f, technology: e.target.value }))}
-                required
               />
             </div>
           </div>

@@ -1,18 +1,22 @@
 import React, { useState, useEffect } from 'react';
-import { UserPlus, Shield, ShieldAlert, Trash2, Edit2, X, CheckCircle, ToggleLeft, ToggleRight, Save, Eye, EyeOff } from 'lucide-react';
-import { getAllAdmins, addAdmin, updateAdmin, deleteAdmin } from '../../services/adminService';
+import { UserPlus, Shield, ShieldAlert, Trash2, Edit2, X, CheckCircle, ToggleLeft, ToggleRight, Save, Eye, EyeOff, Activity, MonitorSmartphone, MapPin, Clock } from 'lucide-react';
+import { getAllAdmins, addAdmin, updateAdmin, deleteAdmin, getLoginHistory } from '../../services/adminService';
 
 const BLANK_ADMIN = { username: '', password: '', status: 'active' };
 
 const AdminManager = () => {
   const [admins, setAdmins] = useState([]);
+  const [history, setHistory] = useState([]);
   const [showForm, setShowForm] = useState(false);
   const [editing, setEditing] = useState(null);
   const [form, setForm] = useState({ ...BLANK_ADMIN });
   const [toast, setToast] = useState('');
   const [showPassword, setShowPassword] = useState(false);
 
-  const reload = () => setAdmins(getAllAdmins());
+  const reload = () => {
+    setAdmins(getAllAdmins());
+    setHistory(getLoginHistory());
+  };
   
   useEffect(() => { reload(); }, []);
 
@@ -149,6 +153,61 @@ const AdminManager = () => {
                 </td>
               </tr>
             ))}
+          </tbody>
+        </table>
+      </div>
+
+      {/* ── Login History Section ── */}
+      <div className="pm-topbar" style={{ marginTop: 40, marginBottom: 16 }}>
+        <div>
+          <h2 style={{ margin: 0, color: '#0f172a', display: 'flex', alignItems: 'center', gap: 8 }}>
+            <Activity size={20} color="#f97316" /> Security & Access Logs
+          </h2>
+          <p style={{ margin: '4px 0 0 0', color: '#64748b', fontSize: '0.85rem' }}>
+            Monitor authorized sessions, IP addresses, and device signatures (30-day retention).
+          </p>
+        </div>
+      </div>
+
+      <div className="pm-table-wrap">
+        <table className="pm-tbl">
+          <thead>
+            <tr>
+              <th>Timestamp</th>
+              <th>Administrator</th>
+              <th>IP Address</th>
+              <th>Device & Browser</th>
+            </tr>
+          </thead>
+          <tbody>
+            {history.length === 0 ? (
+              <tr>
+                <td colSpan="4" className="pm-empty" style={{ textAlign: 'center', padding: '24px', color: '#64748b' }}>No login records found for the past 30 days.</td>
+              </tr>
+            ) : (
+              history.map((h, i) => (
+                <tr key={i} className="pm-row">
+                  <td data-label="Timestamp">
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: '#475569', fontSize: '0.82rem', fontWeight: 600 }}>
+                      <Clock size={14} color="#94a3b8" /> {new Date(h.timestamp).toLocaleString()}
+                    </div>
+                  </td>
+                  <td data-label="Administrator">
+                    <span style={{ fontWeight: 700, color: '#0f172a' }}>{h.username}</span>
+                  </td>
+                  <td data-label="IP Address">
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: '#334155', fontFamily: 'monospace' }}>
+                      <MapPin size={14} color="#6366f1" /> {h.ip}
+                    </div>
+                  </td>
+                  <td data-label="Device & Browser">
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: '#475569' }}>
+                      <MonitorSmartphone size={14} color="#10b981" /> {h.device}
+                    </div>
+                  </td>
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
       </div>

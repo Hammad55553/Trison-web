@@ -7,18 +7,20 @@ import QRScanner from '../../components/admin/QRScanner';
 import InquiryLogs from '../../components/admin/InquiryLogs';
 import { getCustomRegistry } from '../../services/authenticityService';
 import { getInquiries } from '../../services/leadService';
-import { loginAdmin } from '../../services/adminService';
+import { loginAdmin, checkAdminAuth, logoutAdmin } from '../../services/adminService';
 import AdminManager from '../../components/admin/AdminManager';
 import BackupManager from '../../components/admin/BackupManager';
+import BlogManager from '../../components/admin/BlogManager';
 import trisonLogo from '../../assets/images/TRISON.jpg';
 import mainGateImg from '../../assets/images/inside3.webp';
 import './AdminPage.css';
-import { ChevronRight } from 'lucide-react';
+import { ChevronRight, FileText } from 'lucide-react';
 const VIEWS = [
   { key: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { key: 'panels', label: 'Panel Manager', icon: Cpu },
   { key: 'scanner', label: 'Scan & Verify', icon: ScanLine },
   { key: 'leads', label: 'Sales Leads', icon: ClipboardList },
+  { key: 'news', label: 'News & Blog', icon: FileText },
   { key: 'admins', label: 'Admin Users', icon: Shield },
   { key: 'backup', label: 'Database Backup', icon: Database },
 ];
@@ -31,7 +33,7 @@ const AdminPage = ({ onViewChange }) => {
   };
 
   const [isAuthenticated, setIsAuthenticated] = useState(
-    sessionStorage.getItem('trison_admin_auth') === 'true'
+    checkAdminAuth().isAuthenticated
   );
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -76,9 +78,8 @@ const AdminPage = ({ onViewChange }) => {
     }
   };
 
-  const handleLogout = (e) => {
-    e.preventDefault();
-    sessionStorage.removeItem('trison_admin_auth');
+  const handleLogout = () => {
+    logoutAdmin();
     setIsAuthenticated(false);
   };
 
@@ -295,6 +296,11 @@ const AdminPage = ({ onViewChange }) => {
           {/* ── Admins ── */}
           {activeView === 'admins' && (
             <AdminManager />
+          )}
+
+          {/* ── News & Blog ── */}
+          {activeView === 'news' && (
+            <BlogManager />
           )}
 
           {/* ── Backup Manager ── */}

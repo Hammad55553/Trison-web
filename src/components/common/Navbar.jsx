@@ -49,6 +49,12 @@ const Navbar = ({ currentView, onViewChange }) => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  const navigateToBlog = () => {
+    setIsOpen(false);
+    onViewChange('blog');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   const navigateToModules = () => {
     setIsOpen(false);
     onViewChange('modules');
@@ -93,7 +99,7 @@ const Navbar = ({ currentView, onViewChange }) => {
           <button onClick={navigateToVerifier} className={`nav-link ${currentView === 'verifier' ? 'active' : ''}`}>
             <ShieldCheck size={14} style={{ marginRight: '4px', display: 'inline' }} /> Verify Panel
           </button>
-          <button onClick={navigateToPartner} className={`nav-link ${currentView === 'partner' ? 'active' : ''}`}>Global Inquiry</button>
+          <button onClick={navigateToBlog} className={`nav-link ${currentView === 'blog' ? 'active' : ''}`}>Blog & News</button>
           <button onClick={navigateToPartner} className="btn-nav">
             <PhoneCall size={16} /> Contact Us
           </button>
@@ -111,7 +117,7 @@ const Navbar = ({ currentView, onViewChange }) => {
         <button onClick={navigateToModules} className="drawer-link">Products & Solutions</button>
         <button onClick={navigateToAbout} className="drawer-link">About Trison</button>
         <button onClick={navigateToVerifier} className="drawer-link">Verify Panel</button>
-        <button onClick={navigateToPartner} className="drawer-link">Global Inquiry</button>
+        <button onClick={navigateToBlog} className="drawer-link">Blog & News</button>
         <button onClick={navigateToPartner} className="btn-drawer">
           <PhoneCall size={16} /> Contact Us
         </button>

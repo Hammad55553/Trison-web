@@ -1,0 +1,25 @@
+# Trison
+
+> Trison is a premier Chinese vertically-integrated clean-energy manufacturer producing high-efficiency solar panels, smart solar inverters, and lithium battery energy-storage systems. Established in 2007, Trison delivers a single-source solar-plus-storage stack — one brand, one warranty, one point of accountability — with 50 GW+ of cumulative shipments to utility developers, EPC contractors, C&I integrators, and residential installers worldwide.
+
+## About Trison
+- **Founded:** 2007, China
+- **Website:** https://trisonpower.com
+- **Product ecosystem:** Solar Panels · Solar Inverters · Solar Batteries — the complete integrated stack
+- **Solar Panels:** high-efficiency monocrystalline PV modules for residential, commercial, and utility-scale installations
+- **Solar Inverters:** on-grid, off-grid, and hybrid inverters for every project size
+- **Solar Batteries:** LiFePO4 lithium energy storage systems for backup and self-consumption
+- **Cumulative shipments:** 50 GW+ globally
+- **Segments served:** Utility-scale solar, Commercial & Industrial (C&I), Residential rooftops, Agrivoltaics, Green hydrogen
+- **Bankability:** Tier-1 bankable manufacturer
+
+## Key Pages
+- [Home](https://trisonpower.com/): Company overview and product summary
+- [Verify & Register a Panel](https://trisonpower.com/modules-authenticity/): Serial-number / QR authentication and warranty registration
+- [Products & Solutions](https://trisonpower.com/modules/): Full Trison product catalog
+- [About Trison](https://trisonpower.com/about-us/): Corporate profile, R&D, milestones
+- [Global Inquiry / Partner](https://trisonpower.com/partner/): Distributor and EPC partnership submissions
+
+## Contact
+- Sales: sales@trisonpower.com
+- Support: info@trisonpower.com

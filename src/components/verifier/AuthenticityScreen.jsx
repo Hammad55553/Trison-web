@@ -2,9 +2,10 @@ import React, { useState } from 'react';
 import Card from '../common/Card';
 import { verifyAuthenticity, registerCustomPanel, registerBulkPanels, generateCustomBarcode } from '../../services/authenticityService';
 import { Html5QrcodeScanner } from 'html5-qrcode';
-import { Search, Loader2, CheckCircle2, AlertTriangle, Cpu, Calendar, ShieldCheck, Tag, PlusCircle, HelpCircle, FileText, Upload, Globe, ScanLine, Keyboard, Camera } from 'lucide-react';
+import { Search, Loader2, CheckCircle2, AlertTriangle, Cpu, Calendar, ShieldCheck, Tag, PlusCircle, HelpCircle, FileText, Upload, Globe, ScanLine, Keyboard, Camera, XCircle } from 'lucide-react';
 import './AuthenticityScreen.css';
 import verificationImg from '../../assets/images/verification.webp';
+import headerBg from '../../assets/images/verification_barcode_header.webp';
 
 const AuthenticityScreen = () => {
   const [activeTab, setActiveTab] = useState('verify'); // 'verify' | 'register'
@@ -235,7 +236,7 @@ const AuthenticityScreen = () => {
       {/* Premium Hero Banner for Verification */}
       <section
         style={{
-          backgroundImage: `linear-gradient(135deg, rgba(14, 165, 233, 0.5) 0%, rgba(15, 23, 42, 0.8) 100%), url('/src/assets/images/verification_barcode_header.png')`,
+          backgroundImage: `linear-gradient(135deg, rgba(14, 165, 233, 0.5) 0%, rgba(15, 23, 42, 0.8) 100%), url(${headerBg})`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           backgroundRepeat: 'no-repeat',
@@ -343,7 +344,7 @@ const AuthenticityScreen = () => {
                   <div className="auth-status-card empty-card glass">
                     {/* High-tech Scanning Image Visual */}
                     <div className="image-scanner-container">
-                      <img src="/solar_barcode_scanner.png" alt="Solar Panel Scanning" className="scanner-img" loading="lazy" decoding="async" />
+                      <img src="/solar_barcode_scanner.webp" alt="Solar Panel Scanning" className="scanner-img" loading="lazy" decoding="async" />
                       <div className="image-laser-line"></div>
                     </div>
                     <h3>Ready for Scanning</h3>
@@ -358,25 +359,23 @@ const AuthenticityScreen = () => {
                 )}
 
                 {!loading && error && (
-                  <div className="auth-status-card error-card glass premium-error">
-                    <div className="error-icon-wrapper" style={{ backgroundColor: 'rgba(239, 68, 68, 0.1)', width: '80px', height: '80px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px' }}>
-                      <AlertTriangle className="text-red" size={40} color="#ef4444" />
+                  <div className="auth-status-card error-card glass premium-error" style={{ border: '2px solid #ef4444', animation: 'fadeIn 0.3s ease-in-out', padding: '40px 20px', textAlign: 'center' }}>
+                    <div className="error-icon-wrapper" style={{ margin: '0 auto 20px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <div style={{ backgroundColor: '#fef2f2', width: '80px', height: '80px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 0 20px rgba(239, 68, 68, 0.4)' }}>
+                        <XCircle className="text-red" size={48} color="#ef4444" />
+                      </div>
                     </div>
-                    <h3 style={{ color: '#b91c1c', fontSize: '1.5rem', marginBottom: '8px' }}>Record Not Found</h3>
-                    <p className="error-description" style={{ color: '#475569', fontSize: '15px', marginBottom: '20px' }}>
-                      Image was scanned successfully, but the barcode <strong style={{color: '#0f172a'}}>{barcode}</strong> was not found in our database.
+                    <h3 style={{ color: '#b91c1c', fontSize: '1.8rem', margin: '0 0 12px 0', fontWeight: '800' }}>Invalid Barcode</h3>
+                    <p style={{ color: '#475569', fontSize: '1.1rem', margin: '0' }}>
+                      The serial number <strong style={{color: '#1e293b', background: '#f1f5f9', padding: '4px 8px', borderRadius: '4px'}}>{barcode}</strong> does not exist in our official registry.
                     </p>
-                    <div className="error-details-box" style={{ backgroundColor: '#fef2f2', border: '1px solid #fecaca', padding: '16px', borderRadius: '8px', textAlign: 'left', fontSize: '14px', color: '#991b1b' }}>
-                      <p style={{ margin: '0 0 8px 0' }}><strong>System Analysis:</strong> {error}</p>
-                      <p style={{ margin: 0 }}><strong>Suggestion:</strong> Ensure this is a genuine Trison product or check if the code was entered correctly.</p>
-                    </div>
                   </div>
                 )}
 
                 {!loading && result && (
                   <Card className="auth-status-card success-card" interactive={false}>
                     <div className="success-header">
-                      <CheckCircle2 className="success-badge-icon" size={32} />
+                      <CheckCircle2 className="success-badge-icon" size={48} />
                       <div>
                         <span className="verified-tag">Genuine Record Match</span>
                         <h3>{result.brand || 'Trison'} Authenticated</h3>
@@ -448,7 +447,7 @@ const AuthenticityScreen = () => {
                           <ShieldCheck className="meta-icon" />
                           <div>
                             <span className="meta-label">Status</span>
-                            <span className="meta-value" style={{ textTransform: 'capitalize' }}>
+                            <span className="meta-value" style={{ textTransform: 'capitalize', color: '#10b981', fontWeight: 'bold' }}>
                               {result.status}
                             </span>
                           </div>
@@ -467,9 +466,9 @@ const AuthenticityScreen = () => {
                         )}
                         <p>
                           <strong>Active Warranty:</strong>{' '}
-                          {result.warrantyYears ? (isNaN(result.warrantyYears) ? result.warrantyYears : `${result.warrantyYears} Years Replacement`) : '25 Years Replacement'}
+                          Active & Validated
                         </p>
-                        <p><strong>Status:</strong> Active & Validated</p>
+                        <p><strong>Status:</strong> <span style={{ textTransform: 'capitalize', color: '#10b981', fontWeight: 'bold' }}>{result.status || 'Active'}</span></p>
                       </div>
                     )}
 

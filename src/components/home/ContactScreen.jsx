@@ -104,8 +104,8 @@ const ContactScreen = () => {
                 <Mail className="info-list-icon icon-green" />
                 <div>
                   <h4>Official Email</h4>
-                  <p>info@trisonsolar.com</p>
-                  <p>sales@trisonsolar.com</p>
+                  <p>info@trisonpower.com</p>
+                  <p>sales@trisonpower.com</p>
                 </div>
               </div>
             </div>

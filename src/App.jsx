@@ -10,6 +10,8 @@ import HomePage from './pages/HomePage';
 // chunk, fetched on demand the moment the user actually navigates there.
 const VerifierPage = lazy(() => import('./pages/VerifierPage'));
 const PartnerPage = lazy(() => import('./pages/PartnerPage'));
+const BlogPage = lazy(() => import('./pages/BlogPage'));
+const BlogPostPage = lazy(() => import('./pages/BlogPostPage'));
 const OverView = lazy(() => import('./pages/OverView'));
 const ModulesPage = lazy(() => import('./pages/ModulesPage'));
 const AboutUsPage = lazy(() => import('./pages/AboutUsPage'));
@@ -27,8 +29,8 @@ const NotFoundPage = lazy(() => import('./pages/NotFoundPage'));
 
 const PAGE_META = {
   home: {
-    title: 'Trison – Premier Chinese Monocrystalline Solar Cell & Module Manufacturer | Est. 2007',
-    description: 'Trison is a leading Chinese manufacturer of monocrystalline silicon solar cells, plates, and PV modules. Tier-1 quality, 50GW+ global shipments since 2007.',
+    title: 'Trison – Solar Panels, Solar Inverters & Solar Batteries | Integrated Clean-Energy Manufacturer Since 2007',
+    description: 'Trison manufactures the complete solar stack — high-efficiency monocrystalline solar panels, smart solar inverters, and lithium solar batteries. One brand, one warranty. Trusted worldwide since 2007.',
   },
   about: {
     title: 'About Trison – Corporate Profile & Solar Wafer Innovations',
@@ -43,7 +45,7 @@ const PAGE_META = {
     description: 'Explore technical parameters and 3D angle views of the next-generation Trison monocrystalline silicon PV cell plates and modules.',
   },
   verifier: {
-    title: 'Trison Panel Authenticity Verifier – Verify Solar Panel Import | trisonsolar.com',
+    title: 'Trison Panel Authenticity Verifier – Verify Solar Panel Import | trisonpower.com',
     description: 'Instantly verify the authenticity of your Trison panels. Enter the serial number or scan the QR code to confirm your panel is a genuine Trison import.',
   },
   partner: {
@@ -65,9 +67,18 @@ const PAGE_META = {
 };
 
 function App() {
-  const [view, setView] = useState('home'); // 'home' | 'about' | 'modules' | 'overview' | 'verifier' | 'partner' | 'admin'
+  const [view, setView] = useState('home'); // 'home' | 'about' | 'modules' | 'overview' | 'verifier' | 'partner' | 'admin' | 'blog' | 'blog-post'
   const [selectedProduct, setSelectedProduct] = useState('hi-mo-5-bifacial');
-  const [showSplash, setShowSplash] = useState(true);
+  const [selectedBlogId, setSelectedBlogId] = useState(null);
+  const [showSplash, setShowSplash] = useState(() => {
+    if (sessionStorage.getItem('trison_visited')) return false;
+    return true;
+  });
+
+  const handleSplashFinish = () => {
+    sessionStorage.setItem('trison_visited', 'true');
+    setShowSplash(false);
+  };
 
   // Handle HTML5 History API path routing (no hash symbols)
   useEffect(() => {
@@ -82,6 +93,10 @@ function App() {
           const product = params.get('product');
           if (product) setSelectedProduct(product);
         }
+      } else if (path.startsWith('/blog/') && path !== '/blog/') {
+        setView('blog-post');
+        const id = path.replace('/blog/', '');
+        setSelectedBlogId(id);
       } else if (path === '/about-us' || path === '/about-us/') {
         setView('about');
       } else if (path === '/modules' || path === '/modules/') {
@@ -90,6 +105,8 @@ function App() {
         setView('verifier');
       } else if (path === '/partner' || path === '/partner/') {
         setView('partner');
+      } else if (path === '/blog' || path === '/blog/') {
+        setView('blog');
       } else if (path === '/silicon-cell' || path === '/silicon-cell/') {
         setView('silicon-cell');
       } else if (path === '/utility-bifacial' || path === '/utility-bifacial/') {
@@ -123,11 +140,14 @@ function App() {
   }, []);
 
   // Update URL path dynamically using pushState
-  const handleViewChange = (newView, productId = null) => {
+  const handleViewChange = (newView, payload = null) => {
     let targetPath = '/';
     if (newView === 'overview') {
-      const prod = productId || selectedProduct;
+      const prod = payload || selectedProduct;
       targetPath = `/overview?product=${prod}`;
+    } else if (newView === 'blog-post') {
+      const id = payload || selectedBlogId;
+      targetPath = `/blog/${id}`;
     } else if (newView === 'about') {
       targetPath = '/about-us/';
     } else if (newView === 'modules') {
@@ -136,6 +156,8 @@ function App() {
       targetPath = '/modules-authenticity/';
     } else if (newView === 'partner') {
       targetPath = '/partner/';
+    } else if (newView === 'blog') {
+      targetPath = '/blog/';
     } else if (newView === 'silicon-cell') {
       targetPath = '/silicon-cell/';
     } else if (newView === 'utility-bifacial') {
@@ -184,7 +206,7 @@ function App() {
   return (
     <>
       {/* Branded intro splash on first load */}
-      {showSplash && <Splash onFinish={() => setShowSplash(false)} />}
+      {showSplash && <Splash onFinish={handleSplashFinish} />}
 
       {/* High-tech grid background overlay */}
       {!isAdmin && <div className="grid-overlay"></div>}
@@ -213,6 +235,10 @@ function App() {
             ) : view === 'partner' ? (
               /* Dedicated Global Sales & Distribution Inquiries screen */
               <PartnerPage />
+            ) : view === 'blog' ? (
+              <BlogPage onViewChange={handleViewChange} />
+            ) : view === 'blog-post' ? (
+              <BlogPostPage blogId={selectedBlogId} onViewChange={handleViewChange} />
             ) : view === 'silicon-cell' ? (
               <SiliconCellPage />
             ) : view === 'utility-bifacial' ? (

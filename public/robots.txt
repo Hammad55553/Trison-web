@@ -1,8 +1,87 @@
+# ═══════════════════════════════════════════════════════════════
+# Trison — robots.txt (2026 spec, AI-search aware)
+# https://trisonpower.com
+# ═══════════════════════════════════════════════════════════════
+
+# Default: allow every well-behaved crawler.
 User-agent: *
 Allow: /
+Disallow: /admin-x7k2m9/
+Disallow: /admin/
+Crawl-delay: 1
 
-# Disallow secure admin portal path from search indexers
+# — Search engines ————————————————————————————
+User-agent: Googlebot
+Allow: /
 Disallow: /admin-x7k2m9/
 
-# Sitemap location
-Sitemap: https://trisonsolar.com/sitemap.xml
+User-agent: Googlebot-Image
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+Disallow: /admin-x7k2m9/
+
+User-agent: DuckDuckBot
+Allow: /
+
+User-agent: YandexBot
+Allow: /
+
+User-agent: Baiduspider
+Allow: /
+
+# — AI / LLM crawlers (2026) —————————————————
+# Allowing these makes your brand eligible to appear in
+# ChatGPT / Perplexity / Claude / Gemini answers.
+User-agent: GPTBot
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Claude-Web
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: Applebot
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+User-agent: Amazonbot
+Allow: /
+
+User-agent: CCBot
+Allow: /
+
+# — Social preview crawlers (required for rich unfurls) ——————
+User-agent: facebookexternalhit
+Allow: /
+
+User-agent: Twitterbot
+Allow: /
+
+User-agent: LinkedInBot
+Allow: /
+
+User-agent: WhatsApp
+Allow: /
+
+User-agent: Slackbot
+Allow: /
+
+# ═══════════════════════════════════════════════════════════════
+Sitemap: https://trisonpower.com/sitemap.xml

@@ -61,7 +61,7 @@ const PrivacyPolicyPage = () => {
       </p>
 
       <p style={{ fontSize: '0.9rem', color: '#64748b', marginTop: '40px', borderTop: '1px solid #e2e8f0', paddingTop: '20px' }}>
-        Last updated: August 2026. For privacy-related inquiries, contact privacy@trisonsolar.com.
+        Last updated: August 2026. For privacy-related inquiries, contact privacy@trisonpower.com.
       </p>
     </GenericInfoPage>
   );

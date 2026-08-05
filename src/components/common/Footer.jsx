@@ -28,6 +28,11 @@ const Footer = ({ onViewChange }) => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  const navigateToBlog = () => {
+    onViewChange('blog');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   const navigateToModules = () => {
     onViewChange('modules');
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -69,7 +74,7 @@ const Footer = ({ onViewChange }) => {
           <button onClick={navigateToModules}>Products & Solutions</button>
           <button onClick={navigateToAbout}>About Trison</button>
           <button onClick={navigateToVerifier}>Verify Panel</button>
-          <button onClick={navigateToPartner}>Global Inquiry</button>
+          <button onClick={navigateToBlog}>Blog & News</button>
         </div>
 
         {/* Services Col */}

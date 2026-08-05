@@ -1,0 +1,27 @@
+{
+  "name": "Trison — Monocrystalline Solar PV Manufacturer",
+  "short_name": "Trison",
+  "description": "Premier Chinese manufacturer of monocrystalline solar cells and PV modules since 2007.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#f8fafc",
+  "theme_color": "#1a1a5e",
+  "lang": "en",
+  "icons": [
+    {
+      "src": "/logo.jpg",
+      "sizes": "600x150",
+      "type": "image/jpeg",
+      "purpose": "any"
+    },
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ],
+  "categories": ["business", "productivity", "utilities"]
+}

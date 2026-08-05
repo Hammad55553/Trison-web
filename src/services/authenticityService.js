@@ -54,37 +54,7 @@ export const generateSerial = () => {
   const month = String(now.getMonth() + 1).padStart(2, '0');
   const rand  = String(Math.floor(1000 + Math.random() * 9000));
   const seq   = String(Date.now()).slice(-5);
-  return `TSCN-${year}${month}-${rand}${seq}`;
-};
-
-// ── Preset Default Panels for local fallback ──────────
-const PRESET_PANELS = {
-  'TSCN-2607-731358458': {
-    serial: 'TSCN-2607-731358458',
-    brand: 'Trison',
-    model: 'TS-HM5B-575M',
-    wattage: '575W',
-    technology: 'Bifacial Mono PERC',
-    class: 'A',
-    country: 'Pakistan',
-    customerName: 'Hammad Aslam',
-    warrantyYears: '25',
-    status: 'active',
-    registeredAt: '2026-07-20T10:00:00.000Z'
-  },
-  'TSCN-2607-994821102': {
-    serial: 'TSCN-2607-994821102',
-    brand: 'Trison',
-    model: 'TS-HM6B-600M',
-    wattage: '600W',
-    technology: 'Bifacial HPDC',
-    class: 'A',
-    country: 'Pakistan',
-    customerName: 'Zainab Bibi',
-    warrantyYears: '25',
-    status: 'active',
-    registeredAt: '2026-07-20T11:30:00.000Z'
-  }
+  return `TSCN${year}${month}${rand}${seq}`;
 };
 
 // ── CRUD Operations ───────────────────────────────────
@@ -108,8 +78,8 @@ export const getAllPanels = () => {
 export const getRegistry = () => {
   const local = localStorage.getItem(REGISTRY_KEY);
   if (!local || local === '{}') {
-    localStorage.setItem(REGISTRY_KEY, JSON.stringify(PRESET_PANELS));
-    return PRESET_PANELS;
+    localStorage.setItem(REGISTRY_KEY, JSON.stringify({}));
+    return {};
   }
   return JSON.parse(local);
 };

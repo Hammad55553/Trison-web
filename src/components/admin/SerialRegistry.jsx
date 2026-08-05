@@ -5,15 +5,28 @@ import { getCustomRegistry, registerCustomPanel } from '../../services/authentic
 const SerialRegistry = ({ serials, onSerialsUpdate }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [statusMsg, setStatusMsg] = useState('');
-  const [newPanel, setNewPanel] = useState({
-    barcode: '',
-    brand: 'Trison',
-    model: 'TS-Premium-580M',
-    wattage: '580W',
-    customerName: '',
-    warrantyYears: '25',
-    technology: 'Bifacial Mono PERC'
-  });
+  const getInitialNewPanel = () => {
+    const saved = localStorage.getItem('trison_sr_template');
+    if (saved) {
+      try { return { ...JSON.parse(saved), barcode: '' }; } catch (e) {}
+    }
+    return {
+      barcode: '',
+      brand: 'Trison',
+      model: 'TS-Premium-580M',
+      wattage: '580W',
+      customerName: '',
+      warrantyYears: '25',
+      technology: 'Bifacial Mono PERC'
+    };
+  };
+
+  const [newPanel, setNewPanel] = useState(getInitialNewPanel);
+
+  React.useEffect(() => {
+    const templateToSave = { ...newPanel, barcode: '' };
+    localStorage.setItem('trison_sr_template', JSON.stringify(templateToSave));
+  }, [newPanel]);
 
   const handleAddPanel = (e) => {
     e.preventDefault();
@@ -21,15 +34,10 @@ const SerialRegistry = ({ serials, onSerialsUpdate }) => {
     try {
       registerCustomPanel(newPanel);
       onSerialsUpdate(getCustomRegistry());
-      setNewPanel({
-        barcode: '',
-        brand: 'Trison',
-        model: 'TS-Premium-580M',
-        wattage: '580W',
-        customerName: '',
-        warrantyYears: '25',
-        technology: 'Bifacial Mono PERC'
-      });
+      setNewPanel(prev => ({
+        ...prev,
+        barcode: ''
+      }));
       setStatusMsg('Serial number registered successfully!');
       setTimeout(() => setStatusMsg(''), 3000);
     } catch (err) {
@@ -85,8 +93,25 @@ const SerialRegistry = ({ serials, onSerialsUpdate }) => {
             <input
               type="text"
               value={newPanel.model}
-              onChange={e => setNewPanel({ ...newPanel, model: e.target.value })}
+              onChange={e => {
+                const val = e.target.value;
+                const wattMatch = val.match(/(\d{3,}W)/i);
+                setNewPanel(p => ({ 
+                  ...p, 
+                  model: val,
+                  wattage: wattMatch ? wattMatch[0].toUpperCase() : p.wattage 
+                }));
+              }}
+              list="sr-model-options"
             />
+            <datalist id="sr-model-options">
+              {Array.from(new Set([
+                ...Array.from({ length: Math.floor((750 - 580) / 5) + 1 }, (_, i) => `TS21RN-66HT${580 + i * 5}W`),
+                ...Object.values(serials).map(p => p.model).filter(Boolean)
+              ])).sort().map(m => (
+                <option key={m} value={m} />
+              ))}
+            </datalist>
           </div>
           <div className="input-group">
             <label>Wattage Output</label>
