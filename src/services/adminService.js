@@ -14,6 +14,18 @@ const MASTER_ADMIN = {
  * Get all administrators from local storage.
  * Injects the MASTER_ADMIN if it doesn't exist.
  */
+const syncAdmins = () => {
+  fetch('/api/admins.php')
+    .then(res => res.json())
+    .then(data => {
+      if (Array.isArray(data)) {
+        localStorage.setItem(ADMINS_STORAGE_KEY, JSON.stringify(data));
+      }
+    })
+    .catch(() => {});
+};
+syncAdmins();
+
 export const getAllAdmins = () => {
   let admins = [];
   try {
@@ -157,6 +169,12 @@ export const addAdmin = (newAdmin) => {
   });
 
   localStorage.setItem(ADMINS_STORAGE_KEY, JSON.stringify(admins));
+  fetch('/api/admins.php', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(newAdmin)
+  }).then(() => syncAdmins()).catch(() => {});
+  
   return admins;
 };
 
@@ -175,6 +193,11 @@ export const updateAdmin = (username, updates) => {
 
   admins[index] = { ...admins[index], ...updates };
   localStorage.setItem(ADMINS_STORAGE_KEY, JSON.stringify(admins));
+  fetch('/api/admins.php', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(admins[index])
+  }).then(() => syncAdmins()).catch(() => {});
   
   return admins;
 };
@@ -193,6 +216,8 @@ export const deleteAdmin = (username) => {
 
   admins = admins.filter(a => a.username !== username);
   localStorage.setItem(ADMINS_STORAGE_KEY, JSON.stringify(admins));
+  fetch(`/api/admins.php?username=${username}`, { method: 'DELETE' })
+    .then(() => syncAdmins()).catch(() => {});
   
   return admins;
 };

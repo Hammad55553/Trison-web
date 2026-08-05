@@ -90,6 +90,7 @@ const TRISON_CURATED = [
       'All Trison LiFePO4 residential and commercial battery packs have passed UL 9540A thermal-runaway propagation testing — the strictest fire-safety benchmark in energy storage — clearing the path for insurance-friendly deployments in California, Australia, and the EU.',
     category: 'Safety & Certification',
     author: 'Trison Compliance Desk',
+    image: 'https://images.unsplash.com/photo-1620288627228-21d3f945371c?auto=format&fit=crop&w=1200&q=80',
   },
   {
     id: 'trison-04',
@@ -341,6 +342,18 @@ function hydrateCurated() {
 }
 
 // ── PUBLIC API ────────────────────────────────────────────
+const syncBlogs = () => {
+  fetch('/api/blogs.php')
+    .then(res => res.json())
+    .then(data => {
+      if (Array.isArray(data)) {
+        localStorage.setItem(CUSTOM_BLOGS_KEY, JSON.stringify(data));
+      }
+    })
+    .catch(() => {});
+};
+syncBlogs();
+
 export const getCustomBlogs = () => {
   try {
     const data = localStorage.getItem(CUSTOM_BLOGS_KEY);
@@ -363,7 +376,14 @@ export const getAllBlogs = async () => {
     if (live.length) writeLiveCache(live);
   }
 
-  const merged = dedupe([...curated, ...live, ...custom]);
+  let merged = dedupe([...custom, ...curated, ...live]); // Custom first so they override
+  
+  // Filter out hidden global posts
+  try {
+    const hidden = JSON.parse(localStorage.getItem('trison_hidden_blogs') || '[]');
+    merged = merged.filter(b => !hidden.includes(b.id));
+  } catch {}
+  
   merged.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
   return merged;
 };
@@ -388,22 +408,53 @@ export const addCustomBlog = (blog) => {
   };
   blogs.push(newBlog);
   localStorage.setItem(CUSTOM_BLOGS_KEY, JSON.stringify(blogs));
+  fetch('/api/blogs.php', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(newBlog)
+  }).then(() => syncBlogs()).catch(() => {});
   return newBlog;
 };
 
 export const updateCustomBlog = (id, updates) => {
+  if (id.startsWith('trison-') || id.startsWith('gdelt-') || id.startsWith('rss-')) {
+    // It's a global post, hide the global one and create a new custom one
+    const hidden = JSON.parse(localStorage.getItem('trison_hidden_blogs') || '[]');
+    hidden.push(id);
+    localStorage.setItem('trison_hidden_blogs', JSON.stringify(hidden));
+    
+    addCustomBlog({
+      ...updates,
+      id: id + '-edited',
+    });
+    return;
+  }
+  
   const blogs = getCustomBlogs();
   const idx = blogs.findIndex((b) => b.id === id);
   if (idx !== -1) {
     blogs[idx] = { ...blogs[idx], ...updates };
     localStorage.setItem(CUSTOM_BLOGS_KEY, JSON.stringify(blogs));
+    fetch(`/api/blogs.php?id=${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(blogs[idx])
+    }).then(() => syncBlogs()).catch(() => {});
   }
 };
 
 export const deleteCustomBlog = (id) => {
+  if (id.startsWith('trison-') || id.startsWith('gdelt-') || id.startsWith('rss-')) {
+    const hidden = JSON.parse(localStorage.getItem('trison_hidden_blogs') || '[]');
+    hidden.push(id);
+    localStorage.setItem('trison_hidden_blogs', JSON.stringify(hidden));
+    return;
+  }
   const blogs = getCustomBlogs();
   const filtered = blogs.filter((b) => b.id !== id);
   localStorage.setItem(CUSTOM_BLOGS_KEY, JSON.stringify(filtered));
+  fetch(`/api/blogs.php?id=${id}`, { method: 'DELETE' })
+    .then(() => syncBlogs()).catch(() => {});
 };
 
 /** Force-refresh the live feed on the next fetch (used by admin/refresh button). */

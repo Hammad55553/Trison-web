@@ -49,10 +49,6 @@ const BlogManager = () => {
   };
 
   const handleDelete = (blog) => {
-    if (blog.source !== 'custom') {
-      alert("This is an external API news article and cannot be deleted.");
-      return;
-    }
     if (window.confirm('Are you sure you want to delete this post?')) {
       deleteCustomBlog(blog.id);
       fetchBlogs();
@@ -181,18 +177,12 @@ const BlogManager = () => {
                   </td>
                   <td>
                     <div className="action-buttons">
-                      {blog.source === 'custom' ? (
-                        <>
-                          <button className="icon-btn edit" title="Edit Post" onClick={() => handleEdit(blog)}>
-                            <Edit2 size={16} />
-                          </button>
-                          <button className="icon-btn delete" title="Delete Post" onClick={() => handleDelete(blog)}>
-                            <Trash2 size={16} />
-                          </button>
-                        </>
-                      ) : (
-                        <span style={{color: '#64748b', fontSize: '0.85rem'}}>Read Only</span>
-                      )}
+                      <button className="icon-btn edit" title="Edit Post" onClick={() => handleEdit(blog)}>
+                        <Edit2 size={16} />
+                      </button>
+                      <button className="icon-btn delete" title="Delete Post" onClick={() => handleDelete(blog)}>
+                        <Trash2 size={16} />
+                      </button>
                     </div>
                   </td>
                 </tr>

@@ -6,6 +6,9 @@ import { Search, Loader2, CheckCircle2, AlertTriangle, Cpu, Calendar, ShieldChec
 import './AuthenticityScreen.css';
 import verificationImg from '../../assets/images/verification.webp';
 import headerBg from '../../assets/images/verification_barcode_header.webp';
+import warrantyImg from '../../assets/images/warranty_activation.png';
+import specsImg from '../../assets/images/detailed_specs.png';
+import globalImg from '../../assets/images/global_traceability.png';
 
 const AuthenticityScreen = () => {
   const [activeTab, setActiveTab] = useState('verify'); // 'verify' | 'register'
@@ -754,23 +757,27 @@ const AuthenticityScreen = () => {
                 Verification acts as the first step toward officially registering your project. Once validated, your panels are instantly logged into our global warranty tracking system, securing your 25-year performance guarantees.
               </p>
             </div>
-            <div style={{ flex: '1 1 45%', minWidth: '300px', display: 'flex', justifyContent: 'center' }}>
-              <div className="verification-benefit-card" style={{ padding: '40px', width: '100%', maxWidth: '350px', display: 'flex', justifyContent: 'center', alignItems: 'center', backgroundColor: '#ffffff', borderRadius: '24px', boxShadow: '0 10px 40px -10px var(--primary-glow)' }}>
-                <div className="verification-benefit-icon-wrapper" style={{ margin: 0, width: '80px', height: '80px' }}>
-                  <FileText size={40} />
-                </div>
-              </div>
+            <div style={{ flex: '1 1 45%', minWidth: '300px' }}>
+              <img
+                src={warrantyImg}
+                alt="Warranty Activation"
+                loading="lazy"
+                decoding="async"
+                style={{ width: '100%', height: 'auto', borderRadius: '24px', boxShadow: '0 20px 40px -10px rgba(0,0,0,0.15)' }}
+              />
             </div>
           </div>
 
           {/* Row 3: Card Left, Text Right */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '4rem', flexWrap: 'wrap' }}>
-            <div style={{ flex: '1 1 45%', minWidth: '300px', display: 'flex', justifyContent: 'center' }}>
-              <div className="verification-benefit-card" style={{ padding: '40px', width: '100%', maxWidth: '350px', display: 'flex', justifyContent: 'center', alignItems: 'center', backgroundColor: '#ffffff', borderRadius: '24px', boxShadow: '0 10px 40px -10px var(--primary-glow)' }}>
-                <div className="verification-benefit-icon-wrapper" style={{ margin: 0, width: '80px', height: '80px' }}>
-                  <Search size={40} />
-                </div>
-              </div>
+            <div style={{ flex: '1 1 45%', minWidth: '300px' }}>
+              <img
+                src={specsImg}
+                alt="Detailed Specifications"
+                loading="lazy"
+                decoding="async"
+                style={{ width: '100%', height: 'auto', borderRadius: '24px', boxShadow: '0 20px 40px -10px rgba(0,0,0,0.15)' }}
+              />
             </div>
             <div style={{ flex: '1 1 45%', minWidth: '300px' }}>
               <h3 style={{ fontSize: '1.8rem', marginBottom: '16px', color: 'var(--text-primary)' }}>Detailed Specifications</h3>
@@ -788,12 +795,14 @@ const AuthenticityScreen = () => {
                 Our blockchain-backed registry allows EPCs and project financiers to trace the complete origin of the solar equipment—from the specific manufacturing hub down to the shipping logistics, ensuring 100% supply chain transparency.
               </p>
             </div>
-            <div style={{ flex: '1 1 45%', minWidth: '300px', display: 'flex', justifyContent: 'center' }}>
-              <div className="verification-benefit-card" style={{ padding: '40px', width: '100%', maxWidth: '350px', display: 'flex', justifyContent: 'center', alignItems: 'center', backgroundColor: '#ffffff', borderRadius: '24px', boxShadow: '0 10px 40px -10px var(--primary-glow)' }}>
-                <div className="verification-benefit-icon-wrapper" style={{ margin: 0, width: '80px', height: '80px' }}>
-                  <Globe size={40} />
-                </div>
-              </div>
+            <div style={{ flex: '1 1 45%', minWidth: '300px' }}>
+              <img
+                src={globalImg}
+                alt="Global Traceability"
+                loading="lazy"
+                decoding="async"
+                style={{ width: '100%', height: 'auto', borderRadius: '24px', boxShadow: '0 20px 40px -10px rgba(0,0,0,0.15)' }}
+              />
             </div>
           </div>
 

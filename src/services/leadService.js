@@ -3,7 +3,7 @@
  * Synced automatically with Node.js/Express MySQL Database, fallback to localStorage.
  */
 
-const API_URL = 'http://localhost:5000/api/leads';
+const API_URL = '/api/inquiries.php';
 const LEADS_STORAGE_KEY = 'trison_solar_leads';
 
 // Background sync on startup
@@ -61,6 +61,9 @@ export const submitInquiry = (leadData) => {
     })
     .then(res => res.json())
     .then(serverRes => {
+      if (serverRes.error) {
+        throw new Error(serverRes.error);
+      }
       // Sync fresh list
       syncLeads();
       resolve({
@@ -69,13 +72,21 @@ export const submitInquiry = (leadData) => {
         leadId: serverRes.id || localId
       });
     })
-    .catch(() => {
-      // If backend offline, resolve local success anyway
-      resolve({
-        success: true,
-        message: 'Inquiry registered offline/locally. It will sync once connection returns.',
-        leadId: localId
-      });
+    .catch((err) => {
+      // If backend offline or rate limit error
+      if (err.message && err.message.includes('already sent')) {
+        resolve({
+          success: false,
+          message: err.message,
+          leadId: null
+        });
+      } else {
+        resolve({
+          success: true,
+          message: 'Inquiry registered offline/locally. It will sync once connection returns.',
+          leadId: localId
+        });
+      }
     });
   });
 };
@@ -98,8 +109,8 @@ export const deleteInquiryLead = (id) => {
   const updated = existing.filter(l => l.id !== id);
   localStorage.setItem(LEADS_STORAGE_KEY, JSON.stringify(updated));
 
-  // 2. Delete on Express API
-  fetch(`${API_URL}/${id}`, { method: 'DELETE' })
+  // Delete on Server
+  fetch(`${API_URL}?id=${id}`, { method: 'DELETE' })
     .then(() => syncLeads())
     .catch(() => {});
 

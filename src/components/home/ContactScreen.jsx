@@ -32,6 +32,15 @@ const ContactScreen = () => {
 
     try {
       const response = await submitInquiry(formData);
+      
+      if (!response.success) {
+        setStatus({
+          type: 'error',
+          message: response.message,
+        });
+        return;
+      }
+      
       setStatus({
         type: 'success',
         message: response.message,

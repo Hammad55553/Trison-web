@@ -5,20 +5,8 @@
  * ─────────────────────────────────────────────────────
  */
 
-const API_BASE = 'http://localhost:5000/api/panels';
+const API_BASE = '/api/panels.php';
 const REGISTRY_KEY = 'trison_registered_panels';
-
-// ── Preset Data Lists ─────────────────────────────────
-
-export const PANEL_MODELS = [
-  { label: 'Hi-MO 5 Bifacial 555W',       model: 'TS-HM5B-555M', wattage: '555W', technology: 'Bifacial Mono PERC' },
-  { label: 'Hi-MO 5 Bifacial 575W',       model: 'TS-HM5B-575M', wattage: '575W', technology: 'Bifacial Mono PERC' },
-  { label: 'Hi-MO 5 Monofacial 540W',     model: 'TS-HM5M-540M', wattage: '540W', technology: 'Monofacial Mono PERC' },
-  { label: 'Hi-MO 5 Monofacial 555W',     model: 'TS-HM5M-555M', wattage: '555W', technology: 'Monofacial Mono PERC' },
-  { label: 'Hi-MO 6 Bifacial 600W',       model: 'TS-HM6B-600M', wattage: '600W', technology: 'Bifacial HPDC' },
-  { label: 'Hi-MO 6 Monofacial 580W',     model: 'TS-HM6M-580M', wattage: '580W', technology: 'Monofacial HPDC' },
-  { label: 'Hi-MO 9 Bifacial 670W',       model: 'TS-HM9B-670M', wattage: '670W', technology: 'Bifacial TOPCon' },
-];
 
 export const CLASS_OPTIONS = [
   { value: 'A', label: 'Class A – Premium Grade' },
@@ -125,8 +113,8 @@ export const deletePanel = (serial) => {
   delete registry[cleanSerial];
   localStorage.setItem(REGISTRY_KEY, JSON.stringify(registry));
 
-  // 2. Delete on Express Server
-  fetch(`${API_BASE}/${cleanSerial}`, { method: 'DELETE' })
+  // 2. Delete on Express/PHP Server
+  fetch(`${API_BASE}?serial=${cleanSerial}`, { method: 'DELETE' })
     .then(() => syncRegistry())
     .catch(() => {});
 
@@ -155,9 +143,11 @@ export const verifyPanel = async (serial) => {
 
   // 1. Try querying the Node.js Express server directly
   try {
-    const res = await fetch(`${API_BASE}/verify/${clean}`);
+    const res = await fetch(`${API_BASE}?action=verify&serial=${clean}`);
     if (res.ok) {
       localData = await res.json();
+    } else {
+      localData = getPanelBySerial(clean);
     }
   } catch (_) {
     // Fallback to local storage if API is offline
@@ -165,7 +155,7 @@ export const verifyPanel = async (serial) => {
   }
 
   // 2. Return Trison Local Registry match if found
-  if (localData) {
+  if (localData && !localData.error) {
     return {
       ...localData,
       brand: localData.brand || 'Trison',
@@ -174,7 +164,27 @@ export const verifyPanel = async (serial) => {
     };
   }
 
-  throw new Error('Serial not found in Trison Database. Register it in the admin panel first.');
+  // 3. Fallback to Longi API if not found locally
+  try {
+    const longiRes = await fetch(`https://javacms-prod-us.longi.com/getQrInfo?moduleCode=${clean}&locale=en-US&_locale=en-US`);
+    const longiData = await longiRes.json();
+    if (longiData.success && longiData.content) {
+      const c = longiData.content;
+      return {
+        serial: c.moduleId,
+        model: c.productionType,
+        wattage: _wattFromModel(c.productionType) || 'Unknown',
+        class: c.moduleLevel || 'A',
+        brand: 'Trison',
+        source: 'Manufacturer Registry',
+        found: true
+      };
+    }
+  } catch (e) {
+    console.error('Longi API fallback failed', e);
+  }
+
+  throw new Error('Serial not found in Trison Database or Manufacturer records. Register it in the admin panel first.');
 };
 
 // ── Legacy compatibility shims ─────────────────────────

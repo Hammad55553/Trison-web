@@ -6,7 +6,7 @@ import {
 import { Html5QrcodeScanner } from 'html5-qrcode';
 import {
   getAllPanels, savePanel, deletePanel,
-  getRegistry, generateSerial, PANEL_MODELS, CLASS_OPTIONS, COUNTRY_OPTIONS
+  getRegistry, generateSerial, CLASS_OPTIONS, COUNTRY_OPTIONS
 } from '../../services/authenticityService';
 import Barcode from './Barcode';
 import PrintOptionsModal from './PrintOptionsModal';
@@ -52,14 +52,10 @@ const PanelManager = ({ onSerialsUpdate }) => {
   // Flash toast helper
   const flash = (msg) => { setToast(msg); setTimeout(() => setToast(''), 3000); };
 
-  // Pick model → auto-fill wattage & technology
   const handleModelChange = (modelVal) => {
-    const found = PANEL_MODELS.find(m => m.model === modelVal);
     setForm(f => ({
       ...f,
-      model: found?.model || modelVal,
-      wattage: found?.wattage || f.wattage,
-      technology: found?.technology || f.technology,
+      model: modelVal,
     }));
   };
 
@@ -168,7 +164,7 @@ const PanelManager = ({ onSerialsUpdate }) => {
   const totalPages = Math.ceil(filtered.length / itemsPerPage) || 1;
   const paginatedPanels = filtered.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
-  const selectedModelLabel = PANEL_MODELS.find(m => m.model === form.model)?.label || form.model;
+  const selectedModelLabel = form.model;
 
   if (showForm) {
     return (
@@ -247,13 +243,11 @@ const PanelManager = ({ onSerialsUpdate }) => {
                 value={form.model}
                 onChange={e => {
                   const val = e.target.value;
-                  const found = PANEL_MODELS.find(m => m.model === val);
                   const wattMatch = val.match(/(\d{3,}W)/i);
                   setForm(f => ({ 
                     ...f, 
                     model: val,
-                    wattage: found?.wattage || (wattMatch ? wattMatch[0].toUpperCase() : f.wattage),
-                    technology: found?.technology || f.technology,
+                    wattage: (wattMatch ? wattMatch[0].toUpperCase() : f.wattage),
                   }));
                 }}
                 list="model-options"
@@ -262,7 +256,6 @@ const PanelManager = ({ onSerialsUpdate }) => {
               <datalist id="model-options">
                 {Array.from(new Set([
                   ...Array.from({ length: Math.floor((750 - 580) / 5) + 1 }, (_, i) => `TS21RN-66HT${580 + i * 5}W`),
-                  ...PANEL_MODELS.map(m => m.model),
                   ...panels.map(p => p.model).filter(Boolean)
                 ])).sort().map(m => (
                   <option key={m} value={m} />
