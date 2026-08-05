@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { LayoutDashboard, Cpu, ScanLine, ClipboardList, LogOut, LayoutGrid, X, User, Lock, Eye, EyeOff, Shield } from 'lucide-react';
+import { LayoutDashboard, Cpu, ScanLine, ClipboardList, LogOut, LayoutGrid, X, User, Lock, Eye, EyeOff, Shield, Database } from 'lucide-react';
 import AdminStats from '../../components/admin/AdminStats';
 import DashboardCharts from '../../components/admin/DashboardCharts';
 import PanelManager from '../../components/admin/PanelManager';
@@ -9,6 +9,7 @@ import { getCustomRegistry } from '../../services/authenticityService';
 import { getInquiries } from '../../services/leadService';
 import { loginAdmin } from '../../services/adminService';
 import AdminManager from '../../components/admin/AdminManager';
+import BackupManager from '../../components/admin/BackupManager';
 import trisonLogo from '../../assets/images/TRISON.jpg';
 import mainGateImg from '../../assets/images/inside3.webp';
 import './AdminPage.css';
@@ -19,6 +20,7 @@ const VIEWS = [
   { key: 'scanner', label: 'Scan & Verify', icon: ScanLine },
   { key: 'leads', label: 'Sales Leads', icon: ClipboardList },
   { key: 'admins', label: 'Admin Users', icon: Shield },
+  { key: 'backup', label: 'Database Backup', icon: Database },
 ];
 
 const AdminPage = ({ onViewChange }) => {
@@ -293,6 +295,11 @@ const AdminPage = ({ onViewChange }) => {
           {/* ── Admins ── */}
           {activeView === 'admins' && (
             <AdminManager />
+          )}
+
+          {/* ── Backup Manager ── */}
+          {activeView === 'backup' && (
+            <BackupManager />
           )}
         </div>
       </div>

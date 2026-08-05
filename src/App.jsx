@@ -106,7 +106,7 @@ function App() {
         setView('terms');
       } else if (path === '/privacy' || path === '/privacy/') {
         setView('privacy');
-      } else if (path.startsWith('/admin-x7k2m9')) {
+      } else if (path.startsWith('/admin-trison')) {
         setView('admin');
       } else if (path === '/' || path === '') {
         setView('home');
@@ -197,47 +197,47 @@ function App() {
         {view === 'home' ? (
           <HomePage onViewChange={handleViewChange} />
         ) : (
-        <Suspense fallback={<div style={{ minHeight: '60vh' }} />}>
-        {view === 'about' ? (
-          /* Detailed corporate background of Trison */
-          <AboutUsPage />
-        ) : view === 'modules' ? (
-          /* Full catalog directory of Trison PV solar modules */
-          <ModulesPage onViewChange={handleViewChange} setSelectedProduct={setSelectedProduct} />
-        ) : view === 'overview' ? (
-          /* Interactive 3D product overview and datasheet */
-          <OverView productId={selectedProduct} />
-        ) : view === 'verifier' ? (
-          /* Dedicated Authenticity Verification & Registry screen */
-          <VerifierPage />
-        ) : view === 'partner' ? (
-          /* Dedicated Global Sales & Distribution Inquiries screen */
-          <PartnerPage />
-        ) : view === 'silicon-cell' ? (
-          <SiliconCellPage />
-        ) : view === 'utility-bifacial' ? (
-          <UtilityBifacialPage />
-        ) : view === 'ci-monocrystalline' ? (
-          <CIMonocrystallinePage />
-        ) : view === 'n-type-topcon' ? (
-          <NTypeTOPConPage />
-        ) : view === 'panel-warranty' ? (
-          <PanelWarrantyPage />
-        ) : view === 'inverter-warranty' ? (
-          <InverterWarrantyPage />
-        ) : view === 'terms' ? (
-          <TermsPage />
-        ) : view === 'privacy' ? (
-          <PrivacyPolicyPage />
-        ) : view === 'admin' ? (
-          /* Hidden Internal Verifier DB & Leads Dashboard Manager */
-          <AdminPanelPage onViewChange={handleViewChange} />
-        ) : view === 'not-found' ? (
-          <NotFoundPage />
-        ) : (
-          <HomePage onViewChange={handleViewChange} />
-        )}
-        </Suspense>
+          <Suspense fallback={<div style={{ minHeight: '60vh' }} />}>
+            {view === 'about' ? (
+              /* Detailed corporate background of Trison */
+              <AboutUsPage />
+            ) : view === 'modules' ? (
+              /* Full catalog directory of Trison PV solar modules */
+              <ModulesPage onViewChange={handleViewChange} setSelectedProduct={setSelectedProduct} />
+            ) : view === 'overview' ? (
+              /* Interactive 3D product overview and datasheet */
+              <OverView productId={selectedProduct} />
+            ) : view === 'verifier' ? (
+              /* Dedicated Authenticity Verification & Registry screen */
+              <VerifierPage />
+            ) : view === 'partner' ? (
+              /* Dedicated Global Sales & Distribution Inquiries screen */
+              <PartnerPage />
+            ) : view === 'silicon-cell' ? (
+              <SiliconCellPage />
+            ) : view === 'utility-bifacial' ? (
+              <UtilityBifacialPage />
+            ) : view === 'ci-monocrystalline' ? (
+              <CIMonocrystallinePage />
+            ) : view === 'n-type-topcon' ? (
+              <NTypeTOPConPage />
+            ) : view === 'panel-warranty' ? (
+              <PanelWarrantyPage />
+            ) : view === 'inverter-warranty' ? (
+              <InverterWarrantyPage />
+            ) : view === 'terms' ? (
+              <TermsPage />
+            ) : view === 'privacy' ? (
+              <PrivacyPolicyPage />
+            ) : view === 'admin' ? (
+              /* Hidden Internal Verifier DB & Leads Dashboard Manager */
+              <AdminPanelPage onViewChange={handleViewChange} />
+            ) : view === 'not-found' ? (
+              <NotFoundPage />
+            ) : (
+              <HomePage onViewChange={handleViewChange} />
+            )}
+          </Suspense>
         )}
       </main>
 

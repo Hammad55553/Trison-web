@@ -298,6 +298,30 @@ img, video {
   }
 }
 
+@media (max-width: 768px) {
+  h1 { font-size: 2.2rem !important; }
+  h2 { font-size: 1.8rem !important; }
+  h3 { font-size: 1.5rem !important; }
+  h4 { font-size: 1.3rem !important; }
+  h5 { font-size: 1.1rem !important; }
+  h6 { font-size: 1rem !important; }
+  
+  .section-title {
+    font-size: 1.8rem !important;
+  }
+}
+
+@media (max-width: 480px) {
+  h1 { font-size: 1.8rem !important; }
+  h2 { font-size: 1.5rem !important; }
+  h3 { font-size: 1.3rem !important; }
+  h4 { font-size: 1.1rem !important; }
+  
+  .section-title {
+    font-size: 1.5rem !important;
+  }
+}
+
 /* ── Prevent content, text and images from blowing out on large screens (Desktops, 2K/4K displays, wide LEDs) ── */
 @media (min-width: 1400px) {
   html {

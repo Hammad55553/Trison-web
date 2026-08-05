@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import Card from '../common/Card';
 import { verifyAuthenticity, registerCustomPanel, registerBulkPanels, generateCustomBarcode } from '../../services/authenticityService';
-import { Search, Loader2, CheckCircle2, AlertTriangle, Cpu, Calendar, ShieldCheck, Tag, PlusCircle, HelpCircle, FileText, Upload, Globe } from 'lucide-react';
+import { Html5QrcodeScanner } from 'html5-qrcode';
+import { Search, Loader2, CheckCircle2, AlertTriangle, Cpu, Calendar, ShieldCheck, Tag, PlusCircle, HelpCircle, FileText, Upload, Globe, ScanLine, Keyboard, Camera } from 'lucide-react';
 import './AuthenticityScreen.css';
 import verificationImg from '../../assets/images/verification.webp';
 
@@ -14,6 +15,63 @@ const AuthenticityScreen = () => {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
   const [error, setError] = useState('');
+
+  const [scanMode, setScanMode] = useState('manual');
+  const [scanHelpMessage, setScanHelpMessage] = useState('');
+  const scannerRef = React.useRef(null);
+  const scannerInstanceRef = React.useRef(null);
+  const scanTimeoutRef = React.useRef(null);
+
+  React.useEffect(() => {
+    if (activeTab !== 'verify') return;
+
+    if (scanMode === 'camera') {
+      setScanHelpMessage('');
+      scanTimeoutRef.current = setTimeout(() => {
+        setScanHelpMessage('Having trouble? Ensure the barcode is clear, not blurry, and well-lit.');
+      }, 6000);
+
+      setTimeout(() => {
+        if (!scannerRef.current) return;
+        const scanner = new Html5QrcodeScanner(
+          'public-qr-scanner-region',
+          { fps: 10, qrbox: { width: 280, height: 280 }, aspectRatio: 1 },
+          false
+        );
+        scanner.render(
+          async (decodedText) => {
+            scanner.clear().catch(() => {});
+            if (scanTimeoutRef.current) clearTimeout(scanTimeoutRef.current);
+            setScanHelpMessage('');
+            setScanMode('manual');
+            setBarcode(decodedText);
+            
+            setLoading(true);
+            setError('');
+            setResult(null);
+            try {
+              const data = await verifyAuthenticity(decodedText);
+              setResult(data);
+            } catch (err) {
+              setError(err.message || 'Failed to verify. Please try again.');
+            } finally {
+              setLoading(false);
+            }
+          },
+          () => {}
+        );
+        scannerInstanceRef.current = scanner;
+      }, 200);
+    }
+
+    return () => {
+      if (scanTimeoutRef.current) clearTimeout(scanTimeoutRef.current);
+      if (scannerInstanceRef.current) {
+        scannerInstanceRef.current.clear().catch(() => {});
+        scannerInstanceRef.current = null;
+      }
+    };
+  }, [scanMode, activeTab]);
 
   // Single Registration states
   const [regData, setRegData] = useState({
@@ -211,29 +269,50 @@ const AuthenticityScreen = () => {
                 <h3 className="auth-card-title">Check Module Status</h3>
                 <p className="auth-card-desc">Enter any registered barcode or serial number to retrieve consolidated specifications.</p>
 
-                <form onSubmit={handleVerify} className="auth-form">
-                  <div className="search-input-wrapper">
-                    <input
-                      type="text"
-                      value={barcode}
-                      onChange={(e) => setBarcode(e.target.value)}
-                      placeholder="Enter barcode (e.g. TSCN...)"
-                      className="search-input"
-                      required
-                    />
-                    <button type="submit" className="btn-search" disabled={loading}>
-                      {loading ? <Loader2 className="spinner" size={18} /> : <Search size={18} />}
-                    </button>
-                  </div>
-
-                  <button
-                    type="button"
-                    onClick={loadSampleCode}
-                    className="btn-sample"
+                <div className="scan-mode-toggle">
+                  <button 
+                    type="button" 
+                    className={`btn-scan-mode ${scanMode === 'manual' ? 'active' : ''}`} 
+                    onClick={() => setScanMode('manual')}
                   >
-                    Paste Sample Barcode
+                    <Keyboard size={16}/> Manual Entry
                   </button>
-                </form>
+                  <button 
+                    type="button" 
+                    className={`btn-scan-mode ${scanMode === 'camera' ? 'active' : ''}`} 
+                    onClick={() => setScanMode('camera')}
+                  >
+                    <Camera size={16}/> Camera Scan
+                  </button>
+                </div>
+
+                {scanMode === 'camera' ? (
+                  <div className="camera-scanner-wrapper">
+                    <div id="public-qr-scanner-region" ref={scannerRef}></div>
+                    {scanHelpMessage && (
+                      <div className="scan-help-message" style={{ padding: '12px', backgroundColor: 'rgba(239, 68, 68, 0.1)', color: '#ef4444', fontSize: '14px', textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', borderTop: '1px solid rgba(239, 68, 68, 0.2)' }}>
+                        <AlertTriangle size={18} />
+                        {scanHelpMessage}
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <form onSubmit={handleVerify} className="auth-form">
+                    <div className="search-input-wrapper">
+                      <input
+                        type="text"
+                        value={barcode}
+                        onChange={(e) => setBarcode(e.target.value)}
+                        placeholder="Enter barcode (e.g. TSCN...)"
+                        className="search-input"
+                        required
+                      />
+                      <button type="submit" className="btn-search" disabled={loading}>
+                        {loading ? <Loader2 className="spinner" size={18} /> : <Search size={18} />}
+                      </button>
+                    </div>
+                  </form>
+                )}
 
                 <div className="barcode-guideline">
                   <h4>Where to find the barcode?</h4>
@@ -279,10 +358,18 @@ const AuthenticityScreen = () => {
                 )}
 
                 {!loading && error && (
-                  <div className="auth-status-card error-card glass">
-                    <AlertTriangle className="status-large-icon text-orange" size={48} />
-                    <h3>Record Not Found</h3>
-                    <p>{error}</p>
+                  <div className="auth-status-card error-card glass premium-error">
+                    <div className="error-icon-wrapper" style={{ backgroundColor: 'rgba(239, 68, 68, 0.1)', width: '80px', height: '80px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px' }}>
+                      <AlertTriangle className="text-red" size={40} color="#ef4444" />
+                    </div>
+                    <h3 style={{ color: '#b91c1c', fontSize: '1.5rem', marginBottom: '8px' }}>Record Not Found</h3>
+                    <p className="error-description" style={{ color: '#475569', fontSize: '15px', marginBottom: '20px' }}>
+                      Image was scanned successfully, but the barcode <strong style={{color: '#0f172a'}}>{barcode}</strong> was not found in our database.
+                    </p>
+                    <div className="error-details-box" style={{ backgroundColor: '#fef2f2', border: '1px solid #fecaca', padding: '16px', borderRadius: '8px', textAlign: 'left', fontSize: '14px', color: '#991b1b' }}>
+                      <p style={{ margin: '0 0 8px 0' }}><strong>System Analysis:</strong> {error}</p>
+                      <p style={{ margin: 0 }}><strong>Suggestion:</strong> Ensure this is a genuine Trison product or check if the code was entered correctly.</p>
+                    </div>
                   </div>
                 )}
 

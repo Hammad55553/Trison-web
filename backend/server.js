@@ -3,7 +3,21 @@ const cors = require('cors');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 const mysql = require('mysql2');
+const multer = require('multer');
+const mysqldump = require('mysqldump');
+const { google } = require('googleapis');
+const fs = require('fs');
+const path = require('path');
 require('dotenv').config();
+
+const upload = multer({ dest: 'uploads/' });
+
+// Google Drive OAuth2 Client
+const oauth2Client = new google.auth.OAuth2(
+  process.env.GOOGLE_CLIENT_ID || 'YOUR_CLIENT_ID',
+  process.env.GOOGLE_CLIENT_SECRET || 'YOUR_CLIENT_SECRET',
+  process.env.GOOGLE_REDIRECT_URI || 'http://localhost:5000/api/drive/callback'
+);
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -54,6 +68,7 @@ const pool = mysql.createPool({
   user: process.env.DB_USER || 'root',
   password: process.env.DB_PASSWORD || '',
   database: process.env.DB_NAME || 'trison_db',
+  multipleStatements: true,
   waitForConnections: true,
   connectionLimit: 15, // standard pool limit
   queueLimit: 0,
@@ -380,6 +395,146 @@ app.delete('/api/leads/:id', async (req, res) => {
     res.status(500).json({ error: 'Failed to process lead deletion.' });
   }
 });
+
+// ── Database Backup & Restore Endpoints ────────────────
+
+app.get('/api/backup', async (req, res) => {
+  const dbActive = await isDbConnected();
+  if (!dbActive) {
+    return res.status(500).json({ error: 'Database is not connected.' });
+  }
+
+  const dumpPath = path.join(__dirname, 'backup.sql');
+
+  try {
+    await mysqldump({
+      connection: {
+        host: process.env.DB_HOST || 'localhost',
+        user: process.env.DB_USER || 'root',
+        password: process.env.DB_PASSWORD || '',
+        database: process.env.DB_NAME || 'trison_db',
+      },
+      dumpToFile: dumpPath,
+    });
+
+    res.download(dumpPath, 'trison_db_backup.sql', (err) => {
+      if (err) console.error('Error sending backup file:', err);
+      fs.unlink(dumpPath, (unlinkErr) => {
+        if (unlinkErr) console.error('Error deleting backup file:', unlinkErr);
+      });
+    });
+  } catch (error) {
+    console.error('Backup generation failed:', error);
+    res.status(500).json({ error: 'Failed to generate backup.' });
+  }
+});
+
+app.post('/api/restore', upload.single('backupFile'), async (req, res) => {
+  const dbActive = await isDbConnected();
+  if (!dbActive) {
+    return res.status(500).json({ error: 'Database is not connected.' });
+  }
+
+  if (!req.file) {
+    return res.status(400).json({ error: 'No backup file provided.' });
+  }
+
+  try {
+    const filePath = req.file.path;
+    const sqlContent = fs.readFileSync(filePath, 'utf8');
+    
+    // Clean up uploaded file
+    fs.unlinkSync(filePath);
+
+    // Execute the SQL queries
+    await promisePool.query(sqlContent);
+    
+    res.json({ message: 'Database restored successfully.' });
+  } catch (error) {
+    console.error('Database restore failed:', error);
+    res.status(500).json({ error: 'Failed to restore database from backup.' });
+  }
+});
+
+// ── Google Drive Backup Endpoints ────────────────
+
+app.get('/api/drive/auth', (req, res) => {
+  const url = oauth2Client.generateAuthUrl({
+    access_type: 'offline',
+    scope: ['https://www.googleapis.com/auth/drive.file']
+  });
+  res.redirect(url);
+});
+
+app.get('/api/drive/callback', async (req, res) => {
+  const code = req.query.code;
+  if (!code) {
+    return res.send('No code provided.');
+  }
+  try {
+    const { tokens } = await oauth2Client.getToken(code);
+    oauth2Client.setCredentials(tokens);
+    // In a real app, save tokens.refresh_token securely
+    process.env.GOOGLE_DRIVE_REFRESH_TOKEN = tokens.refresh_token || oauth2Client.credentials.refresh_token; 
+    res.send('<script>window.opener.postMessage("google_auth_success", "*"); window.close();</script>');
+  } catch (error) {
+    console.error('Error getting OAuth tokens:', error);
+    res.send('Authentication failed. Check your credentials. You can close this window.');
+  }
+});
+
+app.post('/api/drive/upload', async (req, res) => {
+  const dbActive = await isDbConnected();
+  if (!dbActive) {
+    return res.status(500).json({ error: 'Database is not connected.' });
+  }
+
+  // Ensure authenticated
+  if (!oauth2Client.credentials || !oauth2Client.credentials.access_token) {
+    return res.status(401).json({ error: 'Google Drive not authenticated.' });
+  }
+
+  const dumpPath = path.join(__dirname, 'drive_backup.sql');
+
+  try {
+    await mysqldump({
+      connection: {
+        host: process.env.DB_HOST || 'localhost',
+        user: process.env.DB_USER || 'root',
+        password: process.env.DB_PASSWORD || '',
+        database: process.env.DB_NAME || 'trison_db',
+      },
+      dumpToFile: dumpPath,
+    });
+
+    const drive = google.drive({ version: 'v3', auth: oauth2Client });
+    
+    const fileMetadata = {
+      name: `Trison_Backup_${new Date().toISOString().split('T')[0]}.sql`,
+    };
+    
+    const media = {
+      mimeType: 'application/sql',
+      body: fs.createReadStream(dumpPath),
+    };
+
+    const driveRes = await drive.files.create({
+      resource: fileMetadata,
+      media: media,
+      fields: 'id',
+    });
+
+    fs.unlink(dumpPath, () => {});
+
+    res.json({ message: 'Backup successfully uploaded to Google Drive!', fileId: driveRes.data.id });
+  } catch (error) {
+    console.error('Drive upload failed:', error);
+    fs.unlink(dumpPath, () => {});
+    res.status(500).json({ error: 'Failed to upload backup to Google Drive.' });
+  }
+});
+
+
 
 // Global Error Catch Handler (prevents process termination and hides sensitive call stack info)
 app.use((err, req, res, next) => {

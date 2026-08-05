@@ -310,6 +310,49 @@
   cursor: pointer;
 }
 
+/* Scan Mode Toggle */
+.scan-mode-toggle {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.btn-scan-mode {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: var(--bg-tertiary);
+  color: var(--text-secondary);
+  border: 1px solid var(--card-border);
+  padding: 12px;
+  border-radius: var(--radius-sm);
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-normal);
+}
+
+.btn-scan-mode:hover {
+  background: rgba(0, 0, 0, 0.04);
+}
+
+.btn-scan-mode.active {
+  background: var(--primary);
+  color: #fff;
+  border-color: var(--primary);
+  box-shadow: 0 4px 12px var(--primary-glow);
+}
+
+.camera-scanner-wrapper {
+  margin-bottom: 24px;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  border: 1px solid var(--card-border);
+  background: #000;
+}
+
 textarea#bulk-list {
   background: rgba(0, 0, 0, 0.02);
   border: 1px solid var(--card-border);
@@ -703,6 +746,35 @@ textarea#bulk-list:focus {
 @media (max-width: 968px) {
   .authenticity-grid {
     grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .authenticity-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .scan-mode-toggle {
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .btn-scan-mode {
+    padding: 14px;
+  }
+  
+  .auth-form-card {
+    padding: 24px;
+  }
+  
+  .verification-benefits-section {
+    margin-top: 60px;
+  }
+  .verification-benefits-title {
+    font-size: 2rem;
+  }
+  .verification-benefit-card {
+    padding: 30px 24px;
   }
 }
 
