@@ -2,10 +2,8 @@
 
 const ADMINS_STORAGE_KEY = 'trison_admins_registry';
 
-// Default system administrator (master)
 const MASTER_ADMIN = {
   username: 'admin',
-  password: 'trison123',
   role: 'master',
   status: 'active'
 };
@@ -131,31 +129,11 @@ export const loginAdmin = async (username, password) => {
       return { success: true, user: tokenPayload };
     }
     
-    // Fall back to local check if backend responded with error but server is online
     throw new Error(data.error || 'Invalid credentials');
     
   } catch (err) {
-    // If fetch failed (offline) or threw error above, fallback to local logic
-    const admins = getAllAdmins();
-    const admin = admins.find(a => a.username === username && (a.password === password || password === 'trison123'));
-    
-    if (!admin) {
-      return { success: false, error: 'Invalid username or password.' };
-    }
-    if (admin.status === 'blocked' || admin.status === 'disabled') {
-      return { success: false, error: 'This account has been disabled.' };
-    }
-
-    const expiry = Date.now() + 24 * 60 * 60 * 1000;
-    const tokenPayload = {
-      username,
-      role: admin.role || (username === 'admin' ? 'master' : 'admin'),
-      expiry
-    };
-    localStorage.setItem('trison_admin_auth_token', JSON.stringify(tokenPayload));
-
-    recordLoginHistory(username);
-    return { success: true, user: admin };
+    // If fetch failed (offline) or threw error above, fallback is disabled for security reasons
+    return { success: false, error: err.message || 'Server is unreachable. Please check your connection.' };
   }
 };
 
