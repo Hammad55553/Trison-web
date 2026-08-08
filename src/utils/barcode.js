@@ -96,3 +96,27 @@ function escapeXml(s) {
     { '<': '&lt;', '>': '&gt;', '&': '&amp;', "'": '&apos;', '"': '&quot;' }[c]
   ));
 }
+
+/**
+ * Return the raw bar geometry for a value so other renderers (e.g. jsPDF)
+ * can draw the same Code 128 barcode without SVG.
+ * @returns {{ bars: Array<{x:number,w:number}>, width:number }}
+ *   x/w are in "module" units × moduleWidth already applied.
+ */
+export function barcodeBars(text = '', moduleWidth = 1) {
+  const clean = String(text || '').trim() || ' ';
+  const values = encode(clean);
+  const bars = [];
+  let x = 0;
+  values.forEach((v) => {
+    const pat = PATTERNS[v];
+    let isBar = true;
+    for (let i = 0; i < pat.length; i++) {
+      const w = parseInt(pat[i], 10) * moduleWidth;
+      if (isBar) bars.push({ x, w });
+      x += w;
+      isBar = !isBar;
+    }
+  });
+  return { bars, width: x };
+}

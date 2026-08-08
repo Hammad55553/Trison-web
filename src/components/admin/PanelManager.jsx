@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import {
   Plus, Search, Trash2, Edit2, X, Save, RefreshCw,
   ScanLine, CheckCircle, ToggleLeft, ToggleRight, Printer,
-  Upload, FileDown, Loader2
+  Upload, FileDown, Loader2, Download, ChevronDown
 } from 'lucide-react';
 import { Html5QrcodeScanner } from 'html5-qrcode';
 import {
@@ -10,6 +10,7 @@ import {
   getRegistry, generateSerial, bulkImportPanels, CLASS_OPTIONS, COUNTRY_OPTIONS
 } from '../../services/authenticityService';
 import { parsePanelFile, downloadPanelTemplate } from '../../services/panelExcel';
+import { exportPanelsExcel, exportPanelsCSV, exportPanelsPDF } from '../../services/panelExport';
 import Barcode from './Barcode';
 import PrintOptionsModal from './PrintOptionsModal';
 
@@ -40,6 +41,7 @@ const PanelManager = ({ onSerialsUpdate }) => {
   const [printPanel, setPrintPanel] = useState(null);
   const [importing, setImporting] = useState(false);
   const [importSummary, setImportSummary] = useState(null);
+  const [exportOpen, setExportOpen] = useState(false);
   const scannerRef = useRef(null);
   const scannerInst = useRef(null);
   const fileInputRef = useRef(null);
@@ -78,6 +80,21 @@ const PanelManager = ({ onSerialsUpdate }) => {
     } finally {
       setImporting(false);
       if (fileInputRef.current) fileInputRef.current.value = ''; // allow re-uploading same file
+    }
+  };
+
+  // ── Export current data ───────────────────────────
+  const handleExport = (fmt) => {
+    setExportOpen(false);
+    const data = getAllPanels();
+    if (!data.length) { flash('No panels to export yet.'); return; }
+    try {
+      if (fmt === 'excel') exportPanelsExcel(data);
+      else if (fmt === 'csv') exportPanelsCSV(data);
+      else if (fmt === 'pdf') exportPanelsPDF(data);
+      flash(`Exported ${data.length} panels as ${fmt.toUpperCase()}.`);
+    } catch (err) {
+      flash('Export failed. Please try again.');
     }
   };
 
@@ -451,6 +468,25 @@ const PanelManager = ({ onSerialsUpdate }) => {
           >
             <FileDown size={16} /> Template
           </button>
+          <div className="pm-export-wrap">
+            <button
+              className="pm-btn-outline"
+              onClick={() => setExportOpen(o => !o)}
+              title="Download all panel data"
+            >
+              <Download size={16} /> Export <ChevronDown size={14} />
+            </button>
+            {exportOpen && (
+              <>
+                <div className="pm-export-backdrop" onClick={() => setExportOpen(false)} />
+                <div className="pm-export-menu">
+                  <button onClick={() => handleExport('excel')}>Excel (.xlsx)</button>
+                  <button onClick={() => handleExport('csv')}>CSV (.csv)</button>
+                  <button onClick={() => handleExport('pdf')}>PDF with barcodes</button>
+                </div>
+              </>
+            )}
+          </div>
           <button
             className="pm-btn-outline"
             onClick={() => fileInputRef.current?.click()}

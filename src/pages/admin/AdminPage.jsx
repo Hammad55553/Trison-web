@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { LayoutDashboard, Cpu, ScanLine, ClipboardList, LogOut, LayoutGrid, X, User, Lock, Eye, EyeOff, Shield, Database } from 'lucide-react';
+import { LayoutDashboard, Cpu, ScanLine, ClipboardList, LogOut, LayoutGrid, X, User, Lock, Eye, EyeOff, Shield, Database, Zap } from 'lucide-react';
 import AdminStats from '../../components/admin/AdminStats';
 import DashboardCharts from '../../components/admin/DashboardCharts';
 import PanelManager from '../../components/admin/PanelManager';
 import QRScanner from '../../components/admin/QRScanner';
+import RapidScan from '../../components/admin/RapidScan';
 import InquiryLogs from '../../components/admin/InquiryLogs';
 import { getCustomRegistry } from '../../services/authenticityService';
 import { getInquiries } from '../../services/leadService';
@@ -19,6 +20,7 @@ const VIEWS = [
   { key: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { key: 'panels', label: 'Panel Manager', icon: Cpu },
   { key: 'scanner', label: 'Scan & Verify', icon: ScanLine },
+  { key: 'rapid', label: 'Rapid Scan', icon: Zap },
   { key: 'leads', label: 'Sales Leads', icon: ClipboardList },
   { key: 'news', label: 'News & Blog', icon: FileText },
   { key: 'admins', label: 'Admin Users', icon: Shield },
@@ -282,6 +284,20 @@ const AdminPage = ({ onViewChange }) => {
                 </div>
               </div>
               <QRScanner />
+            </div>
+          )}
+
+          {/* ── Rapid Scan (barcode reader machine) ── */}
+          {activeView === 'rapid' && (
+            <div className="scanner-view-wrap">
+              <div className="scanner-intro">
+                <Zap size={28} />
+                <div>
+                  <h3>Rapid Barcode Scan</h3>
+                  <p>Attach a barcode reader, set the panel details once, then keep scanning serials — each one is added instantly. Duplicates pause so you can update, delete, or skip.</p>
+                </div>
+              </div>
+              <RapidScan onDataChange={setSerials} />
             </div>
           )}
 
