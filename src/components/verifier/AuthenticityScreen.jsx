@@ -35,6 +35,9 @@ const AuthenticityScreen = () => {
       setScanHelpMessage('Having trouble? Hold the barcode steady, keep it in focus, and make sure it is well-lit.');
     }, 6000);
 
+    // Delay start slightly so a previously-open camera has time to fully
+    // release its video track (otherwise the browser throws
+    // "NotReadableError: Could not start video source" on the 2nd open).
     const startTimer = setTimeout(() => {
       if (!scannerRef.current) return;
       const scanner = new Html5QrcodeScanner(
@@ -45,14 +48,17 @@ const AuthenticityScreen = () => {
           aspectRatio: 1,
           // Prefer the rear camera by default; user can switch if needed.
           videoConstraints: { facingMode: { ideal: 'environment' } },
+          rememberLastUsedCamera: true,
         },
         false
       );
       scanner.render(
         async (decodedText) => {
-          scanner.clear().catch(() => {});
           if (scanTimeoutRef.current) clearTimeout(scanTimeoutRef.current);
           setScanHelpMessage('');
+          // Fully release the camera before leaving the scanner.
+          try { await scanner.clear(); } catch (e) { /* ignore */ }
+          scannerInstanceRef.current = null;
           setScanMode('manual');
           setBarcode(decodedText);
 
@@ -68,16 +74,27 @@ const AuthenticityScreen = () => {
             setLoading(false);
           }
         },
-        () => {}
+        (errMsg) => {
+          // Per-frame decode errors are normal; only surface real camera faults.
+          const m = String(errMsg || '').toLowerCase();
+          if (m.includes('notreadable') || m.includes('could not start video')) {
+            if (scanTimeoutRef.current) clearTimeout(scanTimeoutRef.current);
+            setScanHelpMessage('Camera is busy. Close other apps/tabs using the camera, then tap "Camera Scan" again.');
+          }
+        }
       );
       scannerInstanceRef.current = scanner;
-    }, 200);
+    }, 400);
 
     return () => {
       clearTimeout(startTimer);
       if (scanTimeoutRef.current) clearTimeout(scanTimeoutRef.current);
       if (scannerInstanceRef.current) {
-        scannerInstanceRef.current.clear().catch(() => {});
+        // clear() stops the video track and frees the camera for next time.
+        try {
+          const p = scannerInstanceRef.current.clear();
+          if (p && typeof p.catch === 'function') p.catch(() => {});
+        } catch (e) { /* ignore */ }
         scannerInstanceRef.current = null;
       }
     };

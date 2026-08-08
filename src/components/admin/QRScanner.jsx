@@ -22,6 +22,8 @@ const QRScanner = () => {
       setScanHelpMessage('Having trouble? Hold the barcode steady, keep it in focus, and make sure it is well-lit.');
     }, 6000);
 
+    // Small delay so a previously-open camera releases its video track,
+    // avoiding "NotReadableError: Could not start video source".
     const startTimer = setTimeout(() => {
       if (!scannerRef.current) return;
       const scanner = new Html5QrcodeScanner(
@@ -32,28 +34,39 @@ const QRScanner = () => {
           aspectRatio: 1,
           // Prefer the rear camera by default; user can switch if needed.
           videoConstraints: { facingMode: { ideal: 'environment' } },
+          rememberLastUsedCamera: true,
         },
         false
       );
       scanner.render(
         async (decodedText) => {
-          scanner.clear().catch(() => {});
           if (scanTimeoutRef.current) clearTimeout(scanTimeoutRef.current);
           setScanHelpMessage('');
+          try { await scanner.clear(); } catch (e) { /* ignore */ }
+          scannerInstanceRef.current = null;
           setMode('manual');
           setManualCode(decodedText);
           await handleVerify(decodedText);
         },
-        () => {}
+        (errMsg) => {
+          const m = String(errMsg || '').toLowerCase();
+          if (m.includes('notreadable') || m.includes('could not start video')) {
+            if (scanTimeoutRef.current) clearTimeout(scanTimeoutRef.current);
+            setScanHelpMessage('Camera is busy. Close other apps/tabs using the camera, then tap "Camera Scan" again.');
+          }
+        }
       );
       scannerInstanceRef.current = scanner;
-    }, 200);
+    }, 400);
 
     return () => {
       clearTimeout(startTimer);
       if (scanTimeoutRef.current) clearTimeout(scanTimeoutRef.current);
       if (scannerInstanceRef.current) {
-        scannerInstanceRef.current.clear().catch(() => {});
+        try {
+          const p = scannerInstanceRef.current.clear();
+          if (p && typeof p.catch === 'function') p.catch(() => {});
+        } catch (e) { /* ignore */ }
         scannerInstanceRef.current = null;
       }
     };
