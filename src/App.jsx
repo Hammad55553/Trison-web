@@ -27,43 +27,57 @@ const TermsPage = lazy(() => import('./pages/TermsPage'));
 const PrivacyPolicyPage = lazy(() => import('./pages/PrivacyPolicyPage'));
 const NotFoundPage = lazy(() => import('./pages/NotFoundPage'));
 
+const SITE_ORIGIN = 'https://trisonpower.com';
+
 const PAGE_META = {
   home: {
     title: 'Trison – Solar Panels, Solar Inverters & Solar Batteries | Integrated Clean-Energy Manufacturer Since 2007',
     description: 'Trison manufactures the complete solar stack — high-efficiency monocrystalline solar panels, smart solar inverters, and lithium solar batteries. One brand, one warranty. Trusted worldwide since 2007.',
+    path: '/',
   },
   about: {
     title: 'About Trison – Corporate Profile & Solar Wafer Innovations',
     description: 'Learn about Trison’s corporate history, R&D innovations, milestone developments, bankability ratings, and our Solar for Solar green initiatives.',
+    path: '/about-us/',
   },
   modules: {
     title: 'Trison High-Efficiency Solar PV Wafer Modules Catalog',
     description: 'Explore the full catalog of Trison monocrystalline solar modules, including Monofacial and Bifacial M10 wafer platforms.',
+    path: '/modules/',
   },
   overview: {
     title: 'Trison Monocrystalline Plate Product Specification & 3D Overview',
     description: 'Explore technical parameters and 3D angle views of the next-generation Trison monocrystalline silicon PV cell plates and modules.',
+    path: '/overview',
   },
   verifier: {
     title: 'Trison Panel Authenticity Verifier – Verify Solar Panel Import | trisonpower.com',
     description: 'Instantly verify the authenticity of your Trison panels. Enter the serial number or scan the QR code to confirm your panel is a genuine Trison import.',
+    path: '/modules-authenticity/',
   },
   partner: {
     title: 'Partner with Trison – Global Solar Module Supply & Distributor Inquiry',
     description: 'Become a Trison authorized solar module distributor or EPC partner. Submit your bulk inquiry for monocrystalline silicon PV modules and cells worldwide.',
+    path: '/partner/',
+  },
+  blog: {
+    title: 'Trison Blog – Solar Insights, Technology & Industry News',
+    description: 'Read the latest Trison articles on solar technology, module innovation, and clean-energy industry news.',
+    path: '/blog/',
   },
   admin: {
     title: 'Trison Internal Admin Dashboard System',
     description: 'Trison internal database administration portal.',
+    path: '/admin-x7k2m9/',
   },
-  'silicon-cell': { title: 'Silicon Cell Manufacturing - Trison', description: 'Advanced monocrystalline cell fabrication processes.' },
-  'utility-bifacial': { title: 'Utility Bifacial Modules - Trison', description: 'Maximizing energy yield for grid-scale installations.' },
-  'ci-monocrystalline': { title: 'C&I Monocrystalline Plates - Trison', description: 'Optimized solutions for commercial rooftops.' },
-  'n-type-topcon': { title: 'N-Type TOPCon Technology - Trison', description: 'Next generation of ultra-high efficiency solar cells.' },
-  'panel-warranty': { title: '25-Year Panel Warranty - Trison', description: 'Industry-leading guarantees for peace of mind.' },
-  'inverter-warranty': { title: '10-Year Inverter Warranty - Trison', description: 'Securing the heart of your solar power system.' },
-  'terms': { title: 'Terms & Conditions - Trison', description: 'Legal agreements and usage policies.' },
-  'privacy': { title: 'Privacy Policy - Trison', description: 'How we collect, use, and protect your data.' },
+  'silicon-cell': { title: 'Silicon Cell Manufacturing - Trison', description: 'Advanced monocrystalline cell fabrication processes.', path: '/silicon-cell/' },
+  'utility-bifacial': { title: 'Utility Bifacial Modules - Trison', description: 'Maximizing energy yield for grid-scale installations.', path: '/utility-bifacial/' },
+  'ci-monocrystalline': { title: 'C&I Monocrystalline Plates - Trison', description: 'Optimized solutions for commercial rooftops.', path: '/ci-monocrystalline/' },
+  'n-type-topcon': { title: 'N-Type TOPCon Technology - Trison', description: 'Next generation of ultra-high efficiency solar cells.', path: '/n-type-topcon/' },
+  'panel-warranty': { title: '25-Year Panel Warranty - Trison', description: 'Industry-leading guarantees for peace of mind.', path: '/panel-warranty/' },
+  'inverter-warranty': { title: '10-Year Inverter Warranty - Trison', description: 'Securing the heart of your solar power system.', path: '/inverter-warranty/' },
+  'terms': { title: 'Terms & Conditions - Trison', description: 'Legal agreements and usage policies.', path: '/terms/' },
+  'privacy': { title: 'Privacy Policy - Trison', description: 'How we collect, use, and protect your data.', path: '/privacy/' },
 };
 
 function App() {
@@ -183,12 +197,44 @@ function App() {
     window.dispatchEvent(new Event('popstate'));
   };
 
-  // Dynamic SEO: update <title> and meta description on each view change
+  // Dynamic SEO: update <title>, meta description, canonical & og:url on each view change
   useEffect(() => {
     const meta = PAGE_META[view] || PAGE_META.home;
     document.title = meta.title;
-    let descEl = document.querySelector('meta[name="description"]');
+
+    const descEl = document.querySelector('meta[name="description"]');
     if (descEl) descEl.setAttribute('content', meta.description);
+
+    // Resolve the canonical path for this view. Dynamic routes (blog post,
+    // overview with ?product=) use the live pathname so each variant is
+    // self-canonical instead of all pointing at the homepage.
+    let canonicalPath = meta.path || '/';
+    if (view === 'blog-post') {
+      canonicalPath = window.location.pathname;
+    } else if (view === 'overview') {
+      canonicalPath = `/overview${window.location.search || ''}`;
+    } else if (view === 'not-found') {
+      // 404s shouldn't be canonicalized to a real page.
+      canonicalPath = window.location.pathname;
+    }
+    const canonicalUrl = SITE_ORIGIN + canonicalPath;
+
+    let canonicalEl = document.querySelector('link[rel="canonical"]');
+    if (!canonicalEl) {
+      canonicalEl = document.createElement('link');
+      canonicalEl.setAttribute('rel', 'canonical');
+      document.head.appendChild(canonicalEl);
+    }
+    canonicalEl.setAttribute('href', canonicalUrl);
+
+    const ogUrlEl = document.querySelector('meta[property="og:url"]');
+    if (ogUrlEl) ogUrlEl.setAttribute('content', canonicalUrl);
+
+    // Keep og:title / twitter:title in sync so social previews match the page.
+    const ogTitleEl = document.querySelector('meta[property="og:title"]');
+    if (ogTitleEl) ogTitleEl.setAttribute('content', meta.title);
+    const twTitleEl = document.querySelector('meta[name="twitter:title"]');
+    if (twTitleEl) twTitleEl.setAttribute('content', meta.title);
   }, [view]);
 
   const isAdmin = view === 'admin';
