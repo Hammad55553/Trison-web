@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Html5QrcodeScanner } from 'html5-qrcode';
 import { verifyAuthenticity } from '../../services/authenticityService';
-import { CheckCircle2, XCircle, ScanLine, Keyboard, Loader2 } from 'lucide-react';
+import { CheckCircle2, HelpCircle, ScanLine, Keyboard, Loader2 } from 'lucide-react';
 
 const QRScanner = () => {
   const [mode, setMode] = useState('manual'); // 'camera' | 'manual'
@@ -18,7 +18,13 @@ const QRScanner = () => {
         if (!scannerRef.current) return;
         const scanner = new Html5QrcodeScanner(
           'qr-scanner-region',
-          { fps: 10, qrbox: { width: 280, height: 280 }, aspectRatio: 1 },
+          {
+            fps: 10,
+            qrbox: { width: 280, height: 280 },
+            aspectRatio: 1,
+            // Default to the rear camera; fall back automatically when none.
+            videoConstraints: { facingMode: { ideal: 'environment' } },
+          },
           false
         );
         scanner.render(
@@ -52,7 +58,7 @@ const QRScanner = () => {
       const data = await verifyAuthenticity(barcode);
       setScanResult({ ...data, barcode });
     } catch (err) {
-      setError(err.message || 'Barcode not found in database.');
+      setError(err.message || 'No matching panel found. Please check the serial and try again.');
     } finally {
       setLoading(false);
     }
@@ -172,9 +178,9 @@ const QRScanner = () => {
       {error && !loading && (
         <div className="scan-result not-found">
           <div className="result-header">
-            <XCircle size={40} className="result-icon not-found" />
+            <HelpCircle size={40} className="result-icon not-found" />
             <div>
-              <h3>Panel Not Verified</h3>
+              <h3>No Match Found</h3>
               <p>{error}</p>
             </div>
           </div>

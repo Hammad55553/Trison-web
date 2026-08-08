@@ -1370,8 +1370,8 @@ body.admin-body::before {
 }
 
 .scan-result.not-found {
-  background: rgba(239, 68, 68, 0.05);
-  border: 1px solid rgba(239, 68, 68, 0.2);
+  background: rgba(245, 158, 11, 0.06);
+  border: 1px solid rgba(245, 158, 11, 0.25);
 }
 
 .result-header {
@@ -1388,7 +1388,7 @@ body.admin-body::before {
 }
 
 .scan-result.verified h3 { color: #059669; }
-.scan-result.not-found h3 { color: #dc2626; }
+.scan-result.not-found h3 { color: #b45309; }
 
 .result-header p {
   font-size: 0.8rem;
@@ -1397,7 +1397,7 @@ body.admin-body::before {
 }
 
 .result-icon.verified { color: #10b981; }
-.result-icon.not-found { color: #ef4444; }
+.result-icon.not-found { color: #f59e0b; }
 
 .result-details-grid {
   display: grid;

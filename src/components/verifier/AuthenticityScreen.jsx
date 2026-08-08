@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import Card from '../common/Card';
 import { verifyAuthenticity, registerCustomPanel, registerBulkPanels, generateCustomBarcode } from '../../services/authenticityService';
 import { Html5QrcodeScanner } from 'html5-qrcode';
-import { Search, Loader2, CheckCircle2, AlertTriangle, Cpu, Calendar, ShieldCheck, Tag, PlusCircle, HelpCircle, FileText, Upload, Globe, ScanLine, Keyboard, Camera, XCircle } from 'lucide-react';
+import { Search, Loader2, CheckCircle2, AlertTriangle, Cpu, Calendar, ShieldCheck, Tag, PlusCircle, HelpCircle, FileText, Upload, Globe, ScanLine, Keyboard, Camera } from 'lucide-react';
 import './AuthenticityScreen.css';
 import verificationImg from '../../assets/images/verification.webp';
 import headerBg from '../../assets/images/verification_barcode_header.webp';
@@ -39,7 +39,15 @@ const AuthenticityScreen = () => {
         if (!scannerRef.current) return;
         const scanner = new Html5QrcodeScanner(
           'public-qr-scanner-region',
-          { fps: 10, qrbox: { width: 280, height: 280 }, aspectRatio: 1 },
+          {
+            fps: 10,
+            qrbox: { width: 280, height: 280 },
+            aspectRatio: 1,
+            // Open the rear/back camera by default so users don't have to
+            // switch manually. Falls back to any available camera (e.g. a
+            // laptop's front webcam) when no environment-facing camera exists.
+            videoConstraints: { facingMode: { ideal: 'environment' } },
+          },
           false
         );
         scanner.render(
@@ -294,8 +302,8 @@ const AuthenticityScreen = () => {
                   <div className="camera-scanner-wrapper">
                     <div id="public-qr-scanner-region" ref={scannerRef}></div>
                     {scanHelpMessage && (
-                      <div className="scan-help-message" style={{ padding: '12px', backgroundColor: 'rgba(239, 68, 68, 0.1)', color: '#ef4444', fontSize: '14px', textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', borderTop: '1px solid rgba(239, 68, 68, 0.2)' }}>
-                        <AlertTriangle size={18} />
+                      <div className="scan-help-message" style={{ padding: '12px', backgroundColor: 'rgba(245, 158, 11, 0.08)', color: '#92400e', fontSize: '14px', textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', borderTop: '1px solid rgba(245, 158, 11, 0.2)' }}>
+                        <HelpCircle size={18} />
                         {scanHelpMessage}
                       </div>
                     )}
@@ -362,15 +370,15 @@ const AuthenticityScreen = () => {
                 )}
 
                 {!loading && error && (
-                  <div className="auth-status-card error-card glass premium-error" style={{ border: '2px solid #ef4444', animation: 'fadeIn 0.3s ease-in-out', padding: '40px 20px', textAlign: 'center' }}>
+                  <div className="auth-status-card error-card glass premium-error" style={{ border: '1px solid rgba(245, 158, 11, 0.35)', animation: 'fadeIn 0.3s ease-in-out', padding: '40px 20px', textAlign: 'center' }}>
                     <div className="error-icon-wrapper" style={{ margin: '0 auto 20px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                      <div style={{ backgroundColor: '#fef2f2', width: '80px', height: '80px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 0 20px rgba(239, 68, 68, 0.4)' }}>
-                        <XCircle className="text-red" size={48} color="#ef4444" />
+                      <div style={{ backgroundColor: '#fffbeb', width: '80px', height: '80px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 0 20px rgba(245, 158, 11, 0.2)' }}>
+                        <HelpCircle size={48} color="#f59e0b" />
                       </div>
                     </div>
-                    <h3 style={{ color: '#b91c1c', fontSize: '1.8rem', margin: '0 0 12px 0', fontWeight: '800' }}>Invalid Barcode</h3>
+                    <h3 style={{ color: '#1e293b', fontSize: '1.8rem', margin: '0 0 12px 0', fontWeight: '800' }}>No Match Found</h3>
                     <p style={{ color: '#475569', fontSize: '1.1rem', margin: '0' }}>
-                      The serial number <strong style={{color: '#1e293b', background: '#f1f5f9', padding: '4px 8px', borderRadius: '4px'}}>{barcode}</strong> does not exist in our official registry.
+                      We couldn't find <strong style={{color: '#1e293b', background: '#f1f5f9', padding: '4px 8px', borderRadius: '4px'}}>{barcode}</strong> in our registry yet. Please double-check the serial number and try again.
                     </p>
                   </div>
                 )}
