@@ -531,6 +531,112 @@ body.admin-body::before {
   box-shadow: 0 4px 12px var(--primary-glow);
 }
 
+/* Toolbar action group (Template / Import / Register) */
+.pm-toolbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.pm-btn-outline {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  color: #334155;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.pm-btn-outline:hover:not(:disabled) {
+  border-color: var(--primary);
+  color: var(--primary);
+  background: #fffdf7;
+}
+
+.pm-btn-outline:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.pm-spin { animation: pm-rotate 0.8s linear infinite; }
+@keyframes pm-rotate { to { transform: rotate(360deg); } }
+
+/* Import summary card */
+.pm-import-summary {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-left: 4px solid var(--primary);
+  border-radius: 10px;
+  padding: 16px 18px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.05);
+}
+
+.pm-import-summary-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+  color: #0f172a;
+  font-size: 0.95rem;
+  margin-bottom: 12px;
+}
+
+.pm-import-close {
+  margin-left: auto;
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  cursor: pointer;
+  padding: 2px;
+  display: flex;
+}
+.pm-import-close:hover { color: #ef4444; }
+
+.pm-import-stats {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.pm-import-stat {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+.pm-import-stat strong { font-weight: 800; font-size: 0.95rem; }
+.pm-import-stat.added   { background: rgba(16, 185, 129, 0.1); color: #059669; }
+.pm-import-stat.updated { background: rgba(59, 130, 246, 0.1); color: #2563eb; }
+.pm-import-stat.skipped { background: rgba(148, 163, 184, 0.15); color: #64748b; }
+
+.pm-import-errors {
+  margin: 12px 0 0;
+  padding-left: 18px;
+  font-size: 0.82rem;
+  color: #b45309;
+}
+
+@media (max-width: 600px) {
+  .pm-toolbar-actions {
+    width: 100%;
+  }
+  .pm-toolbar-actions button {
+    flex: 1 1 auto;
+    justify-content: center;
+  }
+}
+
 /* Beautiful Animated Floating Toast */
 .pm-toast, .admin-status-toast {
   display: flex;

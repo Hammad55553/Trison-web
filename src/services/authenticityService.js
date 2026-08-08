@@ -187,6 +187,89 @@ export const verifyPanel = async (serial) => {
   throw new Error('Serial not found in Trison Database or Manufacturer records. Register it in the admin panel first.');
 };
 
+/**
+ * Bulk import panels from parsed rows (e.g. an uploaded Excel/CSV file).
+ *
+ * Smart de-duplication so re-uploading the same file never creates
+ * duplicates and never wipes existing good data:
+ *   • Row serial is empty/missing → a new serial is auto-generated → ADD
+ *   • Serial is new (not in registry) → ADD
+ *   • Serial exists AND all fields identical → SKIP (nothing changes)
+ *   • Serial exists BUT some field changed → UPDATE (overwrite that entry)
+ *
+ * @param {Array<Object>} rows  Array of panel-like objects.
+ * @returns {{ added:number, updated:number, skipped:number, total:number, errors:string[] }}
+ */
+export const bulkImportPanels = (rows) => {
+  const registry = getRegistry();
+  let added = 0, updated = 0, skipped = 0;
+  const errors = [];
+
+  // Fields we compare to decide "changed vs same" (ignore timestamps).
+  const COMPARE_FIELDS = [
+    'model', 'wattage', 'technology', 'class', 'country',
+    'status', 'customerName', 'warrantyYears', 'brand',
+  ];
+
+  const isBlankRow = (r) =>
+    !r || COMPARE_FIELDS.every(f => !String(r[f] ?? '').trim()) && !String(r.serial ?? '').trim();
+
+  (rows || []).forEach((rawRow, idx) => {
+    try {
+      if (isBlankRow(rawRow)) return; // ignore empty lines
+
+      // Normalise / apply sensible defaults.
+      const row = {
+        serial: String(rawRow.serial ?? '').trim(),
+        model: String(rawRow.model ?? '').trim(),
+        wattage: String(rawRow.wattage ?? '').trim(),
+        technology: String(rawRow.technology ?? '').trim(),
+        class: String(rawRow.class ?? 'A').trim() || 'A',
+        country: String(rawRow.country ?? 'Pakistan').trim() || 'Pakistan',
+        status: String(rawRow.status ?? 'active').trim() || 'active',
+        customerName: String(rawRow.customerName ?? '').trim(),
+        warrantyYears: String(rawRow.warrantyYears ?? 'Active and Validated').trim(),
+        brand: String(rawRow.brand ?? 'Trison').trim() || 'Trison',
+      };
+
+      // No serial in the file → generate one and treat as a new entry.
+      if (!row.serial) {
+        row.serial = generateSerial();
+      }
+
+      const existing = registry[row.serial];
+
+      if (!existing) {
+        // Brand-new panel.
+        savePanel(row);
+        registry[row.serial] = { ...row };
+        added++;
+        return;
+      }
+
+      // Serial already exists — did anything actually change?
+      const changed = COMPARE_FIELDS.some(
+        f => String(existing[f] ?? '').trim() !== String(row[f] ?? '').trim()
+      );
+
+      if (!changed) {
+        skipped++;                 // identical → keep existing, do nothing
+        return;
+      }
+
+      // Update: overwrite changed fields but preserve the original
+      // registration date so history isn't lost.
+      savePanel({ ...existing, ...row, registeredAt: existing.registeredAt });
+      registry[row.serial] = { ...existing, ...row };
+      updated++;
+    } catch (err) {
+      errors.push(`Row ${idx + 2}: ${err.message || 'could not be imported'}`);
+    }
+  });
+
+  return { added, updated, skipped, total: added + updated + skipped, errors };
+};
+
 // ── Legacy compatibility shims ─────────────────────────
 export const registerCustomPanel = (data) => savePanel({ ...data, serial: data.barcode });
 export const getCustomRegistry = () => getRegistry();

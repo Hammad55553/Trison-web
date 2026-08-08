@@ -1,13 +1,15 @@
 import React, { useState, useEffect, useRef } from 'react';
 import {
   Plus, Search, Trash2, Edit2, X, Save, RefreshCw,
-  ScanLine, CheckCircle, ToggleLeft, ToggleRight, Printer
+  ScanLine, CheckCircle, ToggleLeft, ToggleRight, Printer,
+  Upload, FileDown, Loader2
 } from 'lucide-react';
 import { Html5QrcodeScanner } from 'html5-qrcode';
 import {
   getAllPanels, savePanel, deletePanel,
-  getRegistry, generateSerial, CLASS_OPTIONS, COUNTRY_OPTIONS
+  getRegistry, generateSerial, bulkImportPanels, CLASS_OPTIONS, COUNTRY_OPTIONS
 } from '../../services/authenticityService';
+import { parsePanelFile, downloadPanelTemplate } from '../../services/panelExcel';
 import Barcode from './Barcode';
 import PrintOptionsModal from './PrintOptionsModal';
 
@@ -36,8 +38,11 @@ const PanelManager = ({ onSerialsUpdate }) => {
   const itemsPerPage = 10;
   const [scanning, setScanning] = useState(false);
   const [printPanel, setPrintPanel] = useState(null);
+  const [importing, setImporting] = useState(false);
+  const [importSummary, setImportSummary] = useState(null);
   const scannerRef = useRef(null);
   const scannerInst = useRef(null);
+  const fileInputRef = useRef(null);
 
   // Load panels (and keep the dashboard's serials state in sync)
   const reload = () => {
@@ -51,6 +56,30 @@ const PanelManager = ({ onSerialsUpdate }) => {
 
   // Flash toast helper
   const flash = (msg) => { setToast(msg); setTimeout(() => setToast(''), 3000); };
+
+  // ── Excel / CSV bulk import ───────────────────────
+  const handleFilePicked = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setImporting(true);
+    setImportSummary(null);
+    try {
+      const rows = await parsePanelFile(file);
+      if (!rows.length) {
+        flash('No rows found in the file. Please use the template.');
+        return;
+      }
+      const summary = bulkImportPanels(rows);
+      reload();
+      setImportSummary(summary);
+      flash(`Import done — ${summary.added} added, ${summary.updated} updated, ${summary.skipped} unchanged.`);
+    } catch (err) {
+      flash(err.message || 'Import failed. Please check the file.');
+    } finally {
+      setImporting(false);
+      if (fileInputRef.current) fileInputRef.current.value = ''; // allow re-uploading same file
+    }
+  };
 
   const handleModelChange = (modelVal) => {
     setForm(f => ({
@@ -407,15 +436,61 @@ const PanelManager = ({ onSerialsUpdate }) => {
             onChange={e => setSearch(e.target.value)}
           />
         </div>
-        <button className="pm-btn-add" onClick={openAdd}>
-          <Plus size={16} /> Register Panel
-        </button>
+        <div className="pm-toolbar-actions">
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept=".xlsx,.xls,.csv"
+            style={{ display: 'none' }}
+            onChange={handleFilePicked}
+          />
+          <button
+            className="pm-btn-outline"
+            onClick={downloadPanelTemplate}
+            title="Download a ready-made Excel template with dropdowns"
+          >
+            <FileDown size={16} /> Template
+          </button>
+          <button
+            className="pm-btn-outline"
+            onClick={() => fileInputRef.current?.click()}
+            disabled={importing}
+            title="Upload an Excel or CSV file to add many panels at once"
+          >
+            {importing ? <Loader2 size={16} className="pm-spin" /> : <Upload size={16} />}
+            {importing ? 'Importing...' : 'Import Excel'}
+          </button>
+          <button className="pm-btn-add" onClick={openAdd}>
+            <Plus size={16} /> Register Panel
+          </button>
+        </div>
       </div>
 
       {/* ── Toast ── */}
       {toast && (
         <div className="pm-toast">
           <CheckCircle size={15} /> {toast}
+        </div>
+      )}
+
+      {/* ── Import summary ── */}
+      {importSummary && (
+        <div className="pm-import-summary">
+          <div className="pm-import-summary-head">
+            <CheckCircle size={16} /> Import complete
+            <button className="pm-import-close" onClick={() => setImportSummary(null)}><X size={14} /></button>
+          </div>
+          <div className="pm-import-stats">
+            <span className="pm-import-stat added"><strong>{importSummary.added}</strong> Added</span>
+            <span className="pm-import-stat updated"><strong>{importSummary.updated}</strong> Updated</span>
+            <span className="pm-import-stat skipped"><strong>{importSummary.skipped}</strong> Unchanged</span>
+          </div>
+          {importSummary.errors?.length > 0 && (
+            <ul className="pm-import-errors">
+              {importSummary.errors.slice(0, 5).map((er, i) => <li key={i}>{er}</li>)}
+              {importSummary.errors.length > 5 && <li>…and {importSummary.errors.length - 5} more</li>}
+            </ul>
+          )}
         </div>
       )}
 
