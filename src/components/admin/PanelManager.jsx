@@ -43,6 +43,7 @@ const PanelManager = ({ onSerialsUpdate }) => {
   const [importing, setImporting] = useState(false);
   const [importSummary, setImportSummary] = useState(null);
   const [exportOpen, setExportOpen] = useState(false);
+  const [customModel, setCustomModel] = useState(false);  // "Custom" chosen in model dropdown
   const scannerRef = useRef(null);
   const scannerInst = useRef(null);
   const fileInputRef = useRef(null);
@@ -125,6 +126,7 @@ const PanelManager = ({ onSerialsUpdate }) => {
   const openAdd = () => {
     const savedTemplate = JSON.parse(localStorage.getItem('trison_panel_template') || 'null') || BLANK;
     setForm({ ...savedTemplate, serial: generateSerial() });
+    setCustomModel(savedTemplate.model && !MODEL_MAP[savedTemplate.model]);
     setEditing(null);
     setShowForm(true);
   };
@@ -132,6 +134,8 @@ const PanelManager = ({ onSerialsUpdate }) => {
   // Open Edit form
   const openEdit = (panel) => {
     setForm({ ...BLANK, ...panel });
+    // If the panel's model isn't a known option, open the field in custom mode.
+    setCustomModel(panel.model && !MODEL_MAP[panel.model]);
     setEditing(panel.serial);
     setShowForm(true);
   };
@@ -140,6 +144,7 @@ const PanelManager = ({ onSerialsUpdate }) => {
   const closeForm = () => {
     setShowForm(false);
     setEditing(null);
+    setCustomModel(false);
     stopScanner();
   };
 
@@ -305,21 +310,42 @@ const PanelManager = ({ onSerialsUpdate }) => {
             {/* Field 2: Model Number */}
             <div className="pm-section">
               <label className="pm-section-title">Model Number *</label>
-              {/* Input + datalist: pick from the list OR type a custom model.
-                  Picking a known model auto-fills wattage. */}
-              <input
+              {/* Proper dropdown: pick a known model (auto-fills wattage) or
+                  choose "Custom…" to type your own model number. */}
+              <select
                 className="pm-input"
-                list="pm-model-options"
-                placeholder="Select or type a model…"
-                value={form.model}
-                onChange={e => handleModelChange(e.target.value)}
-                required
-              />
-              <datalist id="pm-model-options">
+                value={customModel ? '__custom__' : form.model}
+                onChange={e => {
+                  const val = e.target.value;
+                  if (val === '__custom__') {
+                    setCustomModel(true);
+                    setForm(f => ({ ...f, model: '' }));
+                  } else {
+                    setCustomModel(false);
+                    handleModelChange(val);
+                  }
+                }}
+                required={!customModel}
+              >
+                <option value="" disabled>Select a model…</option>
                 {MODEL_OPTIONS.map(m => (
-                  <option key={m.model} value={m.model}>{m.wattage}</option>
+                  <option key={m.model} value={m.model}>
+                    {m.model} — {m.wattage}
+                  </option>
                 ))}
-              </datalist>
+                <option value="__custom__">Custom (type your own)…</option>
+              </select>
+              {customModel && (
+                <input
+                  className="pm-input"
+                  style={{ marginTop: 8 }}
+                  placeholder="Type custom model number…"
+                  value={form.model}
+                  onChange={e => handleModelChange(e.target.value)}
+                  required
+                  autoFocus
+                />
+              )}
             </div>
 
             {/* Brand Input */}
