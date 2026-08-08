@@ -350,7 +350,91 @@
   border-radius: var(--radius-md);
   overflow: hidden;
   border: 1px solid var(--card-border);
-  background: #000;
+  background: #ffffff;
+}
+
+.camera-permission-hint {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 16px;
+  font-size: 0.85rem;
+  line-height: 1.4;
+  color: #334155;
+  background: #f8fafc;
+  border-bottom: 1px solid var(--card-border);
+  text-align: center;
+}
+
+.camera-permission-hint strong {
+  color: var(--primary);
+}
+
+/* ─────────────────────────────────────────────
+   html5-qrcode default UI override (make its
+   built-in buttons/links look like real buttons
+   and stay readable on a light background)
+   ───────────────────────────────────────────── */
+#public-qr-scanner-region {
+  border: none !important;
+  padding: 16px !important;
+  font-family: var(--font-display) !important;
+}
+
+/* The scanner's video / image preview */
+#public-qr-scanner-region video,
+#public-qr-scanner-region img {
+  border-radius: var(--radius-sm);
+  max-width: 100%;
+}
+
+/* Any status / helper text the library prints */
+#public-qr-scanner-region,
+#public-qr-scanner-region span,
+#public-qr-scanner-region div {
+  color: #1e293b;
+}
+
+/* "Request Camera Permissions", "Scan an Image File",
+   "Stop Scanning", "Switch Camera" — the library renders
+   these as <button> and <a>. Style them as clear buttons. */
+#public-qr-scanner-region button,
+#public-qr-scanner-region a {
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-family: var(--font-display) !important;
+  font-size: 0.95rem !important;
+  font-weight: 600 !important;
+  color: #ffffff !important;
+  background: var(--primary) !important;
+  border: none !important;
+  border-radius: var(--radius-sm) !important;
+  padding: 12px 20px !important;
+  margin: 8px 6px !important;
+  cursor: pointer !important;
+  text-decoration: none !important;
+  box-shadow: 0 4px 12px var(--primary-glow);
+  transition: all var(--transition-fast);
+}
+
+#public-qr-scanner-region button:hover,
+#public-qr-scanner-region a:hover {
+  filter: brightness(1.05);
+  transform: translateY(-1px);
+}
+
+/* The camera-select dropdown the library injects */
+#public-qr-scanner-region select {
+  font-family: var(--font-display);
+  font-size: 0.9rem;
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--card-border);
+  margin: 8px 0;
+  max-width: 100%;
 }
 
 textarea#bulk-list {

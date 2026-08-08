@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Card from '../common/Card';
 import { verifyAuthenticity, registerCustomPanel, registerBulkPanels, generateCustomBarcode } from '../../services/authenticityService';
-import { Html5QrcodeScanner } from 'html5-qrcode';
+import { Html5Qrcode } from 'html5-qrcode';
 import { Search, Loader2, CheckCircle2, AlertTriangle, Cpu, Calendar, ShieldCheck, Tag, PlusCircle, HelpCircle, FileText, Upload, Globe, ScanLine, Keyboard, Camera } from 'lucide-react';
 import './AuthenticityScreen.css';
 import verificationImg from '../../assets/images/verification.webp';
@@ -27,59 +27,79 @@ const AuthenticityScreen = () => {
   const scanTimeoutRef = React.useRef(null);
 
   React.useEffect(() => {
-    if (activeTab !== 'verify') return;
+    if (activeTab !== 'verify' || scanMode !== 'camera') return;
 
-    if (scanMode === 'camera') {
+    let cancelled = false;
+    setScanHelpMessage('');
+
+    // After a few seconds with no successful scan, show a gentle tip.
+    scanTimeoutRef.current = setTimeout(() => {
+      setScanHelpMessage('Having trouble? Hold the barcode steady, keep it in focus, and make sure it is well-lit.');
+    }, 6000);
+
+    const onScanSuccess = async (decodedText) => {
+      if (cancelled) return;
+      if (scanTimeoutRef.current) clearTimeout(scanTimeoutRef.current);
       setScanHelpMessage('');
-      scanTimeoutRef.current = setTimeout(() => {
-        setScanHelpMessage('Having trouble? Ensure the barcode is clear, not blurry, and well-lit.');
-      }, 6000);
 
-      setTimeout(() => {
-        if (!scannerRef.current) return;
-        const scanner = new Html5QrcodeScanner(
-          'public-qr-scanner-region',
-          {
-            fps: 10,
-            qrbox: { width: 280, height: 280 },
-            aspectRatio: 1,
-            // Open the rear/back camera by default so users don't have to
-            // switch manually. Falls back to any available camera (e.g. a
-            // laptop's front webcam) when no environment-facing camera exists.
-            videoConstraints: { facingMode: { ideal: 'environment' } },
-          },
-          false
-        );
-        scanner.render(
-          async (decodedText) => {
-            scanner.clear().catch(() => {});
-            if (scanTimeoutRef.current) clearTimeout(scanTimeoutRef.current);
-            setScanHelpMessage('');
-            setScanMode('manual');
-            setBarcode(decodedText);
-            
-            setLoading(true);
-            setError('');
-            setResult(null);
-            try {
-              const data = await verifyAuthenticity(decodedText);
-              setResult(data);
-            } catch (err) {
-              setError(err.message || 'Failed to verify. Please try again.');
-            } finally {
-              setLoading(false);
-            }
-          },
-          () => {}
-        );
-        scannerInstanceRef.current = scanner;
-      }, 200);
-    }
+      // Stop the camera, switch back to manual view, and verify.
+      const inst = scannerInstanceRef.current;
+      if (inst) {
+        try { await inst.stop(); } catch (e) { /* already stopped */ }
+        try { await inst.clear(); } catch (e) { /* ignore */ }
+        scannerInstanceRef.current = null;
+      }
+
+      setScanMode('manual');
+      setBarcode(decodedText);
+      setLoading(true);
+      setError('');
+      setResult(null);
+      try {
+        const data = await verifyAuthenticity(decodedText);
+        setResult(data);
+      } catch (err) {
+        setError(err.message || 'Failed to verify. Please try again.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    // Give the DOM a tick to mount the scanner container, then auto-start
+    // the rear camera. This triggers the browser's permission prompt
+    // automatically — no button for the user to hunt for.
+    const startTimer = setTimeout(() => {
+      if (cancelled || !scannerRef.current) return;
+      const html5Qr = new Html5Qrcode('public-qr-scanner-region', { verbose: false });
+      scannerInstanceRef.current = html5Qr;
+
+      html5Qr
+        .start(
+          { facingMode: { ideal: 'environment' } },
+          { fps: 10, qrbox: { width: 260, height: 260 } },
+          onScanSuccess,
+          () => {} // per-frame decode errors: ignore
+        )
+        .catch((err) => {
+          if (cancelled) return;
+          if (scanTimeoutRef.current) clearTimeout(scanTimeoutRef.current);
+          // Permission denied or no camera available — show a calm message.
+          const msg = String(err || '');
+          if (msg.toLowerCase().includes('permission') || msg.toLowerCase().includes('denied') || msg.toLowerCase().includes('notallowed')) {
+            setScanHelpMessage('Camera access is blocked. Please allow camera permission in your browser, or use Manual Entry below.');
+          } else {
+            setScanHelpMessage('No camera found. Please use Manual Entry to type the serial number.');
+          }
+        });
+    }, 200);
 
     return () => {
+      cancelled = true;
+      clearTimeout(startTimer);
       if (scanTimeoutRef.current) clearTimeout(scanTimeoutRef.current);
-      if (scannerInstanceRef.current) {
-        scannerInstanceRef.current.clear().catch(() => {});
+      const inst = scannerInstanceRef.current;
+      if (inst) {
+        inst.stop().then(() => inst.clear()).catch(() => {});
         scannerInstanceRef.current = null;
       }
     };
@@ -300,11 +320,15 @@ const AuthenticityScreen = () => {
 
                 {scanMode === 'camera' ? (
                   <div className="camera-scanner-wrapper">
+                    <div className="camera-permission-hint">
+                      <Camera size={16} style={{ flexShrink: 0 }} />
+                      <span>Point your back camera at the barcode. Tap <strong>Allow</strong> if asked for camera access.</span>
+                    </div>
                     <div id="public-qr-scanner-region" ref={scannerRef}></div>
                     {scanHelpMessage && (
-                      <div className="scan-help-message" style={{ padding: '12px', backgroundColor: 'rgba(245, 158, 11, 0.08)', color: '#92400e', fontSize: '14px', textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', borderTop: '1px solid rgba(245, 158, 11, 0.2)' }}>
-                        <HelpCircle size={18} />
-                        {scanHelpMessage}
+                      <div className="scan-help-message" style={{ padding: '12px 16px', backgroundColor: '#f8fafc', color: '#1e293b', fontSize: '14px', textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', borderTop: '1px solid var(--card-border)' }}>
+                        <HelpCircle size={18} style={{ flexShrink: 0 }} />
+                        <span>{scanHelpMessage}</span>
                       </div>
                     )}
                   </div>
