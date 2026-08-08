@@ -57,11 +57,15 @@
         "Utility-scale solar", "Commercial & industrial solar", "Residential solar",
         "Agrivoltaics", "Green hydrogen production", "Solar-plus-storage integration"
       ],
-      "makesOffer": [
-        { "@type": "Offer", "itemOffered": { "@type": "ProductGroup", "name": "Trison Solar Panels — high-efficiency monocrystalline PV modules for residential, commercial, and utility installations" } },
-        { "@type": "Offer", "itemOffered": { "@type": "ProductGroup", "name": "Trison Solar Inverters — on-grid, off-grid, and hybrid inverters for every project size" } },
-        { "@type": "Offer", "itemOffered": { "@type": "ProductGroup", "name": "Trison Solar Batteries — LiFePO4 lithium energy storage systems for backup and self-consumption" } }
-      ],
+      "hasOfferCatalog": {
+        "@type": "OfferCatalog",
+        "name": "Trison Clean-Energy Product Lines",
+        "itemListElement": [
+          { "@type": "OfferCatalog", "name": "Trison Solar Panels — high-efficiency monocrystalline PV modules for residential, commercial, and utility installations" },
+          { "@type": "OfferCatalog", "name": "Trison Solar Inverters — on-grid, off-grid, and hybrid inverters for every project size" },
+          { "@type": "OfferCatalog", "name": "Trison Solar Batteries — LiFePO4 lithium energy storage systems for backup and self-consumption" }
+        ]
+      },
       "contactPoint": [
         {
           "@type": "ContactPoint",
