@@ -102,6 +102,10 @@
   border: none;
   color: var(--text-primary);
   cursor: pointer;
+  padding: 6px;
+  margin-right: -6px;
+  align-items: center;
+  justify-content: center;
 }
 
 /* Mobile Drawer */
@@ -162,12 +166,28 @@
     display: none;
   }
   .mobile-toggle {
-    display: block;
+    display: inline-flex;
   }
   .navbar {
     padding: 18px 0;
     background: rgba(255, 255, 255, 0.85);
     backdrop-filter: var(--blur-filter);
     border-bottom: 1px solid var(--card-border);
+  }
+  .navbar-container {
+    padding: 0 20px;
+  }
+}
+
+/* Small phones — pull the hamburger and logo further in from the edges */
+@media (max-width: 480px) {
+  .navbar-container {
+    padding: 0 18px;
+  }
+  .mobile-toggle {
+    margin-right: 0;
+  }
+  .logo-img {
+    height: 32px;
   }
 }
