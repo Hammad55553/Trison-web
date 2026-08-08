@@ -175,17 +175,20 @@
     border-bottom: 1px solid var(--card-border);
   }
   .navbar-container {
+    max-width: 100%;
     padding: 0 20px;
+  }
+  /* On mobile the hamburger should sit inside the padding, never hug the
+     screen edge. Reset the negative margin used on desktop. */
+  .mobile-toggle {
+    margin-right: 0;
   }
 }
 
-/* Small phones — pull the hamburger and logo further in from the edges */
+/* Small phones — a touch more breathing room from the edges */
 @media (max-width: 480px) {
   .navbar-container {
     padding: 0 18px;
-  }
-  .mobile-toggle {
-    margin-right: 0;
   }
   .logo-img {
     height: 32px;
