@@ -103,7 +103,6 @@
   color: var(--text-primary);
   cursor: pointer;
   padding: 6px;
-  margin-right: -6px;
   align-items: center;
   justify-content: center;
 }
@@ -176,12 +175,14 @@
   }
   .navbar-container {
     max-width: 100%;
+    width: 100%;
     padding: 0 20px;
   }
   /* On mobile the hamburger should sit inside the padding, never hug the
      screen edge. Reset the negative margin used on desktop. */
   .mobile-toggle {
     margin-right: 0;
+    flex-shrink: 0;
   }
 }
 
