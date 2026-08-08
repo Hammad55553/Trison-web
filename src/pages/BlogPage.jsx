@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { getAllBlogs } from '../services/blogService';
 import './BlogPage.css';
 import { Calendar, ArrowRight, User } from 'lucide-react';
+import fallbackImg from '../assets/images/pv_module.webp';
 
 const BlogPage = ({ onViewChange }) => {
   const [blogs, setBlogs] = useState([]);
@@ -70,8 +71,9 @@ const BlogPage = ({ onViewChange }) => {
               {regularPosts.map(post => (
                 <article key={post.id} className="blog-card">
                   <div className="blog-card-image">
-                    <img src={post.image || 'https://images.unsplash.com/photo-1509391366360-1200424bb9a3?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'} alt={post.title} loading="lazy" />
+                    <img src={post.image || fallbackImg} alt={post.title} loading="lazy" />
                     <div className="blog-category-badge sm">{post.category}</div>
+                    {post.imageCredit && <span className="blog-img-credit">{post.imageCredit}</span>}
                   </div>
                   <div className="blog-card-content">
                     <div className="blog-meta sm">

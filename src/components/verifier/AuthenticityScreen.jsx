@@ -22,7 +22,16 @@ const AuthenticityScreen = () => {
 
   const [scanMode, setScanMode] = useState('manual');
   const [scanHelpMessage, setScanHelpMessage] = useState('');
+  const resultRef = React.useRef(null);
   const scannerRef = React.useRef(null);
+
+  // On mobile, once a result/error appears, gently scroll it into view so the
+  // user sees the outcome instead of staying stuck on the input form.
+  React.useEffect(() => {
+    if ((result || error) && window.innerWidth <= 900 && resultRef.current) {
+      resultRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }, [result, error]);
   const scannerInstanceRef = React.useRef(null);
   const scanTimeoutRef = React.useRef(null);
 
@@ -261,20 +270,20 @@ const AuthenticityScreen = () => {
     <div className="verifier-page-wrapper" style={{ position: 'relative', zIndex: 10, backgroundColor: '#f8fafc' }}>
       {/* Premium Hero Banner for Verification */}
       <section
+        className="verifier-hero"
         style={{
           backgroundImage: `linear-gradient(135deg, rgba(14, 165, 233, 0.5) 0%, rgba(15, 23, 42, 0.8) 100%), url(${headerBg})`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           backgroundRepeat: 'no-repeat',
-          padding: '140px 24px',
           color: 'white',
           textAlign: 'center',
           position: 'relative'
         }}
       >
         <div style={{ position: 'relative', zIndex: 2 }}>
-          <h1 style={{ fontSize: '3.5rem', fontWeight: 900, margin: '0 0 16px 0', color: '#fff' }}>Verification & Registry</h1>
-          <p style={{ fontSize: '1.25rem', color: '#cbd5e1', margin: 0 }}>Securely authenticate your Trison Solar imports via our encrypted global registry.</p>
+          <h1 className="verifier-hero-title">Verification & Registry</h1>
+          <p className="verifier-hero-sub">Securely authenticate your Trison Solar imports via our encrypted global registry.</p>
         </div>
       </section>
 
@@ -360,7 +369,7 @@ const AuthenticityScreen = () => {
                 </div>
               </Card>
 
-              <div className="auth-result-wrapper">
+              <div className="auth-result-wrapper" ref={resultRef}>
                 {loading && (
                   <div className="auth-status-card loading-card glass">
                     <div className="scanner-line"></div>

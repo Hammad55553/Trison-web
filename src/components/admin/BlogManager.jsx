@@ -70,7 +70,7 @@ const BlogManager = () => {
       excerpt,
       category,
       author,
-      image: imageUrl || 'https://images.unsplash.com/photo-1509391366360-1200424bb9a3?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+      image: imageUrl || '/og-image.jpg',
     };
 
     if (currentBlog) {

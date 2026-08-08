@@ -1,4 +1,15 @@
 import expoImg from '../assets/images/expo.webp';
+// Local, always-correct Trison imagery. We never rely on an external CDN
+// (Unsplash) or a third-party news feed's own image, because those can be
+// swapped out for wrong/unrelated pictures at any time.
+import pvModuleImg from '../assets/images/pv_module.webp';
+import pvSolutionsImg from '../assets/images/pv_solutions.webp';
+import newsTandemImg from '../assets/images/news_tandem_cell.webp';
+import siliconImg from '../assets/images/silicon.webp';
+import utilityImg from '../assets/images/untilty.webp';
+import inverterImg from '../assets/images/inverter.webp';
+import solarNodesImg from '../assets/images/solar_network_nodes.webp';
+import siliconWaferImg from '../assets/images/silicon_wafer.webp';
 
 /**
  * ────────────────────────────────────────────────────────────
@@ -23,6 +34,52 @@ const CUSTOM_BLOGS_KEY = 'trison_custom_blogs';
 const LIVE_CACHE_KEY = 'trison_live_news_cache_v1';
 const LIVE_CACHE_TTL_MS = 30 * 60 * 1000; // 30 minutes
 
+// ── PIXABAY (royalty-free solar images) ───────────────────
+// Every live news item gets a relevant, copyright-free solar photo pulled
+// from Pixabay by keyword. Results are cached 24h (Pixabay's requirement)
+// so we never hammer the API. If Pixabay is unreachable, we fall back to a
+// bundled local Trison image — so a card is never blank or off-brand.
+const PIXABAY_KEY = '43037648-e35606f65e1585d340d9aaa31';
+const PIXABAY_CACHE_KEY = 'trison_pixabay_pool_v1';
+const PIXABAY_CACHE_TTL_MS = 24 * 60 * 60 * 1000; // 24 hours
+
+// Fetch a pool of solar photos once, then assign them across articles.
+export async function fetchPixabayPool() {
+  // Serve from 24h cache when possible.
+  try {
+    const raw = localStorage.getItem(PIXABAY_CACHE_KEY);
+    if (raw) {
+      const { at, urls } = JSON.parse(raw);
+      if (Date.now() - at < PIXABAY_CACHE_TTL_MS && Array.isArray(urls) && urls.length) {
+        return urls;
+      }
+    }
+  } catch {}
+
+  const terms = ['solar+panel', 'solar+energy', 'photovoltaic', 'solar+farm', 'renewable+energy'];
+  const urls = [];
+  await Promise.all(
+    terms.map(async (q) => {
+      try {
+        const u = `https://pixabay.com/api/?key=${PIXABAY_KEY}&q=${q}&image_type=photo&orientation=horizontal&safesearch=true&per_page=12`;
+        const res = await fetch(u);
+        if (!res.ok) return;
+        const data = await res.json();
+        (data.hits || []).forEach((h) => {
+          if (h.webformatURL) urls.push(h.webformatURL);
+        });
+      } catch {}
+    })
+  );
+
+  if (urls.length) {
+    try {
+      localStorage.setItem(PIXABAY_CACHE_KEY, JSON.stringify({ at: Date.now(), urls }));
+    } catch {}
+  }
+  return urls;
+}
+
 // ── 1. LIVE FREE FEEDS ─────────────────────────────────────
 // GDELT DOC 2.0 is a completely free global-news API with CORS
 // enabled and no key required. We query solar-industry keywords.
@@ -46,18 +103,18 @@ const RSS_BRIDGES = [
   },
 ];
 
-// Trison-flavoured picture pool (Unsplash CDN, free, high quality).
+// Trison-flavoured picture pool — 100% local assets, so a headline can never
+// be paired with a wrong/unrelated image from an external source.
 const FALLBACK_IMAGES = [
-  'https://images.unsplash.com/photo-1509391366360-1200424bb9a3?auto=format&fit=crop&w=1200&q=80',
-  'https://images.unsplash.com/photo-1497435334941-8c899ee9e8e9?auto=format&fit=crop&w=1200&q=80',
-  'https://images.unsplash.com/photo-1584486520270-19eca1efcce5?auto=format&fit=crop&w=1200&q=80',
-  'https://images.unsplash.com/photo-1466611653911-95081537e5b7?auto=format&fit=crop&w=1200&q=80',
-  'https://images.unsplash.com/photo-1508514177221-188b1cf16e9d?auto=format&fit=crop&w=1200&q=80',
-  'https://images.unsplash.com/photo-1548337138-e87d889cc369?auto=format&fit=crop&w=1200&q=80',
-  'https://images.unsplash.com/photo-1497440001374-f26997328c1b?auto=format&fit=crop&w=1200&q=80',
-  'https://images.unsplash.com/photo-1523348837708-15d4a09cfac2?auto=format&fit=crop&w=1200&q=80',
-  'https://images.unsplash.com/photo-1497436072909-60f360e1d4b1?auto=format&fit=crop&w=1200&q=80',
-  'https://images.unsplash.com/photo-1521405924368-64c5b84bec60?auto=format&fit=crop&w=1200&q=80',
+  pvModuleImg,
+  pvSolutionsImg,
+  newsTandemImg,
+  utilityImg,
+  solarNodesImg,
+  siliconImg,
+  inverterImg,
+  siliconWaferImg,
+  expoImg,
 ];
 
 const pickImage = (i) => FALLBACK_IMAGES[i % FALLBACK_IMAGES.length];
@@ -90,7 +147,7 @@ const TRISON_CURATED = [
       'All Trison LiFePO4 residential and commercial battery packs have passed UL 9540A thermal-runaway propagation testing — the strictest fire-safety benchmark in energy storage — clearing the path for insurance-friendly deployments in California, Australia, and the EU.',
     category: 'Safety & Certification',
     author: 'Trison Compliance Desk',
-    image: 'https://images.unsplash.com/photo-1620288627228-21d3f945371c?auto=format&fit=crop&w=1200&q=80',
+    image: inverterImg,
   },
   {
     id: 'trison-04',
@@ -246,7 +303,9 @@ async function fetchGDELT() {
       category: 'Global News',
       date: gdeltDate(a.seendate),
       author: a.domain || 'Global Newswire',
-      image: a.socialimage || pickImage(i + 3),
+      // Always use a local Trison image — never the article's own social image
+      // (those are unreliable and often unrelated/off-brand).
+      image: pickImage(i + 3),
       link: a.url,
       source: 'live',
       featured: false,
@@ -293,7 +352,8 @@ async function fetchRSSBridges() {
         category: b.fallbackCategory,
         date: it.pubDate ? new Date(it.pubDate).toISOString() : new Date().toISOString(),
         author: it.author || (d.feed && d.feed.title) || 'Solar Industry Wire',
-        image: it.thumbnail || it.enclosure?.link || pickImage(idx + i),
+        // Local Trison image only — feed thumbnails are unreliable/off-brand.
+        image: pickImage(idx + i),
         link: it.link,
         source: 'live',
         featured: false,
@@ -304,8 +364,23 @@ async function fetchRSSBridges() {
 }
 
 async function fetchLiveNews() {
-  const [gdelt, rss] = await Promise.all([fetchGDELT(), fetchRSSBridges()]);
-  return [...gdelt, ...rss];
+  const [gdelt, rss, pixabay] = await Promise.all([
+    fetchGDELT(),
+    fetchRSSBridges(),
+    fetchPixabayPool(),
+  ]);
+  const items = [...gdelt, ...rss];
+
+  // Give every live news item a relevant, royalty-free Pixabay solar photo.
+  // Rotate through the pool so images vary; keep the local fallback that the
+  // item already has if the pool came back empty.
+  if (pixabay.length) {
+    items.forEach((it, i) => {
+      it.image = pixabay[i % pixabay.length];
+      it.imageCredit = 'Pixabay';
+    });
+  }
+  return items;
 }
 
 // Local cache to avoid hammering feeds on every navigation.
@@ -336,7 +411,9 @@ function hydrateCurated() {
   return TRISON_CURATED.map((c, i) => ({
     ...c,
     date: new Date(now - (i * 4 + 1) * dayMs).toISOString(),
-    image: i === 0 ? expoImg : pickImage(i),
+    // Local image is only a fallback; Pixabay images are applied later in
+    // getAllBlogs so Trison curated pieces also get free stock solar photos.
+    image: c.image || pickImage(i),
     source: 'trison',
   }));
 }
@@ -375,6 +452,18 @@ export const getAllBlogs = async () => {
     live = await fetchLiveNews();
     if (live.length) writeLiveCache(live);
   }
+
+  // Give Trison curated pieces free Pixabay solar photos too (not the bundled
+  // local project images). Offset the index so they differ from live items.
+  try {
+    const pool = await fetchPixabayPool();
+    if (pool.length) {
+      curated.forEach((c, i) => {
+        c.image = pool[(i + 5) % pool.length];
+        c.imageCredit = 'Pixabay';
+      });
+    }
+  } catch {}
 
   let merged = dedupe([...custom, ...curated, ...live]); // Custom first so they override
   

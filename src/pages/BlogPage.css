@@ -220,6 +220,21 @@
   transition: transform 0.5s ease;
 }
 
+/* Royalty-free image attribution (Pixabay requirement) */
+.blog-img-credit {
+  position: absolute;
+  bottom: 6px;
+  right: 6px;
+  background: rgba(0, 0, 0, 0.55);
+  color: #fff;
+  font-size: 0.62rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  padding: 2px 7px;
+  border-radius: 4px;
+  pointer-events: none;
+}
+
 .blog-card:hover .blog-card-image img {
   transform: scale(1.05);
 }

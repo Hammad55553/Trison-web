@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { getAllBlogs } from '../services/blogService';
 import { Calendar, User, ArrowLeft, Share2 } from 'lucide-react';
 import './BlogPostPage.css';
+import fallbackImg from '../assets/images/pv_module.webp';
 
 const BlogPostPage = ({ blogId, onViewChange }) => {
   const [blog, setBlog] = useState(null);
@@ -65,7 +66,7 @@ const BlogPostPage = ({ blogId, onViewChange }) => {
 
       {/* Article Featured Image */}
       <div className="post-image-container">
-        <img src={blog.image || 'https://images.unsplash.com/photo-1509391366360-1200424bb9a3?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80'} alt={blog.title} />
+        <img src={blog.image || fallbackImg} alt={blog.title} />
       </div>
 
       {/* Article Content */}

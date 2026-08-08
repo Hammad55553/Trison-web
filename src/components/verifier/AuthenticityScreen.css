@@ -82,6 +82,35 @@
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
 }
 
+/* Verifier hero banner — fluid so it scales down cleanly on phones */
+.verifier-hero {
+  padding: 140px 24px;
+}
+.verifier-hero-title {
+  font-size: 3.5rem;
+  font-weight: 900;
+  margin: 0 0 16px 0;
+  color: #fff;
+  line-height: 1.1;
+}
+.verifier-hero-sub {
+  font-size: 1.25rem;
+  color: #cbd5e1;
+  margin: 0;
+}
+
+@media (max-width: 768px) {
+  .verifier-hero {
+    padding: 90px 20px 60px;
+  }
+  .verifier-hero-title {
+    font-size: 2.1rem;
+  }
+  .verifier-hero-sub {
+    font-size: 1rem;
+  }
+}
+
 .authenticity-grid {
   display: grid;
   grid-template-columns: 1.1fr 0.9fr;
@@ -868,7 +897,27 @@ textarea#bulk-list:focus {
   .auth-form-card {
     padding: 24px;
   }
-  
+
+  /* Result card: stack meta items one per row so long serials don't overflow */
+  .auth-meta-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  .meta-value {
+    font-size: 0.95rem;
+    word-break: break-word;
+    overflow-wrap: anywhere;
+  }
+  .success-header {
+    flex-wrap: wrap;
+  }
+  .success-header h3 {
+    font-size: 1.4rem;
+  }
+  .auth-status-card {
+    padding: 24px 18px;
+  }
+
   .verification-benefits-section {
     margin-top: 60px;
   }
