@@ -1226,6 +1226,45 @@ body.admin-body::before {
   border-radius: 8px;
   overflow: hidden;
   border: none !important;
+  background: #ffffff;
+}
+
+#pm-qr-region button,
+#pm-qr-region a {
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 0.9rem !important;
+  font-weight: 600 !important;
+  color: #ffffff !important;
+  background: #f97316 !important;
+  border: none !important;
+  border-radius: 8px !important;
+  padding: 11px 18px !important;
+  margin: 8px 6px !important;
+  cursor: pointer !important;
+  text-decoration: none !important;
+  box-shadow: 0 4px 12px rgba(249, 115, 22, 0.2);
+  transition: all 0.15s ease;
+}
+#pm-qr-region button:hover,
+#pm-qr-region a:hover {
+  background: #ea6c0e !important;
+  transform: translateY(-1px);
+}
+#pm-qr-region select {
+  font-size: 0.9rem;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid #cbd5e1;
+  margin: 8px 0;
+  max-width: 100%;
+}
+#pm-qr-region video,
+#pm-qr-region img {
+  border-radius: 8px;
+  max-width: 100%;
 }
 
 /* Auto-filled parameter badges */

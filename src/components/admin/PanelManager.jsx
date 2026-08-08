@@ -173,29 +173,45 @@ const PanelManager = ({ onSerialsUpdate }) => {
   // ── QR / Barcode scanner for serial field ─────────
   const startScanner = () => {
     setScanning(true);
+    // Delay so any previously-open camera releases its track first
+    // (prevents "NotReadableError: Could not start video source").
     setTimeout(() => {
       if (!scannerRef.current) return;
       const sc = new Html5QrcodeScanner(
         'pm-qr-region',
-        { fps: 10, qrbox: { width: 240, height: 120 }, aspectRatio: 2 },
+        {
+          fps: 10,
+          qrbox: { width: 240, height: 120 },
+          aspectRatio: 2,
+          videoConstraints: { facingMode: { ideal: 'environment' } },
+          rememberLastUsedCamera: true,
+        },
         false
       );
       sc.render(
-        (decoded) => {
-          sc.clear().catch(() => { });
+        async (decoded) => {
+          try { await sc.clear(); } catch (e) { /* ignore */ }
           scannerInst.current = null;
           setScanning(false);
           setForm(f => ({ ...f, serial: decoded.trim() }));
         },
-        () => { }
+        (errMsg) => {
+          const m = String(errMsg || '').toLowerCase();
+          if (m.includes('notreadable') || m.includes('could not start video')) {
+            flash('Camera is busy. Close other apps/tabs using the camera, then try again.');
+          }
+        }
       );
       scannerInst.current = sc;
-    }, 150);
+    }, 400);
   };
 
   const stopScanner = () => {
     if (scannerInst.current) {
-      scannerInst.current.clear().catch(() => { });
+      try {
+        const p = scannerInst.current.clear();
+        if (p && typeof p.catch === 'function') p.catch(() => {});
+      } catch (e) { /* ignore */ }
       scannerInst.current = null;
     }
     setScanning(false);
