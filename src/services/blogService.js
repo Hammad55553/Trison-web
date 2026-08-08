@@ -411,9 +411,9 @@ function hydrateCurated() {
   return TRISON_CURATED.map((c, i) => ({
     ...c,
     date: new Date(now - (i * 4 + 1) * dayMs).toISOString(),
-    // Local image is only a fallback; Pixabay images are applied later in
-    // getAllBlogs so Trison curated pieces also get free stock solar photos.
-    image: c.image || pickImage(i),
+    // First (featured) item always uses our own Trison expo image; the rest
+    // fall back to a local image but get a Pixabay photo later in getAllBlogs.
+    image: i === 0 ? expoImg : (c.image || pickImage(i)),
     source: 'trison',
   }));
 }
@@ -454,11 +454,13 @@ export const getAllBlogs = async () => {
   }
 
   // Give Trison curated pieces free Pixabay solar photos too (not the bundled
-  // local project images). Offset the index so they differ from live items.
+  // local project images). Keep the very first (featured) item on the local
+  // Trison expo image — that one should always show our own booth photo.
   try {
     const pool = await fetchPixabayPool();
     if (pool.length) {
       curated.forEach((c, i) => {
+        if (i === 0) return; // featured item keeps its local expo image
         c.image = pool[(i + 5) % pool.length];
         c.imageCredit = 'Pixabay';
       });

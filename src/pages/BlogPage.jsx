@@ -37,7 +37,15 @@ const BlogPage = ({ onViewChange }) => {
 
       <div className="blog-container">
         {loading ? (
-          <div style={{ textAlign: 'center', padding: '100px', color: '#fff' }}>Loading latest news...</div>
+          <div className="trison-loader">
+            <div className="trison-loader-ring">
+              <span className="trison-loader-core"></span>
+            </div>
+            <div className="trison-loader-brand">
+              TRIS<span>O</span>N
+            </div>
+            <p className="trison-loader-text">Fetching the latest solar news…</p>
+          </div>
         ) : (
           <>
             {/* Featured Post */}

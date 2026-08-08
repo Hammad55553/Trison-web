@@ -2,6 +2,73 @@
    Blog & Newsroom Styles (Trison)
 ════════════════════════════════ */
 
+/* ── Trison-branded loader ─────────────────────────── */
+.trison-loader {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 22px;
+  padding: 110px 20px;
+}
+
+/* Spinning solar ring: navy track + orange sweep, like a rotating sun */
+.trison-loader-ring {
+  position: relative;
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  border: 5px solid rgba(26, 26, 94, 0.15);
+  border-top-color: #f97316;   /* Trison orange sweep */
+  border-right-color: #1a1a5e; /* Trison navy */
+  animation: trison-spin 0.9s linear infinite;
+}
+
+/* Glowing core = the sun */
+.trison-loader-core {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 22px;
+  height: 22px;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: radial-gradient(circle, #fbbf24 0%, #f97316 70%);
+  box-shadow: 0 0 18px rgba(249, 115, 22, 0.7);
+  animation: trison-pulse 1.2s ease-in-out infinite;
+}
+
+.trison-loader-brand {
+  font-family: var(--font-display, 'Outfit', sans-serif);
+  font-size: 1.6rem;
+  font-weight: 900;
+  letter-spacing: 0.14em;
+  color: #1a1a5e;
+}
+.trison-loader-brand span {
+  color: #f97316; /* the "O" in orange — matches the Trison logo */
+}
+
+.trison-loader-text {
+  font-size: 0.95rem;
+  color: #64748b;
+  font-weight: 500;
+  margin: 0;
+  animation: trison-fade 1.4s ease-in-out infinite;
+}
+
+@keyframes trison-spin {
+  to { transform: rotate(360deg); }
+}
+@keyframes trison-pulse {
+  0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+  50%      { transform: translate(-50%, -50%) scale(0.72); opacity: 0.75; }
+}
+@keyframes trison-fade {
+  0%, 100% { opacity: 0.5; }
+  50%      { opacity: 1; }
+}
+
 .blog-page {
   padding-top: 80px; /* Offset for fixed navbar */
   min-height: 100vh;
