@@ -172,7 +172,7 @@ const RapidScan = ({ onDataChange }) => {
             >
               <option value="" disabled>Select a model…</option>
               {MODEL_OPTIONS.map((m) => (
-                <option key={m.model} value={m.model}>{m.model} — {m.wattage}</option>
+                <option key={m.model} value={m.model}>{m.model}</option>
               ))}
               <option value="__custom__">Custom (type your own)…</option>
             </select>
