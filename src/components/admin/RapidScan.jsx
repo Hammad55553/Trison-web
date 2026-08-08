@@ -15,9 +15,9 @@ import {
  * operator Update / Delete / Skip.
  */
 const DEFAULT_CFG = {
-  model: 'TS-Premium-580M',
-  wattage: '580W',
-  technology: 'Bifacial Mono PERC',
+  model: 'TS21RN-66HT585W',
+  wattage: '585W',
+  technology: 'N-Type Mono',
   class: 'A',
   country: 'Pakistan',
   status: 'active',
@@ -35,6 +35,11 @@ const RapidScan = ({ onDataChange }) => {
   const [scanned, setScanned] = useState([]); // {serial, action:'added'|'updated', at}
   const [duplicate, setDuplicate] = useState(null); // pending duplicate serial + existing
   const [buffer, setBuffer] = useState('');
+  const [customModel, setCustomModel] = useState(() => {
+    const saved = localStorage.getItem('trison_rapid_cfg');
+    const m = saved ? JSON.parse(saved).model : DEFAULT_CFG.model;
+    return m && !MODEL_MAP[m];
+  });
   const inputRef = useRef(null);
 
   // Persist config so it survives refresh.
@@ -151,16 +156,36 @@ const RapidScan = ({ onDataChange }) => {
         </div>
         <div className="rapid-config-grid">
           <label>Model
-            <input
-              list="rapid-model-options"
-              placeholder="Select or type a model…"
-              value={cfg.model}
+            <select
+              value={customModel ? '__custom__' : cfg.model}
               disabled={running}
-              onChange={(e) => setModel(e.target.value)}
-            />
-            <datalist id="rapid-model-options">
-              {MODEL_OPTIONS.map((m) => <option key={m.model} value={m.model}>{m.wattage}</option>)}
-            </datalist>
+              onChange={(e) => {
+                const val = e.target.value;
+                if (val === '__custom__') {
+                  setCustomModel(true);
+                  setField('model', '');
+                } else {
+                  setCustomModel(false);
+                  setModel(val);
+                }
+              }}
+            >
+              <option value="" disabled>Select a model…</option>
+              {MODEL_OPTIONS.map((m) => (
+                <option key={m.model} value={m.model}>{m.model} — {m.wattage}</option>
+              ))}
+              <option value="__custom__">Custom (type your own)…</option>
+            </select>
+            {customModel && (
+              <input
+                style={{ marginTop: 8 }}
+                placeholder="Type custom model number…"
+                value={cfg.model}
+                disabled={running}
+                onChange={(e) => setModel(e.target.value)}
+                autoFocus
+              />
+            )}
           </label>
           <label>Wattage (auto)
             <input value={cfg.wattage} disabled={running} onChange={(e) => setField('wattage', e.target.value)} />

@@ -37,7 +37,10 @@ const PanelManager = ({ onSerialsUpdate }) => {
   const [form, setForm] = useState({ ...BLANK });
   const [toast, setToast] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
+  const [itemsPerPage, setItemsPerPage] = useState(() => {
+    const saved = parseInt(localStorage.getItem('trison_pm_per_page'), 10);
+    return saved > 0 ? saved : 10;
+  });
   const [scanning, setScanning] = useState(false);
   const [printPanel, setPrintPanel] = useState(null);
   const [importing, setImporting] = useState(false);
@@ -238,6 +241,14 @@ const PanelManager = ({ onSerialsUpdate }) => {
 
   const totalPages = Math.ceil(filtered.length / itemsPerPage) || 1;
   const paginatedPanels = filtered.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+
+  // Change how many rows show per page; persist and jump back to page 1.
+  const changePerPage = (n) => {
+    const val = Math.max(1, parseInt(n, 10) || 10);
+    setItemsPerPage(val);
+    setCurrentPage(1);
+    localStorage.setItem('trison_pm_per_page', String(val));
+  };
 
   if (showForm) {
     return (
@@ -638,6 +649,34 @@ const PanelManager = ({ onSerialsUpdate }) => {
         <div className="pm-count">
           Showing {filtered.length === 0 ? 0 : (currentPage - 1) * itemsPerPage + 1} - {Math.min(currentPage * itemsPerPage, filtered.length)} of {filtered.length} panels
         </div>
+
+        <div className="pm-per-page">
+          <label htmlFor="pm-per-page-select">Per page</label>
+          <select
+            id="pm-per-page-select"
+            value={[10, 25, 50, 75, 100].includes(itemsPerPage) ? itemsPerPage : '__custom__'}
+            onChange={e => {
+              if (e.target.value === '__custom__') return;
+              changePerPage(e.target.value);
+            }}
+          >
+            {[10, 25, 50, 75, 100].map(n => (
+              <option key={n} value={n}>{n}</option>
+            ))}
+            {![10, 25, 50, 75, 100].includes(itemsPerPage) && (
+              <option value="__custom__">{itemsPerPage} (custom)</option>
+            )}
+          </select>
+          <input
+            type="number"
+            min="1"
+            className="pm-per-page-custom"
+            placeholder="Custom"
+            onKeyDown={e => { if (e.key === 'Enter') changePerPage(e.currentTarget.value); }}
+            onBlur={e => { if (e.target.value) changePerPage(e.target.value); }}
+          />
+        </div>
+
         {totalPages > 1 && (
           <div className="pm-pagination">
             <button

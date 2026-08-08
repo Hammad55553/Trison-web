@@ -1020,11 +1020,91 @@ body.admin-body::before {
 }
 
 .pm-count {
-  margin-top: 16px;
   font-size: 0.8rem;
   color: #64748b;
-  text-align: right;
   font-weight: 500;
+}
+
+/* ── Pagination + per-page controls (responsive) ── */
+.pm-pagination-wrap {
+  margin-top: 16px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.pm-per-page {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.8rem;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.pm-per-page select,
+.pm-per-page-custom {
+  padding: 6px 10px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  background: #fff;
+  color: #0f172a;
+  cursor: pointer;
+}
+
+.pm-per-page-custom {
+  width: 88px;
+  cursor: text;
+}
+
+.pm-pagination {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pm-page-btn {
+  padding: 6px 14px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  background: #fff;
+  color: #0f172a;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.pm-page-btn:hover:not(:disabled) {
+  background: #f1f5f9;
+}
+
+.pm-page-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.pm-page-info {
+  font-size: 0.8rem;
+  color: #475569;
+  font-weight: 600;
+  min-width: 56px;
+  text-align: center;
+}
+
+/* Stack neatly on small screens */
+@media (max-width: 640px) {
+  .pm-pagination-wrap {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+  .pm-count { text-align: center; }
+  .pm-per-page { justify-content: center; }
+  .pm-pagination { justify-content: center; }
 }
 
 /* ════════════════════════════════
