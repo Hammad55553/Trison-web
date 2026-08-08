@@ -7,7 +7,8 @@ import {
 import { Html5QrcodeScanner } from 'html5-qrcode';
 import {
   getAllPanels, savePanel, deletePanel,
-  getRegistry, generateSerial, bulkImportPanels, CLASS_OPTIONS, COUNTRY_OPTIONS
+  getRegistry, generateSerial, bulkImportPanels, CLASS_OPTIONS, COUNTRY_OPTIONS,
+  MODEL_OPTIONS, MODEL_MAP
 } from '../../services/authenticityService';
 import { parsePanelFile, downloadPanelTemplate } from '../../services/panelExcel';
 import { exportPanelsExcel, exportPanelsCSV, exportPanelsPDF } from '../../services/panelExport';
@@ -98,10 +99,14 @@ const PanelManager = ({ onSerialsUpdate }) => {
     }
   };
 
+  // Selecting a model auto-fills its wattage + technology.
   const handleModelChange = (modelVal) => {
+    const info = MODEL_MAP[modelVal];
     setForm(f => ({
       ...f,
       model: modelVal,
+      wattage: info ? info.wattage : f.wattage,
+      technology: info ? info.technology : f.technology,
     }));
   };
 
@@ -210,8 +215,6 @@ const PanelManager = ({ onSerialsUpdate }) => {
   const totalPages = Math.ceil(filtered.length / itemsPerPage) || 1;
   const paginatedPanels = filtered.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
-  const selectedModelLabel = form.model;
-
   if (showForm) {
     return (
       <div className="pm-root pm-form-view">
@@ -283,30 +286,21 @@ const PanelManager = ({ onSerialsUpdate }) => {
             {/* Field 2: Model Number */}
             <div className="pm-section">
               <label className="pm-section-title">Model Number *</label>
-              <input
+              <select
                 className="pm-input"
-                placeholder="e.g. TS21RN-66HT580W"
                 value={form.model}
-                onChange={e => {
-                  const val = e.target.value;
-                  const wattMatch = val.match(/(\d{3,}W)/i);
-                  setForm(f => ({ 
-                    ...f, 
-                    model: val,
-                    wattage: (wattMatch ? wattMatch[0].toUpperCase() : f.wattage),
-                  }));
-                }}
-                list="model-options"
+                onChange={e => handleModelChange(e.target.value)}
                 required
-              />
-              <datalist id="model-options">
-                {Array.from(new Set([
-                  ...Array.from({ length: Math.floor((750 - 580) / 5) + 1 }, (_, i) => `TS21RN-66HT${580 + i * 5}W`),
-                  ...panels.map(p => p.model).filter(Boolean)
-                ])).sort().map(m => (
-                  <option key={m} value={m} />
+              >
+                <option value="" disabled>Select a model…</option>
+                {/* keep any custom/legacy model value selectable */}
+                {form.model && !MODEL_MAP[form.model] && (
+                  <option value={form.model}>{form.model} (custom)</option>
+                )}
+                {MODEL_OPTIONS.map(m => (
+                  <option key={m.model} value={m.model}>{m.model} — {m.wattage}</option>
                 ))}
-              </datalist>
+              </select>
             </div>
 
             {/* Brand Input */}
@@ -324,9 +318,9 @@ const PanelManager = ({ onSerialsUpdate }) => {
 
           {/* ── Row: Wattage + Technology ─────── */}
           <div className="pm-row-2">
-            {/* Wattage Input */}
+            {/* Wattage Input (auto-filled from model, still editable) */}
             <div className="pm-section">
-              <label className="pm-section-title">Wattage *</label>
+              <label className="pm-section-title">Wattage * (auto from model)</label>
               <input
                 className="pm-input"
                 placeholder="e.g. 580W"

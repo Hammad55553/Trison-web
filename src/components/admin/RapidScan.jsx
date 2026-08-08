@@ -4,7 +4,7 @@ import {
 } from 'lucide-react';
 import {
   savePanel, deletePanel, getPanelBySerial, getRegistry,
-  CLASS_OPTIONS, COUNTRY_OPTIONS,
+  CLASS_OPTIONS, COUNTRY_OPTIONS, MODEL_OPTIONS, MODEL_MAP,
 } from '../../services/authenticityService';
 
 /**
@@ -55,6 +55,17 @@ const RapidScan = ({ onDataChange }) => {
   }, [running, duplicate]);
 
   const setField = (k, v) => setCfg((c) => ({ ...c, [k]: v }));
+
+  // Selecting a model auto-fills its wattage + technology.
+  const setModel = (model) => {
+    const info = MODEL_MAP[model];
+    setCfg((c) => ({
+      ...c,
+      model,
+      wattage: info ? info.wattage : c.wattage,
+      technology: info ? info.technology : c.technology,
+    }));
+  };
 
   const pushScanned = (serial, action) => {
     setScanned((list) => [{ serial, action, at: Date.now() }, ...list].slice(0, 200));
@@ -138,9 +149,12 @@ const RapidScan = ({ onDataChange }) => {
         </div>
         <div className="rapid-config-grid">
           <label>Model
-            <input value={cfg.model} disabled={running} onChange={(e) => setField('model', e.target.value)} />
+            <select value={cfg.model} disabled={running} onChange={(e) => setModel(e.target.value)}>
+              {!MODEL_MAP[cfg.model] && <option value={cfg.model}>{cfg.model || 'Select model'}</option>}
+              {MODEL_OPTIONS.map((m) => <option key={m.model} value={m.model}>{m.model}</option>)}
+            </select>
           </label>
-          <label>Wattage
+          <label>Wattage (auto)
             <input value={cfg.wattage} disabled={running} onChange={(e) => setField('wattage', e.target.value)} />
           </label>
           <label>Technology
