@@ -81,7 +81,6 @@ const BlogPage = ({ onViewChange }) => {
                   <div className="blog-card-image">
                     <img src={post.image || fallbackImg} alt={post.title} loading="lazy" />
                     <div className="blog-category-badge sm">{post.category}</div>
-                    {post.imageCredit && <span className="blog-img-credit">{post.imageCredit}</span>}
                   </div>
                   <div className="blog-card-content">
                     <div className="blog-meta sm">

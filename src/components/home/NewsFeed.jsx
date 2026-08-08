@@ -56,7 +56,6 @@ const NewsFeed = () => {
             <div className="news-item-card" key={idx}>
               <div className="news-img-box">
                 <img src={images[idx] || item.image} alt={item.title} className="news-img" loading="lazy" decoding="async" />
-                <span className="news-img-credit">Pixabay</span>
               </div>
               <div className="news-content-box">
                 <span className="news-tag-badge">{item.tag}</span>
