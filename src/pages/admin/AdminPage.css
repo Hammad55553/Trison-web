@@ -1285,10 +1285,91 @@ body.admin-body::before {
   margin-bottom: 16px;
 }
 
+/* Hint shown above the camera area */
+.camera-permission-hint {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 16px;
+  font-size: 0.85rem;
+  line-height: 1.4;
+  color: #334155;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  text-align: center;
+  margin-bottom: 14px;
+}
+
+.camera-permission-hint strong {
+  color: #f97316;
+}
+
+/* Neutral (non-red) help message under the camera */
+.camera-wrapper .scan-help-message {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 16px;
+  margin-top: 12px;
+  font-size: 0.85rem;
+  color: #1e293b;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  text-align: center;
+}
+
 #qr-scanner-region {
   border-radius: 8px;
   overflow: hidden;
   border: none !important;
+  background: #ffffff;
+  padding: 8px;
+}
+
+/* Make the html5-qrcode default buttons/links look like real buttons */
+#qr-scanner-region button,
+#qr-scanner-region a {
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 0.9rem !important;
+  font-weight: 600 !important;
+  color: #ffffff !important;
+  background: #f97316 !important;
+  border: none !important;
+  border-radius: 8px !important;
+  padding: 11px 18px !important;
+  margin: 8px 6px !important;
+  cursor: pointer !important;
+  text-decoration: none !important;
+  box-shadow: 0 4px 12px rgba(249, 115, 22, 0.2);
+  transition: all 0.15s ease;
+}
+
+#qr-scanner-region button:hover,
+#qr-scanner-region a:hover {
+  background: #ea6c0e !important;
+  transform: translateY(-1px);
+}
+
+#qr-scanner-region select {
+  font-size: 0.9rem;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid #cbd5e1;
+  margin: 8px 0;
+  max-width: 100%;
+}
+
+#qr-scanner-region video,
+#qr-scanner-region img {
+  border-radius: 8px;
+  max-width: 100%;
 }
 
 .manual-scan-form {

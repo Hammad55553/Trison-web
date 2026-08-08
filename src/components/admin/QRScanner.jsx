@@ -9,38 +9,49 @@ const QRScanner = () => {
   const [scanResult, setScanResult] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [scanHelpMessage, setScanHelpMessage] = useState('');
   const scannerRef = useRef(null);
   const scannerInstanceRef = useRef(null);
+  const scanTimeoutRef = useRef(null);
 
   useEffect(() => {
-    if (mode === 'camera') {
-      setTimeout(() => {
-        if (!scannerRef.current) return;
-        const scanner = new Html5QrcodeScanner(
-          'qr-scanner-region',
-          {
-            fps: 10,
-            qrbox: { width: 280, height: 280 },
-            aspectRatio: 1,
-            // Default to the rear camera; fall back automatically when none.
-            videoConstraints: { facingMode: { ideal: 'environment' } },
-          },
-          false
-        );
-        scanner.render(
-          async (decodedText) => {
-            scanner.clear().catch(() => {});
-            setMode('manual');
-            setManualCode(decodedText);
-            await handleVerify(decodedText);
-          },
-          () => {}
-        );
-        scannerInstanceRef.current = scanner;
-      }, 200);
-    }
+    if (mode !== 'camera') return;
+
+    setScanHelpMessage('');
+    scanTimeoutRef.current = setTimeout(() => {
+      setScanHelpMessage('Having trouble? Hold the barcode steady, keep it in focus, and make sure it is well-lit.');
+    }, 6000);
+
+    const startTimer = setTimeout(() => {
+      if (!scannerRef.current) return;
+      const scanner = new Html5QrcodeScanner(
+        'qr-scanner-region',
+        {
+          fps: 10,
+          qrbox: { width: 260, height: 260 },
+          aspectRatio: 1,
+          // Prefer the rear camera by default; user can switch if needed.
+          videoConstraints: { facingMode: { ideal: 'environment' } },
+        },
+        false
+      );
+      scanner.render(
+        async (decodedText) => {
+          scanner.clear().catch(() => {});
+          if (scanTimeoutRef.current) clearTimeout(scanTimeoutRef.current);
+          setScanHelpMessage('');
+          setMode('manual');
+          setManualCode(decodedText);
+          await handleVerify(decodedText);
+        },
+        () => {}
+      );
+      scannerInstanceRef.current = scanner;
+    }, 200);
 
     return () => {
+      clearTimeout(startTimer);
+      if (scanTimeoutRef.current) clearTimeout(scanTimeoutRef.current);
       if (scannerInstanceRef.current) {
         scannerInstanceRef.current.clear().catch(() => {});
         scannerInstanceRef.current = null;
@@ -91,8 +102,17 @@ const QRScanner = () => {
       {/* Camera Mode */}
       {mode === 'camera' && !scanResult && !error && (
         <div className="camera-wrapper">
-          <p className="camera-hint">Point camera at QR code or barcode on the panel</p>
+          <div className="camera-permission-hint">
+            <ScanLine size={16} style={{ flexShrink: 0 }} />
+            <span>Tap <strong>Request Camera Permissions</strong> below, then point your back camera at the barcode.</span>
+          </div>
           <div id="qr-scanner-region" ref={scannerRef}></div>
+          {scanHelpMessage && (
+            <div className="scan-help-message">
+              <HelpCircle size={18} style={{ flexShrink: 0 }} />
+              <span>{scanHelpMessage}</span>
+            </div>
+          )}
         </div>
       )}
 
