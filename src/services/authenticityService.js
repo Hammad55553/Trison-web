@@ -17,16 +17,22 @@ export const COUNTRY_OPTIONS = [
   'Pakistan', 'UAE', 'Saudi Arabia', 'Qatar', 'Kuwait', 'Bangladesh', 'India', 'China',
 ];
 
-// Predefined Trison panel models with their default wattage + technology.
-// Selecting a model auto-fills wattage (and technology) in the forms.
-export const MODEL_OPTIONS = [
-  { model: 'TS-Premium-540M', wattage: '540W', technology: 'Mono PERC' },
-  { model: 'TS-Premium-550M', wattage: '550W', technology: 'Mono PERC' },
-  { model: 'TS-Premium-580M', wattage: '580W', technology: 'Bifacial Mono PERC' },
-  { model: 'TS-Bifacial-600M', wattage: '600W', technology: 'Bifacial Mono PERC' },
-  { model: 'TS-TOPCon-615N', wattage: '615W', technology: 'N-Type TOPCon' },
-  { model: 'TS-TOPCon-630N', wattage: '630W', technology: 'N-Type TOPCon' },
-];
+// Predefined Trison panel models. The wattage is embedded in the model
+// number (e.g. TS21RN-66HT585W → 585W), so we generate the full range
+// 585W–750W in 5W steps and derive each wattage automatically.
+// Selecting a model auto-fills its wattage in the forms.
+const _TRISON_TECH = 'N-Type Mono';
+export const MODEL_OPTIONS = (() => {
+  const list = [];
+  for (let w = 585; w <= 750; w += 5) {
+    list.push({
+      model: `TS21RN-66HT${w}W`,
+      wattage: `${w}W`,
+      technology: _TRISON_TECH,
+    });
+  }
+  return list;
+})();
 
 // Quick lookup: model name → { wattage, technology }
 export const MODEL_MAP = MODEL_OPTIONS.reduce((acc, m) => {

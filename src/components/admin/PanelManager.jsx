@@ -99,13 +99,16 @@ const PanelManager = ({ onSerialsUpdate }) => {
     }
   };
 
-  // Selecting a model auto-fills its wattage + technology.
+  // Setting a model auto-fills wattage/technology.
+  // 1) exact match in the known list, else
+  // 2) derive wattage from a "…<number>W" model number (custom models).
   const handleModelChange = (modelVal) => {
     const info = MODEL_MAP[modelVal];
+    const wattMatch = String(modelVal).match(/(\d{3,4})\s*W/i);
     setForm(f => ({
       ...f,
       model: modelVal,
-      wattage: info ? info.wattage : f.wattage,
+      wattage: info ? info.wattage : (wattMatch ? `${wattMatch[1]}W` : f.wattage),
       technology: info ? info.technology : f.technology,
     }));
   };
@@ -302,21 +305,21 @@ const PanelManager = ({ onSerialsUpdate }) => {
             {/* Field 2: Model Number */}
             <div className="pm-section">
               <label className="pm-section-title">Model Number *</label>
-              <select
+              {/* Input + datalist: pick from the list OR type a custom model.
+                  Picking a known model auto-fills wattage. */}
+              <input
                 className="pm-input"
+                list="pm-model-options"
+                placeholder="Select or type a model…"
                 value={form.model}
                 onChange={e => handleModelChange(e.target.value)}
                 required
-              >
-                <option value="" disabled>Select a model…</option>
-                {/* keep any custom/legacy model value selectable */}
-                {form.model && !MODEL_MAP[form.model] && (
-                  <option value={form.model}>{form.model} (custom)</option>
-                )}
+              />
+              <datalist id="pm-model-options">
                 {MODEL_OPTIONS.map(m => (
-                  <option key={m.model} value={m.model}>{m.model} — {m.wattage}</option>
+                  <option key={m.model} value={m.model}>{m.wattage}</option>
                 ))}
-              </select>
+              </datalist>
             </div>
 
             {/* Brand Input */}

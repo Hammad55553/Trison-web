@@ -56,13 +56,15 @@ const RapidScan = ({ onDataChange }) => {
 
   const setField = (k, v) => setCfg((c) => ({ ...c, [k]: v }));
 
-  // Selecting a model auto-fills its wattage + technology.
+  // Setting a model auto-fills wattage/technology (exact match, or derive
+  // the wattage from a "…<number>W" custom model number).
   const setModel = (model) => {
     const info = MODEL_MAP[model];
+    const wattMatch = String(model).match(/(\d{3,4})\s*W/i);
     setCfg((c) => ({
       ...c,
       model,
-      wattage: info ? info.wattage : c.wattage,
+      wattage: info ? info.wattage : (wattMatch ? `${wattMatch[1]}W` : c.wattage),
       technology: info ? info.technology : c.technology,
     }));
   };
@@ -149,10 +151,16 @@ const RapidScan = ({ onDataChange }) => {
         </div>
         <div className="rapid-config-grid">
           <label>Model
-            <select value={cfg.model} disabled={running} onChange={(e) => setModel(e.target.value)}>
-              {!MODEL_MAP[cfg.model] && <option value={cfg.model}>{cfg.model || 'Select model'}</option>}
-              {MODEL_OPTIONS.map((m) => <option key={m.model} value={m.model}>{m.model}</option>)}
-            </select>
+            <input
+              list="rapid-model-options"
+              placeholder="Select or type a model…"
+              value={cfg.model}
+              disabled={running}
+              onChange={(e) => setModel(e.target.value)}
+            />
+            <datalist id="rapid-model-options">
+              {MODEL_OPTIONS.map((m) => <option key={m.model} value={m.model}>{m.wattage}</option>)}
+            </datalist>
           </label>
           <label>Wattage (auto)
             <input value={cfg.wattage} disabled={running} onChange={(e) => setField('wattage', e.target.value)} />
